@@ -11,7 +11,7 @@ setup(
 	keywords='',
 	author='OS, David Read',
 	author_email='david.read@hackneyworkshop.com',
-	url='',
+	url='http://data.gov.uk/',
 	license='',
 	packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
 	namespace_packages=['ckanext', 'ckanext.os'],

@@ -900,6 +900,15 @@ function submitBox(){
              map.getProjectionObject(), '');
             
              **/
+
+            // DR: Insertion from Drupal version of this file to do the submit.
+            // We replace any existing co-ords in the search url, then 
+            // append the ones that have been selected.
+            // This is just a temporary measure pending getting proper 
+            // geo-search faceting working.
+            var pageUrl = $(location).attr('href').replace(/&bbw=(-)?\d*\.\d*&bbe=(-)?\d*\.\d*&bbs=(-)?\d*\.\d*&bbn=(-)?\d*\.\d*/,'')+'&bbw='+bBox[0]+'&bbe='+bBox[1]+'&bbs='+bBox[3]+'&bbn='+bBox[2];
+            pageUrl = pageUrl.replace(/#!#wrapper/,'');
+            window.location = pageUrl.replace(/#/,'');
             
         }
     }

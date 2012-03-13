@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+    	<base href="http://vmlin74/inspire/2_2_1_1/"/>
+        <title>UK Location Programme</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name="DC.subject" scheme="eGMS.IPSV" content="Civil Service"/>
+        <meta name="eGMS.accessibility" scheme="eGMS.WCAG10" content="Double-A" />
+        <meta name="DC.coverage" content="GB" />
+        <meta name="DC.language" scheme="DCTERMS.ISO639-2" content="eng" />
+        <meta name="DC.creator" content="Ordnance Survey, http://www.ordnancesurvey.co.uk/contactus" />
+        <meta name="DC.publisher" content="Ordnance Survey, Adanac Drive, Southampton, SO16 0AS, 023 8005 5257, customerservices@ordnancesurvey.co.uk" />
+        <meta name="DC.title" content="UK Location Programme" />
+        <meta name="DC.date" scheme="DCTERMS.W3CDTF" content="2011-04-15" />
+        <meta name="description" content="The UK Location Information Infrastructure (UKLII) enables users to search for metadata records using a number of criteria. This is the location component of that service allowing users to search for and is provided by Ordnance Survey." />
+        <meta name="keywords" content="ordnance survey,os,uk location programme" />
+        <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://vmlin74/inspire/2_2_1_1/" />
+        <!-- TO DO: Add final URL -->
+        <meta name="copyright" content="Ordnance Survey 2011" />
+        <link rel="stylesheet" type="text/css" href="global.css" media="screen,projection"/>
+        <!--[if IE 6]>
+		<link rel="stylesheet" type="text/css" href="ie6.css" media="screen,projection" title="desktop" />
+		<![endif]-->
+        <script type="text/javascript">
+            // <![CDATA[
+            document.write('<style type="text/css">#noJS{display:none;}</style>');
+            // ]]>
+        </script>
+        <script src="./scripts/domparser.js" type="text/javascript">
+        </script>
+        <script src="http://46.137.180.108/libraries/OpenLayers-2.10/OpenLayers.js" type="text/javascript">
+        </script>
+		<script src="./scripts/wmsmap.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <div id="wrapper">
+                <div id="noJS">
+                    <p>
+                        You do not appear to have JavaScript enabled in your browser.
+                    </p>
+                    <p>
+                        This application requires JavaScript in order to function correctly, so please ensure it is enabled before proceeding.
+                    </p>
+                </div>
+                
+				<p id="helplink"><a href="http://data.gov.uk/faq" class="newwin" title="Help document (opens in a new window)"  onclick="window.open(this.href);return false">Need help getting started?</a></p>
+	
+            	<form action="#" id="searchForm" onsubmit="return false;">
+            	
+                	<fieldset id="fieldset1">
+	                    <legend>Step 1 (Optional)</legend>
+	                    
+	                    <p>Locate area of interest<br />
+	                    <strong>Example:</strong> <em>London or EH99 1SP or 54.58, -5.93</em></p>
+			
+	                    <label for="searchArea"><span class="offScreen">Search</span></label>
+	                    
+                    	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
+			
+						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name; postcode; or latitude, longitude in decimal degrees" />
+					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
+		  	
+					  	<div id="gazContainer">
+						</div>
+			
+                	</fieldset>
+                	
+                	<fieldset id="fieldset2">
+							<legend>Step 2</legend>
+				
+							<p>Draw search area</p>
+				
+							<input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" onkeypress="drawBoundingBox()" title="Draw a bounding box" />
+							
+							<input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" onkeypress="clearBoundingBox()" title="Clear the bounding box" />
+							
+							<div class="formRow" title="Only available between 1:5M and 1:75K">
+								<input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="document.body.style.cursor = 'wait'; checkBoundaries()" />&nbsp;<label for="boundaries">Display administrative areas</label>
+							</div>		 		  
+					</fieldset>
+	
+					<fieldset id="fieldset3">
+						<legend>Step 3</legend>
+							
+							<p>Find data for selected area</p>
+							
+							<input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
+			
+					</fieldset>
+            </form>
+			<div style=.clear:left; height:30px;.>&#160;</div>
+			<div id="mapwrapper">
+				<div id="mappanel"></div>
+			</div>
+        </div>
+    </body>
+</html>

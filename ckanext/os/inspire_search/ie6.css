@@ -1,0 +1,36 @@
+/*
+* Global style sheet for IE6.
+* 
+* @author			: Toni Ruckwood
+* @version			: 1.0.0 
+* @create date		: 23 Aug 2011
+* @modified date	: 
+*/
+
+
+#searchForm {
+	height: 12em;
+}
+
+#searchForm FIELDSET {
+	height: 12em;
+}
+
+#fieldset1 {
+	width: 440px;
+}
+
+#fieldset2 {
+	width: 250px;
+}
+
+#fieldset3 {
+	width: 250px;
+}
+
+#searchArea {
+	border: 1px solid #000;
+	font-family: inherit;
+	padding: 4px 5px;
+	height: 2em;
+}

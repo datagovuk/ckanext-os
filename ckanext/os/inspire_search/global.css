@@ -1,0 +1,160 @@
+/*
+* Global style sheet for search.
+* 
+* @author			: Toni Ruckwood
+* @version			: 1.0.6 
+* @create date		: 15 Apr 2011
+* @modified date	: 23 Aug 2011
+*/
+
+/*Global reset*/
+* {
+	margin: 0;
+	padding: 0;
+}
+
+/*Set main page properties and centre page*/
+BODY {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: .75em;
+	background-color: #fff;
+	color: #000;
+	text-align: center;
+}
+
+/*Restore paragraph margins*/
+P {
+	margin: .5em 0;
+	line-height: 1.5;
+}
+
+/*Main page container*/
+#wrapper {
+	width: 960px;
+	margin: 10px auto;
+	text-align: left;
+}
+
+/*Message for non JavaScript users*/
+#noJS {
+	background-color: #f00;
+	color: #fff;
+	padding: 10px;
+	margin: 10px 0;
+	text-align: center;
+}
+
+/*Help link*/
+#helplink {
+	text-align: right;
+}
+
+/*Main form*/
+#searchForm {
+	height: 10em;
+}
+
+#searchForm FIELDSET {
+	padding: 10px;
+	float: left;
+	border: 1px solid #999;
+	-ms-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	height: 10em;
+	margin-bottom: 10px;
+}
+
+#fieldset1 {
+	width: 418px;
+	margin-right: 10px;
+}
+
+#fieldset2 {
+	width: 228px;
+	margin-right: 10px;
+}
+
+#fieldset3 {
+	width: 228px;
+}
+
+#searchForm LEGEND {
+	font-weight: bold;
+	font-size: 1.167em;
+	color: #000;
+}
+
+.formRow {
+	clear: left;
+	margin: 10px 0;
+}
+
+#searchArea {
+	border: 1px solid #000;
+	font-family: inherit;
+	padding: 4px 5px;
+	width: 350px;
+}
+
+/*Form buttons*/
+#buttonID, #buttonDrawID, #buttonClearID, #buttonSearchID {
+	padding: 4px 5px;
+	border: 1px solid #000;
+	background-color: #eee;
+	color: #000;
+	cursor: pointer;
+}
+
+#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
+  background-color: #cdcdcd;
+}
+
+/*Gazetteer search results*/
+#searchForm #selectGaz {
+	display: none;
+}
+
+/*Mapping*/
+#mapwrapper {
+	clear: both;
+	border: 1px solid #273397;
+	margin-top: 10px;
+}
+#mappanel {
+	width: 958px;
+	height: 435px;
+}
+#mappanel DIV.olControlAttribution {
+	font-size: .833em;
+	left: 5px;
+	bottom: 3px;
+	color: #666;
+}
+
+/*Misc styles*/
+html.waiting {
+cursor: wait;
+}
+
+/*Elements positioned off screen*/
+.offScreen {
+	position: absolute;
+	left: -9999px;
+}
+
+div.olControlScaleLine {
+bottom: 16px;
+right: 3px;
+padding: 5px;
+left: auto;
+color: #666;
+/*hr: #666;*/
+} 
+
+div.olMousePosition{
+right: 3px;
+padding: 5px;     
+}

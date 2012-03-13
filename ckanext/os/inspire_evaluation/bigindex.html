@@ -1,0 +1,446 @@
+<html>
+    <center>
+        <h1>INSPIRE / UKLP Preview Map Test Application</h1>
+		<h2><i>(For internal use only)</i></h2>
+    </center>
+    <body bgcolor="Silver">
+        <p>
+        <form name="input" action="evalmapwms.htm" method="get">
+			<b>Bounding Box </b><i>(Default is a bounding box around part of the Solent)</i>
+			<p>
+			<table>
+				<tr>
+					<td>
+					</td>
+					<td>
+						<input id="nb" type="text" name="n" value="50.90" tabindex="4">North Bounding Latitude
+						</input>
+
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input id="wb" type="text" name="w" value="-1.45" tabindex="1">West Bounding Longitude
+						</input>
+					</td>
+
+					<td>
+					</td>
+					<td>
+						<input id="eb" type="text" name="e" value="-1.15" tabindex="3">East Bounding Longitude
+						</input>
+					</td>
+				</tr>
+				<tr>
+					<td>
+
+					</td>
+					<td>
+						<input id="sb" type="text" name="s" value="50.70" tabindex="2">South Bounding Latitude
+						</input>
+					</td>
+					<td>
+					</td>
+				</tr>
+			</table>
+
+<br>
+
+		Enter a URL: <input type="text" name="url" size="100" />
+		<br><br>
+
+				
+			
+		<p>
+		<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+		</p>
+			
+<b>Good WMS URLs :</b>
+<br><br>
+02. <input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Surface_Geology/wms?">
+<b>BGS Surface geology (OGC WxS INSPIRE IOC)</b></input></br>
+
+03. <input type="checkbox" name="url" value="http://ogc2.bgs.ac.uk/1GEConnector/surface/?">
+<b>BGS Surface geology (OGC WxS)</b></input><br/>
+
+04. <input type="checkbox" name="url" value="http://mapapps.bgs.ac.uk/arcgis/services/INSPIREWMS/Digmap/MapServer/WMSServer?">
+<b>BGS Detailed Bedrock and Superficial geology (OGC WxS INSPIRE IOC)</b></input><br/>
+
+05. <input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_1GE_Geology/wms?">
+<b>BGS GeoSure (OGC WxS)</b></input><br/>
+
+06. <input type="checkbox" name="url" value="http://maps.bgs.ac.uk/ArcGIS/services/BGS_Detailed_Geology/MapServer/WMSServer?">
+<b>BGS Detailed Bedrock and Superficial geology (OGC WxS)</b></input><br/>
+
+07. <input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms?">
+<b>BGS Bedrock and Superficial geology (OGC WxS)</b></input><br/>
+
+08. <input type="checkbox" name="url" value="http://mapapps.bgs.ac.uk/arcgis/services/INSPIREWMS/Boreholes/MapServer/WMSServer?">
+<b>BGS Onshore Borehole Index (OGC WxS INSPIRE IOC)</b></input><br/>
+
+13. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/Chernobyl/MapServer/WMSServer?">
+<b>Post-Chernobyl soil and vegetation surveys (1986-1987) - map of sample locations</b></input><br/>
+
+14. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/NaturalRadionuclides/MapServer/WMSServer?">
+<b>England & Wales natural radionuclide concentrations in soil, water & sediments survey maps</b></input><br/>
+
+18. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/MycorrhizalFungiMap/MapServer/WMSServer?">
+<b>Arbuscular mycorrhizal fungal diversity: Farm Locations</b></input><br/>
+
+26. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/arcgis/services/Biogeochemistry/Cs137NuclearWeaponsFallout1985Q4/MapServer/WMSServer?">
+<b>Cs-137 Nuclear Weapons Fallout - view service</b></input><br/>
+
+27. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/CSHabitats/MapServer/WMSServer?">
+<b>Countryside Survey Habitats Data Service </b></input><br/>
+
+32. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/Services/Water/CumbrianLakes/MapServer/WMSServer?">
+<b>Cumbrian lakes environmental research (CLEAR) - map of sample locations</b></input><br/>
+
+34. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/arcgis/services/Biodiversity/WoodlandSurvey/MapServer/WMSServer?">
+<b>Woodland Survey Sites</b></input><br/>
+
+35. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/CumbrianUplandWatersChemistry/MapServer/WMSServer?">
+<b>Cumbria Upland Waters Chemistry - map of sample locations.</b></input><br/>
+
+69. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/arcgis/services/Biodiversity/MoorHouseSoils/MapServer/WMSServer?">
+<b>ECN Moor House Soils WMS</b></input><br/>
+
+75. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/Avonmouth/MapServer/WMSServer?">
+<b>Trace metals in soils in the West Bristol (Avonmouth) area - map of sample locations</b></input><br/>
+
+78. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/arcgis/services/Biodiversity/ECNSites/MapServer/WMSServer?">
+<b>ECN Sites</b></input><br/>
+
+81. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biogeochemistry/PBMS_MerlinEggs/MapServer/WMSServer?">
+<b>Geographical regions for merlin and golden eagles in the UK (PBMS)</b></input><br/>
+
+86. <input type="checkbox" name="url" value="http://mapgateway.snh.gov.uk/ServicesWMS/FCS_Inventories_and_Surveys/MapServer/WMSServer?">
+<b>FCS Inventories and Surveys WMS</b></input><br/>
+
+87. <input type="checkbox" name="url" value="http://mapgateway.snh.gov.uk/ServicesWMS/FCS_Admin_Boundaries/MapServer/WMSServer?">
+<b>FCS Administrative Boundaries WMS</b></input><br/>
+
+88. <input type="checkbox" name="url" value="http://mapgateway.snh.gov.uk/ServicesWMS/FCS_Grants_and_Regulations/MapServer/WMSServer?">
+<b>FCS Grants & Regulations WMS</b></input><br/>
+
+89. <input type="checkbox" name="url" value="http://arcsrv1.rcahms.gov.uk/arcgis/services/wmsRCAHMS/MapServer/WMSServer?">
+<b>Web Map Service for Canmore: the National Monuments Record for Scotland and its maritime waters</b></input><br/>
+
+91. <input type="checkbox" name="url" value="http://mapgateway.snh.gov.uk/ServicesWMS/FCS_National_Forest_Estate/MapServer/WMSServer?">
+<b>FCS National Forest Estate WMS</b></input><br/>
+
+92. <input type="checkbox" name="url" value="http://gis.sepa.org.uk/ArcGIS/services/WMS_Water_Bodies/MapServer/WMSServer?">
+<b>WFD Water Bodies (WMS)</b></input><br/>
+
+93. <input type="checkbox" name="url" value="http://sedsh13.sedsh.gov.uk/ArcGIS/services/OSG/OSG/MapServer/WMSServer?">
+<b>One Scotland Address Gazetteer Web Map Service (WMS)</b></input><br/>
+
+94. <input type="checkbox" name="url" value="http://sedsh13.sedsh.gov.uk/ArcGIS/services/HS/Historic_Scotland/MapServer/WMSServer?">
+<b>Historic Scotland (WMS)</b></input><br/>
+
+95. <input type="checkbox" name="url" value="http://mapgateway.snh.gov.uk/ServicesWMS/SNH_Protected_Areas/MapServer/WMSServer?">
+<b>Scottish Natural Heritage Protected Areas WMS</b></input><br/>
+
+96. <input type="checkbox" name="url" value="http://sedsh13.sedsh.gov.uk/ArcGIS/services/ROS/ROS_CadastralParcels/MapServer/WMSServer">
+<b>Land Register Title Seed Point (WMS)</b></input><br/>
+
+99. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Protected_sites/wms?">
+<b>Welsh Government Protected sites view service.</b></input><br/>
+
+100. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Natural_risk_zones/wms?">
+<b>Welsh Government Natural Risk Zones view service.</b></input><br/>
+
+101. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Transport_networks/wms?">
+<b>Welsh Government Transport Networks view service.</b></input><br/>
+
+102. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Protected_sites/wms?">
+<b>Welsh Government Protected sites view service.</b></input><br/>
+
+103. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Natural_risk_zones/wms?">
+<b>Welsh Government Natural Risk Zones view service.</b></input><br/>
+
+104. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Transport_networks/wms?">
+<b>Welsh Government Transport networks view service.</b></input><br/>
+
+105. <input type="checkbox" name="url" value="http://inspire.wales.gov.uk/maps/Natural_risk_zones/wms?">
+<b>Welsh Government Natural Risk Zones view service.</b></input><br/>
+
+			<p>
+	<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+		
+			</p>
+
+
+<h3>Unresponsive WMSs</H3>
+40. <input type="checkbox" name="url" value="http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_DOM_TAR/MapServer/WMSServer?request=getCapabilities&service=WMS">
+<b>Land Cover Map 2007 (1km raster dominant Target Class, GB) Licensed Web Map Service</b></input><b><font color="red">  http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_DOM_TAR/MapServer/WMSServer?request=getCapabilities&service=WMS</font></b><br/>
+
+47. <input type="checkbox" name="url" value="http://lasigprod/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_PC_AGG/MapServer/WMSServer?">
+<b>Land Cover Map 2007 (1km percentage aggregate class, GB) Licensed Map Service</b></input><b><font color="red">  http://lasigprod/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_PC_AGG/MapServer/WMSServer?</font></b><br/>
+
+56. <input type="checkbox" name="url" value="http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/Plynlimon_core_data/MapServer/WMSServer?">
+<b>Plynlimon research catchments map view service</b></input><b><font color="red">  http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/Plynlimon_core_data/MapServer/WMSServer?</font></b><br/>
+
+58. <input type="checkbox" name="url" value="http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/Non_NRFA/HOST_5km_Dominant/MapServer/WMSServer?">
+<b>A representation of HOST for the UK at 5km</b></input><b><font color="red">  http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/Non_NRFA/HOST_5km_Dominant/MapServer/WMSServer?</font></b><br/>
+
+60. <input type="checkbox" name="url" value="http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/CSHedges/MapServer/WMSServer?">
+<b>Countryside Survey Hedgerow Data Map View </b></input><b><font color="red">  http://lasigprod.nerc-lancaster.ac.uk/arcgis/services/LandCoverMap/LCM2007_GB_1k_DOM_AGG/MapServer/WMSServer?</font></b><br/>
+
+62. <input type="checkbox" name="url" value="http://lasigprod.nerc-lancaster.ac.uk/arcgis/services/LandCoverMap/LCM2007_GB_1k_DOM_AGG/MapServer/WMSServer?">
+<b>Land Cover Map 2007 (1km dominant aggregate class, GB) Licensed Web Map Service</b></input><b><font color="red">  http://lasigprod.nerc-lancaster.ac.uk/arcgis/services/LandCoverMap/LCM2007_GB_1k_DOM_AGG/MapServer/WMSServer?</font></b><br/>
+
+67. <input type="checkbox" name="url" value="http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_25m/MapServer/WMSServer?">
+<b>Land Cover Map 2007 (25m raster, GB) Licensed Map Service</b></input><b><font color="red">   http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_25m/MapServer/WMSServer?</font></b><br/>
+
+77. <input type="checkbox" name="url" value="http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/CEH_INSPIRE/CEH_Rivers_INSPIRE/MapServer/WMSServer">
+<b>CEH digital 1:50,000 GB Rivers INSPIRE View Service</b></input><b><font color="red">   http://wlwin5.nerc-wallingford.ac.uk/ArcGIS/services/CEH_INSPIRE/CEH_Rivers_INSPIRE/MapServer/WMSServer</font></b><br/>
+
+84. <input type="checkbox" name="url" value="http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_PC_TAR/MapServer/WMSServer?">
+<b>Land Cover Map 2007 (1km percentage Target Class, GB) Licensed Map Service</b></input><b><font color="red">   http://lasigprod.nerc-lancaster.ac.uk/ArcGIS/services/LandCoverMap/LCM2007_GB_1k_PC_TAR/MapServer/WMSServer?</font></b><br/>
+
+90. <input type="checkbox" name="url" value="http://sedsh13.sedsh.gov.uk/ArcGIS/services/TS/TrunkRoadNetwork/MapServer/WMSServer?">
+<b>Trunk Road Sections 2011 WMS service</b></input><b><font color="red">   http://sedsh13.sedsh.gov.uk/ArcGIS/services/TS/TrunkRoadNetwork/MapServer/WMSServer?</font></b><br/>
+
+97. <input type="checkbox" name="url" value="http://sedsh04.sedsh.gov.uk/wms.php?">
+<b>Scottish Government corporate datasets Web Mapping Service (WMS)</b></input><b><font color="red">   http://sedsh04.sedsh.gov.uk/wms.php?</font></b>  There is a Inspire Test page @ <a href="http://sedsh04.sedsh.gov.uk/sg_inspire/">http://sedsh04.sedsh.gov.uk/sg_inspire/</a>
+<br>
+<h3>Unresponsive WMS with UserID & Password</H3>
+
+85. <input type="checkbox" name="url" value="http://www.geostore.com/OGC/OGCInterface?UID=U19099&PASSWORD=password&INTERFACE=EAINSPIREDIRECT&">
+<b>British Waterways INSPIRE compliant service metadata</b></input><b><font color="red">   http://www.geostore.com/OGC/OGCInterface?UID=U19099&PASSWORD=password&INTERFACE=EAINSPIREDIRECT&</font></b><br/>
+
+			<p>
+	<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+		
+			</p>
+
+
+<h3>URL is a webpage and not WMS</h3>
+33. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=7&dsKey=GA000145">
+<b>BRC Amphibia Species Richness View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=7&dsKey=GA000145</font></b><br/>
+
+37. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000651">
+<b>BRC Moths Species Richness from the John Heath Lepidoptera Recording Scheme - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000651</font></b><br/>
+
+38. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=7&dsKey=GA000154">
+<b>BRC Astacura Species Richess View Service </b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=7&dsKey=GA000154</font></b><br/>
+
+39. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000555">
+<b>BRC Culicidae Species Richness in the UK - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000555</font></b><br/>
+
+41. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000158">
+<b>BRC Trichoptera Species Richness in Britain and Ireland - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000158</font></b><br/>
+
+45. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000191">
+<b>BRC Coccinellidae Species Richness in Britain and Ireland - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000191</font></b><br/>
+
+50. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000156">
+<b>BRC Corixidae and Other Aquatic Bugs Species Richness - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000156</font></b><br/>
+
+51. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000389">
+<b>BRC Isopoda Species Richness in the UK and Ireland - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000389</font></b><br/>
+
+52. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000192">
+<b>BRC Cerambycidae Species Richness in the UK - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000192</font></b><br/>
+
+53. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000397">
+<b>BRC Neuroptera and Allied Insects Species Richness in Britain and Ireland - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000397</font></b><br/>
+
+55. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000320">
+<b>BRC Ixodidea Species Richness in the UK and Ireland - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000320</font></b><br/>
+
+57. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000164">
+<b>BRC Atomariine Species Richness View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000164</font></b><br/>
+
+59. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000155">
+<b>BRC Tipuloidea (Cranefly) Species Richness in Britain - View Service</b></input><b><font color="red">  http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000155</font></b><br/>
+
+64. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000145">
+<b>BRC Reptilia Species Richness in Britain and Ireland - View Service</b></input><br/>
+
+70. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000074">
+<b>BRC Mammals Species Richness in Britain - View Service</b></input><b><font color="red">   http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000074</font></b></br>
+
+72. <input type="checkbox" name="url" value="http://wlwin5.nerc-wallingford.ac.uk/arcgis/services/BRC/UK_BMS_Sites/MapServer/WMSServer?">
+<b>UK Butterfly Monitoring Scheme locations</b></input><b><font color="red">   http://wlwin5.nerc-wallingford.ac.uk/arcgis/services/BRC/UK_BMS_Sites/MapServer/WMSServer?</font></b><br/>
+
+73. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000423">
+<b>BRC Diplopoda Species Richness in Britain and Ireland - View Service</b></input><b><font color="red">   http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000423</font></b><br/>
+
+74. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000157">
+<b>BRC Orthoptera Species Richness in Britain and Ireland - View Service</b></input><b><font color="red">   http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000157</font></b><br/>
+
+82. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000160">
+<b>BRC Buprestoidea and Elateroidea Species Richess in Britain and Ireland - View Service</b></input><b><font color="red">   http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?refID=0&dsKey=GA000160</font></b><br/>
+
+83. <input type="checkbox" name="url" value="http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?dsKey=GA000422">
+<b>BRC Brachycera Species Richness View Service</b></input><b><font color="red">   http://data.nbn.org.uk/datasetInfo/taxonDataset.jsp?dsKey=GA000422</font></b><br/>
+
+
+			<p>
+	<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+		
+			</p>
+<b>Non-CKAN URLs for additional testing</b>
+<br><br>
+
+<input type="checkbox" name="url" value="foo"><b>foo</b>
+                - Notes: Syntactically invalid URL.  An error message should be displayed and the layer should not display in the layer tree
+                </input>
+                <br/>
+				
+				<input type="checkbox" name="url" value="1066"><b>1066</b>
+                - Notes: Syntactically invalid URL.  An error message should be displayed and the layer should not display in the layer tree
+                </input>
+                <br/>
+
+<input type="checkbox" name="url" value="http:/foo.com"><b>http:/foo.com</b>
+                - Notes: Syntactically invalid URL.  An error message should be displayed and the layer should not display in the layer tree
+                </input>
+                <br/>
+				
+				 <input type="checkbox" name="url" value="http//foo.com"><b>http//foo.com</b>
+                - Notes: Syntactically invalid URL.  An error message should be displayed and the layer should not display in the layer tree
+                </input>
+                <br/>
+				
+				 <input type="checkbox" name="url" value="http://46.137.180.55:8080"><b>http://46.137.180.55:8080</b>
+               - Notes: Syntactically valid URL, but a nonexistent server.  Should display in the layer tree with a spinning icon
+                 </input>
+                <br/>
+				
+				 <input type="checkbox" name="url" value="http://46.137.180.55:8080/wms?request=getCapabilities&service=wms"><b>http://46.137.180.55:8080/wms?request=getCapabilities&service=wms</b>
+               - Notes: Syntactically valid URL, but a nonexistent server.  Should display in the layer tree with a spinning icon
+                 </input>
+                <br/>
+				
+				
+				 <input type="checkbox" name="url" value="http://news.bbc.co.uk"><b>http://news.bbc.co.uk</b>
+                - Notes: Syntactically valid URL, but not a WMS.  Should display in the layer tree with a spinning icon
+                </input>
+                <br/>
+				
+				<input type="checkbox" name="url" value="http://ordnancesurvey.co.uk"><b>http://ordnancesurvey.co.uk</b>
+                - Notes: Syntactically valid URL, but not a WMS.  Should display in the layer tree with a spinning icon
+                </input>
+                <br/>
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?"><b>http://46.137.121.28/geoserver/wms?</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>
+				<input type="checkbox" name="url" value="https://46.137.121.28/geoserver/wms?"><b>https://46.137.121.28/geoserver/wms?</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms"><b>http://46.137.121.28/geoserver/wms</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?service=wms&request=getCapabilities"><b>http://46.137.121.28/geoserver/wms?service=wms&request=getCapabilities</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?service=wms&request=getCapabilities&"><b>http://46.137.121.28/geoserver/wms?service=wms&request=getCapabilities&</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>				
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms"><b>http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>				
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms&"><b>http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms&</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms&foo=rubbish"><b>http://46.137.121.28/geoserver/wms?request=getCapabilities&service=wms&foo=rubbish</b>
+				- Notes: This is a WMS running on our ITE server 46.137.121.28.  Should display correctly in the layer tree              
+			   </input>
+                <br/>	
+			
+							<p>
+	<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+			
+			</p>
+
+<b>URLs from index.html test page.  CAVEAT:  Some of the notes may no longer be valid, as the application has changed over time.</b>
+<br><br>
+				<input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_1GE_Geology/wms?"><b>BGS GeoSure (OGC WxS)</b>
+                </input>
+                <br/>
+				
+
+				<input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/BGS_Bedrock_and_Surface_Geology/wms.php?"><b>BGS Surface geology (OGC WxS INSPIRE IOC)</b>
+                </input>
+                <br/>
+				
+				
+				
+				<input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms?"><b>BGS Bedrock and Superficial geology (OGC WxS)</b>
+                </input>
+                <br/>
+				
+				<input type="checkbox" name="url" value="http://maps.bgs.ac.uk/ArcGIS/services/BGS_Detailed_Geology/MapServer/WMSServer?"><b>British geology onshore digital maps (1:50000 scale)</b>
+                - Notes: Will display at zoom levels 5 & 6
+                </input>
+                <br/>				
+				<input type="checkbox" name="url" value="http://46.137.121.28/geoserver/wms?"><b>Ordnance Survey Maps for INSPIRE running on TEST server</b>
+                </input>
+                <br/>	
+				<input type="checkbox" name="url" value="http://46.137.44.183/geoserver/wms?"><b>Ordnance Survey Maps for INSPIRE running on DEV server</b>
+                </input>
+                <br/>		             
+                <input type="checkbox" name="url" value="http://arcsrv1.rcahms.gov.uk/arcgis/services/wmsRCAHMS/MapServer/WMSServer?"><b>Ancient and Historical Monuments of Scotland</b>
+                - Notes:  Must be ETRS89, as it does not throw exception; however, no data is displayed
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_Bedrock_and_Superficial_Geology/wms? "><b>UK onshore and offshore bedrock and superficial geology (1:625000 scale)</b>
+                - Notes:  Cannot connect to WMS server
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv?"><b>GEBCO</b>
+                - Notes: Not in ETRS89; Displays an exception
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://ogc.bgs.ac.uk/cgi-bin/BGS_1GE_Geology/wms?"><b>Samples of high resolution ground stability data (1:50000 scale)</b>
+                - Notes: Not in ETRS89; Displays an exception
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://158.109.55.144/cgi-bin/wms?"><b>European Environment Agency (EEA) WMS</b>
+                - Notes:  Cannot connect to WMS server
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://idezar.zaragoza.es/wms/IDEZar_base/IDEZar_base?"><b>IDE Zaragoza WMS</b>
+                - Notes:  Must be ETRS89, as it does not throw exception; however, the data is in Spain 
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://www2.demis.nl/WMS/wms.asp?"><b>World Map</b>
+                - Notes:  Throws an exception because it is in EPSG:4258, not EPSG:4326 (aka ETRS89) 
+                </input>
+                <br/>
+                <input type="checkbox" name="url" value="http://columbo.nrlssc.navy.mil/ogcwms/servlet/WMSServlet/Zavala_County_TX_Maps.wms?"><b>NRL GIDB Portal: Zapata County, Texas USA Maps</b>
+                - Notes:  Does not throw an exception, but drapes the map in a solid colour
+                <br/>
+                <input type="checkbox" name="url" value="http://columbo.nrlssc.navy.mil/ogcwms/servlet/WMSServlet/UK_Election_Maps.wms?"><b>NRL GIDB Portal: UK Election Maps</b>
+                - Notes:  Cannot connect to WMS server
+                <br/>
+                <input type="checkbox" name="url" value="http://maps1.intergraph.com/wms/world/request.asp?"><b>Intergraph World Map</b>
+                - Notes:  Cannot connect to WMS server
+                <br/>
+                <input type="checkbox" name="url" value="http://wms1.agr.gc.ca/cgi-bin/mapplant2000_f?"><b>AAC - Zones de rusticit des plantes (2000)</b>
+                - Notes: Not in ETRS89; Displays an exception
+                <br/>
+                <input type="checkbox" name="url" value="http://206.14.214.198/image?"><b>CustomWeather Map Server</b>
+                - Notes:  Cannot connect because this is not a valid WMS URL.  This illustrates what happens if there is bad data in CKAN.
+                <br/>
+                <p>
+				<p>
+					<input type="submit"></input><input type="button" value="Clear All" onClick="this.form.reset()" />
+				</p>
+                </form>
+
+
+            </body>
+        </html>

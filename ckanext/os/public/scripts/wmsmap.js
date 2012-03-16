@@ -1,0 +1,1 @@
+../../inspire_search/scripts/wmsmap.js

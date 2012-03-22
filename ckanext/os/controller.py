@@ -37,7 +37,7 @@ class PreviewWidget(BaseController):
         pass    
 
 class Proxy(BaseController):
-    def proxy(self):
+    def gazetteer_proxy(self):
         # avoid status_code_redirect intercepting error responses
         request.environ['pylons.status_code_redirect'] = False
 
@@ -59,11 +59,20 @@ class Proxy(BaseController):
             response.status_int = 400
             return 'Value for t parameter not recognised'
 
-    def _read_url(self, url):
+    def _read_url(self, url, post_data=None, content_type=None):
+        headers = {'Content-Type': content_type} if content_type else {}
+        request = urllib2.Request(url, post_data, headers)
         try:
-            f = urllib2.urlopen(url)
+            f = urllib2.urlopen(request)
         except HTTPError, e:
             response.status_int = 400
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
         return f.read()
+        
+    def geoserver_proxy(self, url_suffix):
+        # for boundary information etc.
+        url = 'http://%s/geoserver/%s' % \
+              (INSPIRE_IP_ADDRESS, url_suffix)
+        return self._read_url(url, post_data=request.body,
+                              content_type=request.headers.get('Content-Type'))
         

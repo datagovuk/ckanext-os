@@ -9,15 +9,24 @@ class SearchWidget(SingletonPlugin):
     implements(IConfigurer)
 
     def after_map(self, map):
-        map.connect('/map-based-search',
+        map.connect('/data/map-based-search',
                     controller='ckanext.os.controller:SearchWidget',
                     action='index')
-        map.connect('/map-based-preview',
+        map.connect('/data/map-based-preview',
                     controller='ckanext.os.controller:PreviewWidget',
                     action='index')
         map.connect('/proxy.php',
                     controller='ckanext.os.controller:Proxy',
-                    action='proxy')
+                    action='gazetteer_proxy')
+
+        # Proxy for boundary information etc.
+        # This is ideally duplicated in the Apache config as:
+        #
+        # ProxyPass /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
+        # ProxyPassReverse /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
+        map.connect('/geoserver/{url_suffix:.*}',
+                    controller='ckanext.os.controller:Proxy',
+                    action='geoserver_proxy')
         return map
 
     def update_config(self, config):

@@ -44,12 +44,12 @@
                         This application requires JavaScript in order to function correctly, so please ensure it is enabled before proceeding.
                     </p>
                 </div>
-                
-				<p id="helplink"><a href="http://data.gov.uk/faq" class="newwin" title="Help document (opens in a new window)"  onclick="window.open(this.href);return false">Need help getting started?</a></p>
-	
+                	
             	<form id="searchForm" action="/dataset" method="post">
             	
-                	<fieldset id="fieldset1">
+                    <p id="helplink"><a href="/doc/map-based-search/" class="newwin" title="Help document">Need help getting started?</a> <a href="TODO">Close</a> </p>
+
+                    <fieldset id="fieldset1">
 	                    <legend>Step 1 (Optional)</legend>
 	                    
 	                    <p>Locate area of interest<br />
@@ -57,7 +57,7 @@
 			
 	                    <label for="searchArea"><span class="offScreen">Search</span></label>
 	                    
-                    	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
+                    	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
 			
 						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name; postcode; or latitude, longitude in decimal degrees" />
 					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
@@ -65,35 +65,38 @@
 					  	<div id="gazContainer">
 						</div>
 			
-                	</fieldset>
+                    </fieldset>
                 	
-                	<fieldset id="fieldset2">
-							<legend>Step 2</legend>
+                    <fieldset id="fieldset2">
+                            <legend>Step 2</legend>
 				
-							<p>Draw search area</p>
+                            <p>Draw search area &nbsp;<a href="#" rel="htmltooltip">[quick tip]</a></p>
 				
-							<input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" onkeypress="drawBoundingBox()" title="Draw a bounding box" />
+                            <div class="htmltooltip" style="display: None">When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.</div>
+
+
+                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" />
 							
-							<input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" onkeypress="clearBoundingBox()" title="Clear the bounding box" />
+                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" />
+
+                            <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K">
+                                <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
+                            </div>
 							
-							<div class="formRow" title="Only available between 1:5M and 1:75K">
-								<input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="document.body.style.cursor = 'wait'; checkBoundaries()" />&nbsp;<label for="boundaries">Display administrative areas</label>
-							</div>		 		  
-					</fieldset>
+                    </fieldset>
 	
-					<fieldset id="fieldset3">
-						<legend>Step 3</legend>
+                    <fieldset id="fieldset3">
+                        <legend>Step 3</legend>
 							
-							<p>Find data for selected area</p>
+                        <p>Find data for selected area</p>
 							
-							<input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
+                        <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
 			
-					</fieldset>
+                 </fieldset>
             </form>
-			<div style=.clear:left; height:30px;.>&#160;</div>
-			<div id="mapwrapper">
-				<div id="mappanel"></div>
-			</div>
+            <div id="mapwrapper">
+                <div id="mappanel"></div>
+            </div>
         </div>
     </body>
 </html>

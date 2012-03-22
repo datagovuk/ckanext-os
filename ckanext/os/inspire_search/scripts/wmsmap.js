@@ -184,7 +184,7 @@ function addSelect() {
 
 function inspireinit() {
             setText();
-				
+            // To be used to keep track of Draw button press
 			var browserName=navigator.appName; 
 			if (browserName=="Microsoft Internet Explorer")
 			{ 
@@ -533,7 +533,7 @@ function handleGazServerResponse(){
         return;
     }
     
-    // if the request was aborted, don�t do anything
+    // if the request was aborted, don't do anything
     if (xmlhttp.status == 0) {
         return;
     }
@@ -558,6 +558,7 @@ function handleGazServerResponse(){
 function gazInfo(gazTxt){
     globalGazCoords = new Array();
     globalGazZoomType = new Array();
+    globalGazTypes = new Array();
 
     var gazXml = (new DOMParser()).parseFromString(gazTxt, "text/xml");
     var gazEntries = gazXml.getElementsByTagName("GazetteerItemVO");
@@ -665,6 +666,7 @@ function gazInfo(gazTxt){
             index = i + numberHeaders;
             globalGazCoords[index] = point[0].firstChild.data;
             globalGazZoomType[index] = zoomtype[0].firstChild.data;
+            globalGazTypes[index] = lrType;
         }
         
         // Make list box visible
@@ -703,7 +705,7 @@ function handlePostcodeServerResponse(){
         return;
     }
     
-    // if the request was aborted, don�t do anything
+    // if the request was aborted, don't do anything
     if (xmlhttp.status == 0) {
         return;
     }
@@ -732,10 +734,6 @@ function pcInfo(gazTxt){
     var gazXml = (new DOMParser()).parseFromString(gazTxt, "text/xml");
     
     var root = gazXml.documentElement;
-    
-    var gaz = gazXml.getElementsByTagName("CodePointItemVO");
-    
-    var point = gazXml.getElementsByTagName("point")[0];
     
     var coords = point.firstChild.data.split(" ");
     
@@ -861,7 +859,6 @@ function submitBox(){
         var eblon = ur.lon.toFixed(2);
         var nblat = ur.lat.toFixed(2);
         var sblat = ll.lat.toFixed(2);
-    if (!isNaN(wblon) && !isNaN(eblon) && !isNaN(nblat) && !isNaN(sblat) && submitFlag == 1) {           
         
         if (wblon < -30.00 || eblon > 3.50 || sblat < 48.00 || nblat > 64.00) {
         
@@ -911,10 +908,6 @@ function submitBox(){
             window.location = pageUrl.replace(/#/,'');
             
         }
-    }
-    else {
-        alert('You must draw a bounding box before submitting.');
-    }
 }
 
 function boundaryLoadstart() {	
@@ -1181,7 +1174,9 @@ function refreshMap() {
 
 // Set the text in the Search text field
 function setText(){
+  if(document.getElementById("searchArea").value == ""){
     document.getElementById("searchArea").value = "Place name, postcode or coordinate";
+  }
 }
 
 // Makes the Enter key press the Search button

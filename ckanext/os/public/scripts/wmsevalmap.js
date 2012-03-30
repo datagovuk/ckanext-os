@@ -1,0 +1,1 @@
+../../inspire_evaluation/scripts/wmsevalmap.js

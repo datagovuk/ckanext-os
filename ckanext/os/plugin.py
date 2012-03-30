@@ -12,8 +12,8 @@ class SearchWidget(SingletonPlugin):
         map.connect('/data/map-based-search',
                     controller='ckanext.os.controller:SearchWidget',
                     action='index')
-        map.connect('/data/map-based-preview',
-                    controller='ckanext.os.controller:PreviewWidget',
+        map.connect('/data/map-based-search',
+                    controller='ckanext.os.controller:SearchWidget',
                     action='index')
         map.connect('/proxy.php',
                     controller='ckanext.os.controller:Proxy',

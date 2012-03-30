@@ -16,3 +16,10 @@ To enable it, in your CKAN config add to ckan.plugins items, as follows::
 
  ckan.plugins = os_search os_preview
 
+
+Tests
+=====
+
+Run the tests like this::
+
+ nosetests --ckan pyenv/src/ckanext-os/ckanext/os/tests/

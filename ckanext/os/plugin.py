@@ -12,10 +12,7 @@ class SearchWidget(SingletonPlugin):
         map.connect('/data/map-based-search',
                     controller='ckanext.os.controller:SearchWidget',
                     action='index')
-        map.connect('/data/map-based-search',
-                    controller='ckanext.os.controller:SearchWidget',
-                    action='index')
-        map.connect('/data/proxy.php',
+        map.connect('/data/search_proxy',
                     controller='ckanext.os.controller:Proxy',
                     action='gazetteer_proxy')
 
@@ -47,9 +44,15 @@ class PreviewWidget(SingletonPlugin):
     implements(IConfigurer)
 
     def after_map(self, map):
-        map.connect('/map-based-preview',
+        map.connect('/data/map-preview',
                     controller='ckanext.os.controller:PreviewWidget',
                     action='index')
+        map.connect('/data/preview_proxy',
+                    controller='ckanext.os.controller:Proxy',
+                    action='preview_proxy')
+        map.connect('/geoserver/{url_suffix:.*}',
+                    controller='ckanext.os.controller:Proxy',
+                    action='geoserver_proxy')
         return map
 
     def update_config(self, config):

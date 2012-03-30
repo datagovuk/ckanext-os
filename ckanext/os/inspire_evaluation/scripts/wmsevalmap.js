@@ -134,7 +134,7 @@ Ext.onReady(function(){
     "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2011]";
     
     // setup base mapping
-    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", "http://46.137.180.108/geoserver/gwc/service/wms", {		
+    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", "http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/gwc/service/wms", {		
 		LAYERS: 'InspireETRS89',
         styles: '',
         format: 'image/png',
@@ -389,7 +389,7 @@ function buildUI(urls){
             qtip: validUrls[i],
             
             loader: new GeoExt.tree.WMSCapabilitiesLoader({
-                url: 'proxy.php?url=' + urlWmsSuffix, // Must use proxy
+                url: 'preview_proxy?url=' + urlWmsSuffix, // Must use proxy
                 layerOptions: {
                     buffer: 0,
                     singleTile: false,
@@ -862,7 +862,7 @@ function buildUI(urls){
         border: false,
         renderTo: 'info',
         
-        html: "<a href=\"http://data.gov.uk/faq\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>" +
+        html: "<a href=\"/doc/map-preview\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>" +
         "Please note:<br><br>" +
 		"<b>-</b> Where a rotating circle remains in the WMS Layers window, this indicates that the service is waiting for a response from that publisher's WMS. This is due to their server not being available or to network problems.<br>" +        
         "<b>-</b> Backdrop mapping can be turned off and on using the check box at the top of the Map Layers panel.<br>" +

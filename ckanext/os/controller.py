@@ -1,4 +1,5 @@
 import os
+import re
 import urllib2
 from urllib2 import HTTPError
 
@@ -11,10 +12,10 @@ PREVIEW_BASE_URL_OS = '<base href="http://localhost/inspireeval/2_2_0_7/" />'
 PREVIEW_BASE_URL_CKAN = '<base href="/os"/>'
 MAP_TILE_HOST = 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
 GAZETTEER_HOST = 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
+LIBRARIES_HOST = 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
 LIBRARIES_OS = 'http://46.137.180.108/libraries'
-LIBRARIES_CKAN = '/os/libraries'
-SEARCH_TILES_OS = 'http://46.137.180.108/geoserver/gwc/service/wms'
-SEARCH_TILES_CKAN = 'http://%s/geoserver/gwc/service/wms' % MAP_TILE_HOST
+TILES_URL_OS = 'http://46.137.180.108/geoserver/gwc/service/wms'
+TILES_URL_CKAN = 'http://%s/geoserver/gwc/service/wms' % MAP_TILE_HOST
 
 class BaseWidget(BaseController):
     def __init__(self):
@@ -42,23 +43,27 @@ class BaseWidget(BaseController):
 
 class SearchWidget(BaseWidget):
     def index(self):
-        c.libraries_base_url = 'http://46.137.180.108/libraries'
-        #c.libraries_base_url = '/libraries' # OS had http://46.137.180.108/libraries
+        c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        # OS had http://46.137.180.108/libraries
         return render('os/map_search.html')
 
     def wmsmap(self):
         return self.read_file_and_substitute_text(
             'inspire_search/scripts/wmsmap.js', {
-                SEARCH_TILES_OS: SEARCH_TILES_CKAN,
+                TILES_URL_OS: TILES_URL_CKAN,
                 })        
 
 class PreviewWidget(BaseWidget):
     def index(self):
+        c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        # OS had http://46.137.180.108/libraries
+        return render('os/map_preview.html')
+
+    def wmsevalmap(self):
         return self.read_file_and_substitute_text(
-            'inspire_preview/evalmapwms.htm', {
-                PREVIEW_BASE_URL_OS: PREVIEW_BASE_URL_CKAN,
-                LIBRARIES_OS: LIBRARIES_CKAN,
-                })
+            'inspire_search/scripts/wmsevalmap.js', {
+                TILES_URL_OS: TILES_URL_CKAN,
+                })        
 
 class Proxy(BaseController):
     def gazetteer_proxy(self):
@@ -100,3 +105,57 @@ class Proxy(BaseController):
         return self._read_url(url, post_data=request.body,
                               content_type=request.headers.get('Content-Type'))
         
+    def preview_proxy(self):
+        # avoid status_code_redirect intercepting error responses
+        request.environ['pylons.status_code_redirect'] = False
+
+        wms_url = request.params.get('url')
+
+        # Check parameter
+        if not (wms_url):
+            response.status_int = 400
+            return 'Missing url parameter'
+
+        # e.g. wms_url = u'http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS'
+        if not re.match('https?://[^?]*\?request=\w+&service=\w+', wms_url):
+            response.status_int = 400
+            return 'Invalid URL'
+            
+        return self._read_url(wms_url)
+
+'''
+header('Content-type: text/xml; charset=utf-8');
+
+function validateUrl() {
+
+	$wmsUrl = $_GET['url'];
+
+	$str1="?";
+	$str2="request=getcapabilities";
+	$str3="request=getfeatureinfo";
+	$str4="service=wms";
+
+	$chk1 = strpos(strtolower($wmsUrl),$str1);
+	$chk2 = strpos(strtolower($wmsUrl),$str2);
+	$chk3 = strpos(strtolower($wmsUrl),$str3);
+	$chk4 = strpos(strtolower($wmsUrl),$str4);
+
+	if (($chk1 == true && $chk2 == true && $chk4 == true) || ($chk1 == true && $chk3 == true && $chk4 == true)) {
+
+		return true;
+
+	}
+	else {
+
+		return false;
+
+	}
+
+ }
+
+if (validateUrl()){
+
+	echo file_get_contents($_GET['url']);
+
+}
+'''

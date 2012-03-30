@@ -241,7 +241,7 @@ function inspireinit() {
     
     		// setup tiled layer
     		tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", //"http://46.137.180.108:80/geoserver/wms", {
-			"http://46.137.180.108/geoserver/gwc/service/wms", {
+			"http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/gwc/service/wms", {
 		        //LAYERS: 'sea_dtm,InspireVectorStack',
 				LAYERS: 'InspireETRS89',
 		        STYLES: '',
@@ -315,7 +315,7 @@ function inspireinit() {
 		    };
     
 		    // Define the OS mapping layer
-		    gwcLayer = new OSInspire.Layer.WMS("INSPIRE", "http://46.137.180.108/geoserver/wms", wmsParams, wmsOptions);
+		    gwcLayer = new OSInspire.Layer.WMS("INSPIRE", "http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/wms", wmsParams, wmsOptions);
     
 		    // Boundaries
 		    defBoundaryStyle = {
@@ -519,7 +519,7 @@ function getXMLObject(){
 // Call Gazetteer servlet
 function gazetteer(queryText){
     if (xmlhttp) {
-        var url = "proxy.php?t=gz&q=" + queryText;
+        var url = "search_proxy?t=gz&q=" + queryText;
         xmlhttp.open("GET", url, true);
         xmlhttp.onreadystatechange = handleGazServerResponse;
         xmlhttp.send(null);
@@ -686,7 +686,7 @@ function postcode(queryText){
 
     if (xmlhttp) {
     
-        var url = "proxy.php?t=pc&q=" + queryText;
+        var url = "search_proxy?t=pc&q=" + queryText;
         
         xmlhttp.open("GET", url, true);
         xmlhttp.onreadystatechange = handlePostcodeServerResponse;

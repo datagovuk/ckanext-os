@@ -357,31 +357,11 @@ function buildUI(urls){
   
     // Build layer tree from valid WMS URLs 
     for (var i = 0; i < validUrls.length; i++) {
-    
-        // Logic to handle the inclusion or lack of parameters in the WMS URL
-        
-        var wmsSuffix;
-        
-        // If WMS URL terminates with a ?
-        if (validUrls[i].charAt(validUrls[i].length - 1) == "?") {
-            wmsSuffix = "request=getCapabilities&service=wms";
             
-        }
-        // If WMS URL does not contain a ?
-        else 
-            if (validUrls[i].indexOf("?") == -1) {
-                wmsSuffix = "?request=getCapabilities&service=wms";
-                
-            }
-            // Don't append anything
-            else {
-                wmsSuffix = "";
-            }
-        
         // Replace ? and & characters with their HTML encoded counterparts
-        var urlWmsSuffix = validUrls[i] + wmsSuffix;
-        urlWmsSuffix = urlWmsSuffix.replace("?", "%3F");
-        urlWmsSuffix = urlWmsSuffix.replace("&", "%26");
+      var urlWmsSuffix = validUrls[i]; // + wmsSuffix;
+        urlWmsSuffix = urlWmsSuffix.replace(/\?/gi, "%3F");
+        urlWmsSuffix = urlWmsSuffix.replace(/\&/gi, "%26");
         
         // Child definition
         child = {
@@ -418,51 +398,11 @@ function buildUI(urls){
 		// set max. length of qtip on child nodes
 		for(var i=0; i<children.length; i++) {
 			var qtipString = children[i].qtip;
-			var tidyString = "";
-			var mostSuitablePosForForwardSlash = 0;
-			if (qtipString.length > 30)
+			if (qtipString.length > 50)
 			{
-				while (qtipString.length > 30)
-				{
-					// take first chunk off and add to tidyString
-					if (tidyString.length > 0)
-					{
-						tidyString += "<br>";
-					} 
-				
-					mostSuitablePosForForwardSlash = 0;
-					for (j = 0; j < qtipString.length; j++)
-					{
-						if (qtipString.charAt(j) == "/")
-						{
-							if (Math.pow(30-j,2) < Math.pow(30-mostSuitablePosForForwardSlash,2))
-							{
-								mostSuitablePosForForwardSlash = j;
-							}
-						}					
-					}
-					if (mostSuitablePosForForwardSlash != 0)
-					{
-						tidyString += qtipString.substring(0, mostSuitablePosForForwardSlash);
-						qtipString = qtipString.substring(mostSuitablePosForForwardSlash, qtipString.length);										
-						//alert("using a slash at " + mostSuitablePosForForwardSlash + "<br>" + tidyString + "<br>" + qtipString);
-					} else {
-						tidyString += qtipString;
-						qtipString = "";
-						//alert("no more cutting to do. " + "<br>" + tidyString + "<br>" + qtipString)
-					}
-				}
-				if (qtipString.length > 0)
-				{
-					tidyString += "<br>" + qtipString;
-				}
+				children[i].qtip = qtipString.substring(0,49) + "<br>" + qtipString.substring(50,(qtipString.length));
 			}
-			else
-			{
-				tidyString = qtipString;
-			}
-			children[i].qtip = tidyString;
-		}
+                }
 	}
 	else
 	{
@@ -480,6 +420,8 @@ function buildUI(urls){
     // Define the layer tree
     tree = new Ext.tree.TreePanel({
     
+        header: false,
+        border: false,
         id: 'tree',
         header: false,
         border: false,

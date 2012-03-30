@@ -1,0 +1,79 @@
+
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+
+  <py:def function="optional_head">
+        <title>UK Location Programme</title>
+        <!--meta http-equiv="content-type" content="text/html;charset=utf-8" /-->
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        <meta name="DC.subject" scheme="eGMS.IPSV" content="Civil Service"/>
+        <meta name="eGMS.accessibility" scheme="eGMS.WCAG10" content="Double-A" />
+        <meta name="DC.coverage" content="GB" />
+        <meta name="DC.language" scheme="DCTERMS.ISO639-2" content="eng" />
+        <meta name="DC.creator" content="Ordnance Survey, http://www.ordnancesurvey.co.uk/contactus" />
+        <meta name="DC.publisher" content="Ordnance Survey, Adanac Drive, Southampton, SO16 0AS, 023 8005 5257, customerservices@ordnancesurvey.co.uk" />
+        <meta name="DC.title" content="UK Location Programme" />
+        <meta name="DC.date" scheme="DCTERMS.W3CDTF" content="2011-04-15" />
+        <meta name="description" content="UK Location Programme is a UK pan-government initiative to improve the sharing and re-use of public sector location information."/>
+        <meta name="keywords" content="ordnance survey,os,inspire, uklp, uk location programme" />
+        <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://localhost/inspireeval/2_2_0_7/" />
+        <meta name="copyright" content="Ordnance Survey 2011" />
+        <link rel="stylesheet" type="text/css" href="/css/eval.css" />		       <link rel="stylesheet" type="text/css" href="/css/map_preview.css" media="screen,projection"/>
+		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.2.1/resources/css/ext-all.css" />
+		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.2.1/examples/shared/examples.css" />
+        <script type="text/javascript">
+            // <![CDATA[
+            document.write('<style type="text/css">#noJS{display:none;}</style>');
+            // ]]>
+        </script>
+        <script type="text/javascript" src="/scripts/parseURLIntoArray.js">
+        </script>		
+		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.2.1/adapter/ext/ext-base.js">
+        </script>
+		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.2.1/ext-all.js">
+        </script>
+		<script type="text/javascript" src="${c.libraries_base_url}/OpenLayers-2.11/OpenLayers.js">
+        </script>
+		<script type="text/javascript" src="${c.libraries_base_url}/proj4js/lib/proj4js-compressed.js">
+		</script>
+        <script type="text/javascript" src="/scripts/GeoExt.js">
+        </script>
+        <script type="text/javascript" src="/scripts/GetCap.js">
+        </script>
+        <script type="text/javascript" src="/scripts/wmsevalmap.js">
+        </script>
+  </py:def>
+
+  <py:def function="page_title">Map Based Preview</py:def>
+  <py:def function="page_heading">Map Based Preview</py:def>
+
+  <div py:match="content" class="map-preview">
+        <div>
+            <p>
+                You do not appear to have JavaScript enabled in your browser.
+            </p>
+            <p>
+                This application requires JavaScript in order to function correctly, so please ensure it is enabled before proceeding.
+            </p>
+        </div>
+        <div id="pleasewait">
+        </div>
+        <script type="text/javascript">
+            // <![CDATA[
+            document.getElementById('pleasewait').innerHTML = '<p>Calling Web Map Services.</p><p>Please wait...</p>';
+            // ]]>
+        </script>
+        <div id="wrapper">
+            <div id="info">
+            	
+            </div>
+        </div>
+
+  </div>
+
+  <xi:include href="../layout.html" />
+
+</html>
+

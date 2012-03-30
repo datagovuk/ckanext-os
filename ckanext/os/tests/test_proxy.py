@@ -2,9 +2,9 @@ import urllib2
 from urllib import quote
 import SimpleHTTPServer
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_raises
 
-from ckanext.os.controller import GAZETTEER_HOST, MAP_TILE_HOST
+from ckanext.os.controller import GAZETTEER_HOST, MAP_TILE_HOST, Proxy, ValidationError
 
 boundary_request = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="json" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="inspire:UK_Admin_Boundaries_250m_4258" srsName="EPSG:4258" xmlns:inspire="http://ordnancesurvey.co.uk/spatialdb"><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:BBOX><ogc:PropertyName>the_geom</ogc:PropertyName><gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4258"><gml:lowerCorner>-5.4529443561525 51.077000998278</gml:lowerCorner><gml:upperCorner>-0.6249563498509 53.269250249574</gml:upperCorner></gml:Envelope></ogc:BBOX></ogc:Filter></wfs:Query></wfs:GetFeature>'
 
@@ -17,7 +17,42 @@ class TestProxyWithHarness:
         harness = InspireHarness()
     def test_gazetteer_proxy(self):
         q = 'London'
-    
+
+
+class TestPreviewProxy:
+    def test_wms_url_correcter_normal(self):
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=GetCapabilities&service=WMS'),
+            'http://host.com?request=GetCapabilities&service=WMS')
+        assert_equal(Proxy.wms_url_correcter('http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS'), 'http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS')
+
+    def test_wms_url_correcter_duplicate_keys(self):
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=GetCapabilities&service=WMS1&service=WMS2'),
+            'http://host.com?request=GetCapabilities&service=WMS2')
+
+    def test_wms_url_correcter_bad_structure(self):
+        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+                      'http://host.com?request=GetCapabilities&')
+        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+                      'http://host.com?request=GetCapabilities&')
+
+    def test_wms_url_correcter_missing_params(self):
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?service=WMS'),
+            'http://host.com?request=GetCapabilities&service=WMS')
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=GetCapabilities'),
+            'http://host.com?request=GetCapabilities&service=WMS')
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com'),
+            'http://host.com?request=GetCapabilities&service=WMS')
+
+    def test_wms_url_correcter_duff_values_unchanged(self):
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=&service=123'),
+            'http://host.com?request=&service=123')
+        
 
 class TestExternalServers:
     def test_gazetteer_proxy(self):

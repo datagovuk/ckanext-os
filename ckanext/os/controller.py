@@ -4,6 +4,7 @@ import urllib2
 from urllib2 import HTTPError
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
+from ckan import model
 
 # move to configuration?
 SEARCH_BASE_URL_OS = '<base href="http://vmlin74/inspire/2_2_1_1/"/>'
@@ -16,6 +17,9 @@ LIBRARIES_HOST = 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' #
 LIBRARIES_OS = 'http://46.137.180.108/libraries'
 TILES_URL_OS = 'http://46.137.180.108/geoserver/gwc/service/wms'
 TILES_URL_CKAN = 'http://%s/geoserver/gwc/service/wms' % MAP_TILE_HOST
+
+class ValidationError(Exception):
+    pass
 
 class BaseWidget(BaseController):
     def __init__(self):
@@ -104,6 +108,43 @@ class Proxy(BaseController):
               (MAP_TILE_HOST, url_suffix)
         return self._read_url(url, post_data=request.body,
                               content_type=request.headers.get('Content-Type'))
+
+    @staticmethod
+    def wms_url_correcter(wms_url):
+        '''Corrects basic errors in WMS URLs.
+        May raise ValidationError if it really cannot be made sense of.
+        '''
+        # e.g. wms_url = u'http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS'
+        # Split up params
+        try:
+            if '?' in wms_url:
+                base_url, params_str = wms_url.split('?')
+            else:
+                base_url, params_str = wms_url, ''
+            params_list = params_str.split('&')
+            if params_list == ['']:
+                params_list = []
+            params = {}
+            for param_str in params_list:
+                key, value = param_str.split('=')
+                params[key.lower()] = value
+                # duplicates get removed here automatically
+        except ValueError, e:
+            raise ValidationError('URL structure wrong')
+
+        # Add in request and service params if missing
+        if 'request' not in params:
+            params['request'] = 'GetCapabilities'
+        if 'service' not in params:
+            params['service'] = 'WMS'
+
+        # Reassemble URL
+        params_list = []
+        for key, value in params.items():
+            params_list.append('%s=%s' % (key, value))
+        wms_url = base_url + '?' + '&'.join(params_list)
+        
+        return wms_url
         
     def preview_proxy(self):
         # avoid status_code_redirect intercepting error responses
@@ -116,10 +157,18 @@ class Proxy(BaseController):
             response.status_int = 400
             return 'Missing url parameter'
 
-        # e.g. wms_url = u'http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS'
-        if not re.match('https?://[^?]*\?request=\w+&service=\w+', wms_url):
+        # Check URL is in CKAN (otherwise we are an open proxy)
+        query = model.Session.query(model.Resource).filter_by(url=wms_url)
+        if query.count() == 0:
+            response.status_int = 403
+            return 'WMS URL not known'
+
+        # Correct basic errors in the WMS URL
+        try:
+            wms_url = self.wms_url_correcter(wms_url)
+        except ValidationError, e:
             response.status_int = 400
-            return 'Invalid URL'
+            return 'Invalid URL: %s' % str(e)
             
         return self._read_url(wms_url)
 

@@ -1,0 +1,111 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+
+  <py:def function="optional_head">
+        <title>UK Location Programme</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta name="DC.subject" scheme="eGMS.IPSV" content="Civil Service"/>
+        <meta name="eGMS.accessibility" scheme="eGMS.WCAG10" content="Double-A" />
+        <meta name="DC.coverage" content="GB" />
+        <meta name="DC.language" scheme="DCTERMS.ISO639-2" content="eng" />
+        <meta name="DC.creator" content="Ordnance Survey, http://www.ordnancesurvey.co.uk/contactus" />
+        <meta name="DC.publisher" content="Ordnance Survey, Adanac Drive, Southampton, SO16 0AS, 023 8005 5257, customerservices@ordnancesurvey.co.uk" />
+        <meta name="DC.title" content="UK Location Programme" />
+        <meta name="DC.date" scheme="DCTERMS.W3CDTF" content="2011-04-15" />
+        <meta name="description" content="The UK Location Information Infrastructure (UKLII) enables users to search for metadata records using a number of criteria. This is the location component of that service allowing users to search for and is provided by Ordnance Survey." />
+        <meta name="keywords" content="ordnance survey,os,uk location programme" />
+        <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://vmlin74/inspire/2_2_1_1/" />
+        <!-- TO DO: Add final URL -->
+        <meta name="copyright" content="Ordnance Survey 2011" />
+        <link rel="stylesheet" type="text/css" href="/css/global.css" media="screen,projection"/>
+        <link rel="stylesheet" type="text/css" href="/css/search.css" media="screen,projection"/>
+        <!--[if IE 6]>
+		<link rel="stylesheet" type="text/css" href="ie6.css" media="screen,projection" title="desktop" />
+		<![endif]-->
+        <script type="text/javascript">
+            // <![CDATA[
+            document.write('<style type="text/css">#noJS{display:none;}</style>');
+            // ]]>
+        </script>
+        <script src="/scripts/domparser.js" type="text/javascript">
+        </script>
+        <script src="${c.libraries_base_url}/OpenLayers-2.10/OpenLayers.js" type="text/javascript">
+        </script>
+        <script src="/scripts/wmsmap.js" type="text/javascript">
+        </script>
+  </py:def>
+
+  <py:def function="page_title">Map Based Search</py:def>
+  <py:def function="page_heading">Map Based Search</py:def>
+
+  <div py:match="content" class="map-search">
+        <div id="wrapper">
+                <div id="noJS">
+                    <p>
+                        You do not appear to have JavaScript enabled in your browser.
+                    </p>
+                    <p>
+                        This application requires JavaScript in order to function correctly, so please ensure it is enabled before proceeding.
+                    </p>
+                </div>
+                	
+            	<form id="searchForm" action="/dataset" method="post">
+            	
+                    <p id="helplink"><a href="/doc/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
+
+                    <fieldset id="fieldset1">
+	                    <legend>Step 1 (Optional)</legend>
+	                    
+	                    <p>Locate area of interest</p>
+	                    <p><strong>Example:</strong> <em>London or EH99 1SP or 54.58, -5.93</em></p>
+			
+	                    <label for="searchArea"><span class="offScreen">Search</span></label>
+	                    
+                    	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
+			
+						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name; postcode; or latitude, longitude in decimal degrees" />
+					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
+		  	
+					  	<div id="gazContainer">
+						</div>
+			
+                    </fieldset>
+                	
+                    <fieldset id="fieldset2">
+                            <legend>Step 2</legend>
+				
+                            <p>Draw search area &nbsp;<a href="#" rel="htmltooltip">[quick tip]</a></p>
+				
+                            <div class="htmltooltip" style="left: 427.5px; top: 590px; display: none; ">When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.</div>
+
+                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" />
+							
+                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" />
+
+                            <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K">
+                                <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
+                            </div>
+							
+                    </fieldset>
+	
+                    <fieldset id="fieldset3">
+                        <legend>Step 3</legend>
+							
+                        <p>Find data for selected area</p>
+							
+                        <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
+			
+                 </fieldset>
+            </form>
+            <div id="mapwrapper">
+                <div id="mappanel"></div>
+            </div>
+        </div>
+  </div>
+
+  <xi:include href="../layout.html" />
+
+</html>
+

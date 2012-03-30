@@ -898,17 +898,50 @@ function submitBox(){
             
              **/
 
-            // DR: Insertion from Drupal version of this file to do the submit.
             // We replace any existing co-ords in the search url, then 
             // append the ones that have been selected.
             // This is just a temporary measure pending getting proper 
             // geo-search faceting working.
-            var pageUrl = $(location).attr('href').replace(/&bbw=(-)?\d*\.\d*&bbe=(-)?\d*\.\d*&bbs=(-)?\d*\.\d*&bbn=(-)?\d*\.\d*/,'')+'&bbw='+bBox[0]+'&bbe='+bBox[1]+'&bbs='+bBox[3]+'&bbn='+bBox[2];
-            pageUrl = pageUrl.replace(/#!#wrapper/,'');
-            window.location = pageUrl.replace(/#/,'');
-            
+            var pageUrlBase = window.location.href.slice(0, window.location.href.indexOf('?'));
+            var existingParams = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            var params = [];
+            // extract existing params and remove any existing bbox ones
+            for(var i = 0; i < existingParams.length; i++) {
+                param = existingParams[i].split('=');
+                if (param[0].match(/^bb[nsew]$/) == null) {
+                  params.push(param[0] + '=' + param[1]);
+                }
+              }
+            //pageUrl = pageUrl.replace('[&?]bb[nsew]=(-)?\d*\.\d*');
+            //pageUrl.replace(/[&?]bb[eswn]=-?\d*\.\d*/g, '');
+            // add new bounding box to params
+            params.push('bbw'+'='+bBox[0]);
+            params.push('bbe'+'='+bBox[1]);
+            params.push('bbs'+'='+bBox[3]);
+            params.push('bbn'+'='+bBox[2]);
+
+            // Assemble full pageUrl
+            var pageUrl = pageUrlBase + '?';
+            pageUrl = pageUrl + params.join('&')
+            pageUrl = pageUrl.replace('/data/map-based-search','/data/search');
+            window.location = pageUrl;
         }
 }
+
+$.extend({
+  getUrlParams: function(ignore_keys_regex){
+    var vars = [], param;
+    var params = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < params.length; i++)
+    {
+      param = params[i].split('=');
+      if (params[0].match(ignore_keys_regex) != null) {
+        vars[hash[0]](hash[0]);
+      }
+    }
+    return vars;
+  },
+});
 
 function boundaryLoadstart() {	
 	//setTimeout("document.body.style.cursor = 'wait'", 10);
@@ -1208,3 +1241,118 @@ function fixcase(str){
     });
     
 }
+
+
+//Inline HTML Tooltip script: By JavaScript Kit: http://www.javascriptkit.com
+//Created: July 10th, 08'
+
+var htmltooltip={
+  tipclass: 'htmltooltip',
+  fadeeffect: [true, 200],
+  anchors: [],
+  tooltips: [], //array to contain references to all tooltip DIVs on the page
+
+  positiontip:function($, tipindex, e){
+    var anchor=this.anchors[tipindex]
+    var tooltip=this.tooltips[tipindex]
+    var scrollLeft=window.pageXOffset? window.pageXOffset : this.iebody.scrollLeft
+    var scrollTop=window.pageYOffset? window.pageYOffset : this.iebody.scrollTop
+    var docwidth=(window.innerWidth)? window.innerWidth-15 : htmltooltip.iebody.clientWidth-15
+    var docheight=(window.innerHeight)? window.innerHeight-18 : htmltooltip.iebody.clientHeight-15
+    var tipx=anchor.dimensions.offsetx
+    var tipy=anchor.dimensions.offsety+anchor.dimensions.h
+    tipx=(tipx+tooltip.dimensions.w-scrollLeft>docwidth)? tipx-tooltip.dimensions.w : tipx //account for right edge
+    tipy=(tipy+tooltip.dimensions.h-scrollTop>docheight)? tipy-tooltip.dimensions.h-anchor.dimensions.h : tipy //account for bottom edge
+
+
+    var winH = $(window).height();
+    var winW = $(window).width();
+
+    //Set the popup window to center
+    var MapHeight = $(tooltip).height();
+    var MapWidth = $(tooltip).width();
+    if (MapHeight < 100 || MapWidth < 100) {
+      MapHeight = -270;
+      MapWidth = 550;
+    }
+
+    $(tooltip).css({
+      left: winW/2-MapWidth/2,
+      top: winH/2-MapHeight/2 - 160
+    })
+  },
+
+  showtip:function($, tipindex, e){
+    var tooltip=this.tooltips[tipindex]
+    if (this.fadeeffect[0])
+      $(tooltip).hide().fadeIn(this.fadeeffect[1])
+    else
+      $(tooltip).show()
+  },
+
+  hidetip:function($, tipindex, e){
+    var tooltip=this.tooltips[tipindex]
+    if (this.fadeeffect[0])
+      $(tooltip).fadeOut(this.fadeeffect[1])
+    else
+      $(tooltip).hide()
+  },
+
+  updateanchordimensions:function($){
+    var $anchors=$('a[rel="'+htmltooltip.tipclass+'"]')
+    $anchors.each(function(index){
+      this.dimensions={
+        w:this.offsetWidth,
+        h:this.offsetHeight,
+        offsetx:$(this).offset().left,
+        offsety:$(this).offset().top
+        }
+    })
+  },
+
+  render:function(){
+    jQuery(document).ready(function($){
+      htmltooltip.iebody=(document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body;
+
+
+      var $anchors=$('a[rel="' + htmltooltip.tipclass +'"]');
+
+      //var $anchors=$('*[@rel="'+htmltooltip.tipclass+'"]');
+      var $tooltips=$('div[class="'+htmltooltip.tipclass+'"]');
+      $anchors.each(function(index){ //find all links with "title=htmltooltip" declaration
+        this.dimensions={
+          w:this.offsetWidth,
+          h:this.offsetHeight,
+          offsetx:$(this).offset().left,
+          offsety:$(this).offset().top
+          } //store anchor dimensions
+        this.tippos=index+' pos' //store index of corresponding tooltip
+        var tooltip=$tooltips.eq(index).get(0) //ref corresponding tooltip
+        if (tooltip==null) //if no corresponding tooltip found
+          return //exist
+        tooltip.dimensions={
+          w:tooltip.offsetWidth,
+          h:tooltip.offsetHeight
+          }
+        $(tooltip).remove().appendTo('body') //add tooltip to end of BODY for easier positioning
+        htmltooltip.tooltips.push(tooltip) //store reference to each tooltip
+        htmltooltip.anchors.push(this) //store reference to each anchor
+        var $anchor=$(this)
+        $anchor.hover(
+          function(e){ //onMouseover element
+            htmltooltip.positiontip($, parseInt(this.tippos), e)
+            htmltooltip.showtip($, parseInt(this.tippos), e)
+          },
+          function(e){ //onMouseout element
+            htmltooltip.hidetip($, parseInt(this.tippos), e)
+          }
+          )
+        $(window).bind("resize", function(){
+          htmltooltip.updateanchordimensions($)
+          })
+      })
+    })
+  }
+}
+
+htmltooltip.render()

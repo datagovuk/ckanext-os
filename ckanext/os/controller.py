@@ -42,11 +42,9 @@ class BaseWidget(BaseController):
 
 class SearchWidget(BaseWidget):
     def index(self):
-        return self.read_file_and_substitute_text(
-            'inspire_search/searchmapwms.htm', {
-                SEARCH_BASE_URL_OS: SEARCH_BASE_URL_CKAN,
-                LIBRARIES_OS: LIBRARIES_CKAN,
-                })
+        c.libraries_base_url = 'http://46.137.180.108/libraries'
+        #c.libraries_base_url = '/libraries' # OS had http://46.137.180.108/libraries
+        return render('os/map_search.html')
 
     def wmsmap(self):
         return self.read_file_and_substitute_text(

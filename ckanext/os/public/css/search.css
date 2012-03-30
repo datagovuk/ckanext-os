@@ -1,0 +1,28 @@
+// CSS for the search widget for when integrated into CKAN
+
+div.map-search legend { 
+  width: auto;
+  margin: 0;
+  border: none;
+  line-height: 12px;
+}
+
+div.map-search fieldset p { 
+  margin: 0;
+}
+
+div.map-search label { 
+  display: inline;
+}
+
+div.htmltooltip{
+  position: absolute; /*leave this and next 3 values alone*/
+  z-index: 1000;
+  left: -10000px;
+  top: -10000px;
+  background: #000;
+  border: 3px solid #000;
+  color: white;
+  padding: 3px;
+  width: 550px; /*width of tooltip*/
+}

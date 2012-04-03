@@ -57,7 +57,7 @@ P {
 #searchForm FIELDSET {
 	padding: 10px;
 	float: left;
-	border: 1px solid #999;
+//	border: 1px solid #999;
 	-ms-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-o-border-radius: 5px;
@@ -102,15 +102,15 @@ P {
 /*Form buttons*/
 #buttonID, #buttonDrawID, #buttonClearID, #buttonSearchID {
 	padding: 4px 5px;
-	border: 1px solid #000;
-	background-color: #eee;
-	color: #000;
+//	border: 1px solid #000;
+//	background-color: #eee;
+//	color: #000;
 	cursor: pointer;
 }
 
-#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
-  background-color: #cdcdcd;
-}
+//#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
+//  background-color: #cdcdcd;
+//}
 
 /*Gazetteer search results*/
 #searchForm #selectGaz {
@@ -120,7 +120,7 @@ P {
 /*Mapping*/
 #mapwrapper {
 	clear: both;
-	border: 1px solid #273397;
+//	border: 1px solid #273397;
 	margin-top: 10px;
 }
 #mappanel {
@@ -157,4 +157,26 @@ color: #666;
 div.olMousePosition{
 right: 3px;
 padding: 5px;     
+}
+em{
+    font-style: italic;
+    font-weight: normal;	
+}
+strong {
+    font-style: normal;
+    font-weight: bold;
+}
+
+.x-panel-body {
+    border-style:none;
+}
+
+div.olPopupContent {
+display: table-cell;
+vertical-align: middle;
+padding: 1px;
+}
+
+div.olPopup {
+padding: 3px;
 }

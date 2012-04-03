@@ -1,13 +1,13 @@
 // CSS for the search widget for when integrated into CKAN
 
-div.map-search legend { 
+legend { 
   width: auto;
   margin: 0;
-  border: none;
+  border-bottom: none;
   line-height: 12px;
 }
 
-div.map-search fieldset p { 
+fieldset p { 
   margin: 0;
 }
 
@@ -25,4 +25,8 @@ div.htmltooltip{
   color: white;
   padding: 3px;
   width: 550px; /*width of tooltip*/
+}
+
+div.olMap { 
+  line-height: 12px;
 }

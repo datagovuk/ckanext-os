@@ -34,3 +34,13 @@
 	padding: 4px 5px;
 	height: 2em;
 }
+
+div.olPopupContent {
+display: table-cell;
+vertical-align: middle;
+padding: 1px;
+}
+
+div.olPopup {
+padding: 3px;
+}

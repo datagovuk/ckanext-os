@@ -1,18 +1,38 @@
 // CSS for the search widget for when integrated into CKAN
 
+body.SearchWidget {
+  background: #f4f4f4;
+}
+
+body.SearchWidget h1 {
+  font-size: 32px;
+}
+
+fieldset h2 {
+  font-size: 16px;
+  line-height: 23px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ccc;
+  display: block;
+}
+
 legend { 
   width: auto;
+  border: none;
   margin: 0;
-  border-bottom: none;
   line-height: 12px;
 }
 
-fieldset p { 
-  margin: 0;
+div.map-search p { 
+  margin: 0 0 8px;
 }
 
 div.map-search label { 
   display: inline;
+}
+
+div#boundariesWrapper {
+  padding-top: 12px;
 }
 
 div.htmltooltip{
@@ -29,4 +49,8 @@ div.htmltooltip{
 
 div.olMap { 
   line-height: 12px;
+}
+
+select#selectGaz { 
+  margin-top: 5px;
 }

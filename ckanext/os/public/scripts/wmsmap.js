@@ -299,7 +299,7 @@ function inspireinit() {
     mapPanel = new GeoExt.MapPanel({
         renderTo: "mappanel",
         height: 435,
-        width: 958,
+        width: 940,
         map: map,
         center: new OpenLayers.LonLat(-8.89754749, 54),
         zoom: 1,
@@ -1255,7 +1255,7 @@ var htmltooltip={
     var MapHeight = $(tooltip).height();
     var MapWidth = $(tooltip).width();
     if (MapHeight < 100 || MapWidth < 100) {
-      MapHeight = -270;
+      MapHeight = -370;
       MapWidth = 550;
     }
 

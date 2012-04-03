@@ -30,7 +30,7 @@ P {
 
 /*Main page container*/
 #wrapper {
-	width: 960px;
+	width: 940px;
 	margin: 10px auto;
 	text-align: left;
 }
@@ -63,7 +63,7 @@ P {
 	-o-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	height: 10em;
+	height: 12em;
 	margin-bottom: 10px;
 }
 
@@ -78,7 +78,7 @@ P {
 }
 
 #fieldset3 {
-	width: 228px;
+	width: 214px;
 }
 
 #searchForm LEGEND {
@@ -124,7 +124,7 @@ P {
 	margin-top: 10px;
 }
 #mappanel {
-	width: 958px;
+	width: 940px;
 	height: 435px;
 }
 #mappanel DIV.olControlAttribution {

@@ -6,6 +6,7 @@ from urllib import quote
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
 from ckan import model
+from ckan.lib.helpers import OrderedDict
 
 # move to configuration?
 SEARCH_BASE_URL_OS = '<base href="http://vmlin74/inspire/2_2_1_1/"/>'
@@ -126,7 +127,7 @@ class Proxy(BaseController):
             params_list = params_str.split('&')
             if params_list == ['']:
                 params_list = []
-            params = {}
+            params = OrderedDict()
             for param_str in params_list:
                 key, value = param_str.split('=')
                 params[key.lower()] = value
@@ -139,6 +140,12 @@ class Proxy(BaseController):
             params['request'] = 'GetCapabilities'
         if 'service' not in params:
             params['service'] = 'WMS'
+
+        # Only allow particular parameter values
+        if params['request'].lower() not in ('getcapabilities', 'getfeatureinfo'):
+            raise ValidationError('Invalid value for "request"')
+        if params['service'].lower() != 'wms':
+            raise ValidationError('Invalid value for "service"')
 
         # Reassemble URL
         params_list = []
@@ -173,6 +180,36 @@ class Proxy(BaseController):
             return 'Invalid URL: %s' % str(e)
             
         return self._read_url(wms_url)
+
+    def preview_getinfo(self):
+        '''
+        This is a proxy request for the Preview map to get detail of a particular subset of a WMS service.
+        
+        Example request:
+        http://dev-ckan.dgu.coi.gov.uk/data/preview_getinfo?url=http%3A%2F%2Flasigpublic.nerc-lancaster.ac.uk%2FArcGIS%2Fservices%2FBiodiversity%2FGMFarmEvaluation%2FMapServer%2FWMSServer%3FLAYERS%3DWinterOilseedRape%26QUERY_LAYERS%3DWinterOilseedRape%26STYLES%3D%26SERVICE%3DWMS%26VERSION%3D1.1.1%26REQUEST%3DGetFeatureInfo%26EXCEPTIONS%3Dapplication%252Fvnd.ogc.se_xml%26BBOX%3D-1.628338%252C52.686046%252C-0.086204%252C54.8153%26FEATURE_COUNT%3D11%26HEIGHT%3D845%26WIDTH%3D612%26FORMAT%3Dimage%252Fpng%26INFO_FORMAT%3Dapplication%252Fvnd.ogc.wms_xml%26SRS%3DEPSG%253A4258%26X%3D327%26Y%3D429
+        and that url parameter value unquotes to:
+        http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?LAYERS=WinterOilseedRape&QUERY_LAYERS=WinterOilseedRape&STYLES=&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml&BBOX=-1.628338%2C52.686046%2C-0.086204%2C54.8153&FEATURE_COUNT=11&HEIGHT=845&WIDTH=612&FORMAT=image%2Fpng&INFO_FORMAT=application%2Fvnd.ogc.wms_xml&SRS=EPSG%3A4258&X=327&Y=429
+        '''
+        # avoid status_code_redirect intercepting error responses
+        request.environ['pylons.status_code_redirect'] = False
+
+        wms_url = request.params.get('url')
+
+        # Check parameter
+        if not (wms_url):
+            response.status_int = 400
+            return 'Missing url parameter'
+
+        # Check base of URL is in CKAN (otherwise we are an open proxy)
+        # (the parameters get changed by the Preview widget)
+        base_wms_url = wms_url.split('?')[0]
+        query = model.Session.query(model.Resource).filter(model.Resource.url.ilike(wms_url+'%'))
+        if query.count() == 0:
+            response.status_int = 403
+            return 'Base of WMS URL not known: %r' % base_wms_url
+
+        return self._read_url(wms_url)
+
 
 '''
 header('Content-type: text/xml; charset=utf-8');

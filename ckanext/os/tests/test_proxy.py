@@ -52,12 +52,15 @@ class TestPreviewProxy:
         assert_equal(Proxy.wms_url_correcter(
             'http://host.com?request=GetCapabilities&service=WMS'),
             'http://host.com?request=GetCapabilities&service=WMS')
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=getcapabilities&service=wms'),
+            'http://host.com?request=getcapabilities&service=wms')
         assert_equal(Proxy.wms_url_correcter('http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS'), 'http://lasigpublic.nerc-lancaster.ac.uk/ArcGIS/services/Biodiversity/GMFarmEvaluation/MapServer/WMSServer?request=GetCapabilities&service=WMS')
 
     def test_wms_url_correcter_duplicate_keys(self):
         assert_equal(Proxy.wms_url_correcter(
-            'http://host.com?request=GetCapabilities&service=WMS1&service=WMS2'),
-            'http://host.com?request=GetCapabilities&service=WMS2')
+            'http://host.com?request=GetCapabilities&request=GetFeatureInfo'),
+            'http://host.com?request=GetFeatureInfo&service=WMS')
 
     def test_wms_url_correcter_bad_structure(self):
         assert_raises(ValidationError, Proxy.wms_url_correcter, 
@@ -68,7 +71,7 @@ class TestPreviewProxy:
     def test_wms_url_correcter_missing_params(self):
         assert_equal(Proxy.wms_url_correcter(
             'http://host.com?service=WMS'),
-            'http://host.com?request=GetCapabilities&service=WMS')
+            'http://host.com?service=WMS&request=GetCapabilities')
         assert_equal(Proxy.wms_url_correcter(
             'http://host.com?request=GetCapabilities'),
             'http://host.com?request=GetCapabilities&service=WMS')
@@ -78,8 +81,14 @@ class TestPreviewProxy:
 
     def test_wms_url_correcter_duff_values_unchanged(self):
         assert_equal(Proxy.wms_url_correcter(
-            'http://host.com?request=&service=123'),
-            'http://host.com?request=&service=123')
+            'http://host.com?colour=blue&rainbow='),
+            'http://host.com?colour=blue&rainbow=&request=GetCapabilities&service=WMS')
+
+    def test_wms_url_correcter_disallowed_values(self):
+        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+                      'http://host.com?request=DoBadThing')
+        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+                      'http://host.com?service=NotWMS')
         
 
 class OsServerCase:

@@ -316,7 +316,7 @@ Ext.onReady(function(){
     
     OpenLayers.DOTS_PER_INCH = 90.71428571428572;
 
-    OpenLayers.ProxyHost = "getinfo.php?url=";
+    OpenLayers.ProxyHost = "preview_getinfo?url=";
     
     OpenLayers.Util.onImageLoadError = function(){
     

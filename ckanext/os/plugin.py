@@ -50,6 +50,9 @@ class PreviewWidget(SingletonPlugin):
         map.connect('/data/preview_proxy',
                     controller='ckanext.os.controller:Proxy',
                     action='preview_proxy')
+        map.connect('/data/preview_getinfo',
+                    controller='ckanext.os.controller:Proxy',
+                    action='preview_getinfo')
         map.connect('/geoserver/{url_suffix:.*}',
                     controller='ckanext.os.controller:Proxy',
                     action='geoserver_proxy')

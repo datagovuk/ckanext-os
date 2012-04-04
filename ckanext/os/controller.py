@@ -2,6 +2,7 @@ import os
 import re
 import urllib2
 from urllib2 import HTTPError
+from urllib import quote
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
 from ckan import model
@@ -84,11 +85,11 @@ class Proxy(BaseController):
         if type_ == 'gz':
             # Gazetteer service
             return self._read_url('http://%s/InspireGaz/gazetteer?q=%s' %
-                                  (GAZETTEER_HOST, q))
+                                  (GAZETTEER_HOST, quote(q)))
         elif type_ == 'pc':
             # Postcode service
             return self._read_url('http://%s/InspireGaz/postcode?q=%s' %
-                                  (GAZETTEER_HOST, q))
+                                  (GAZETTEER_HOST, quote(q)))
         else:
             response.status_int = 400
             return 'Value for t parameter not recognised'

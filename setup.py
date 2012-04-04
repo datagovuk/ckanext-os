@@ -23,5 +23,8 @@ setup(
         [ckan.plugins]
         os_search=ckanext.os.plugin:SearchWidget
         os_preview=ckanext.os.plugin:PreviewWidget
+
+        [paste.paster_command]
+        mock_os_server = ckanext.os.testtools.mock_os_server:Command
 	""",
 )

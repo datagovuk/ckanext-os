@@ -49,6 +49,10 @@ div.htmltooltip{
 
 div.olMap { 
   line-height: 12px;
+  font-family:helvetica,tahoma,verdana,sans-serif;
+  font-size: 10px;
+  line-height: 12px;
+  color: black;
 }
 
 select#selectGaz { 

@@ -203,7 +203,7 @@ class Proxy(BaseController):
         # Check base of URL is in CKAN (otherwise we are an open proxy)
         # (the parameters get changed by the Preview widget)
         base_wms_url = wms_url.split('?')[0]
-        query = model.Session.query(model.Resource).filter(model.Resource.url.ilike(wms_url+'%'))
+        query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
         if query.count() == 0:
             response.status_int = 403
             return 'Base of WMS URL not known: %r' % base_wms_url

@@ -21,8 +21,8 @@
         <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://localhost/inspireeval/2_2_0_7/" />
         <meta name="copyright" content="Ordnance Survey 2011" />
         <link rel="stylesheet" type="text/css" href="/css/eval.css" />		       <link rel="stylesheet" type="text/css" href="/css/map_preview.css" media="screen,projection"/>
-		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.2.1/resources/css/ext-all.css" />
-		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.2.1/examples/shared/examples.css" />
+		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />
+		<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/examples/shared/examples.css" />
         <script type="text/javascript">
             // <![CDATA[
             document.write('<style type="text/css">#noJS{display:none;}</style>');
@@ -30,15 +30,15 @@
         </script>
         <script type="text/javascript" src="/scripts/parseURLIntoArray.js">
         </script>		
-		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.2.1/adapter/ext/ext-base.js">
+		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/adapter/ext/ext-base.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.2.1/ext-all.js">
+		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/ext-all.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/OpenLayers-2.11/OpenLayers.js">
+		<script type="text/javascript" src="${c.libraries_base_url}/openlayers-openlayers-85b836d/OpenLayers.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/proj4js/lib/proj4js-compressed.js">
+		<script type="text/javascript" src="${c.libraries_base_url}/proj4js-1.0.3/lib/proj4js.js">
 		</script>
-        <script type="text/javascript" src="/scripts/GeoExt.js">
+        <script type="text/javascript" src="${c.libraries_base_url}/GeoExt/GeoExt.js">
         </script>
         <script type="text/javascript" src="/scripts/GetCap.js">
         </script>
@@ -48,6 +48,7 @@
 
   <py:def function="page_title">Map Based Preview</py:def>
   <py:def function="page_heading">Map Based Preview</py:def>
+  <py:def function="body_class">no-sidebar no-minornavigation</py:def>
 
   <div py:match="content" class="map-preview">
         <div>

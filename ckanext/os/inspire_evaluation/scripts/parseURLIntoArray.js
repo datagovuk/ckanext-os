@@ -5,6 +5,8 @@ function ParamParser(){
     this.westBndLon = null;
     this.northBndLat = null;
     this.southBndLat = null;
+    this.infoFormat = null;
+    this.exceptions = null;
  
     pairs = location.search.split("\?")[1].split("&");
     for (i in pairs) {
@@ -21,8 +23,12 @@ function ParamParser(){
             this.southBndLat = parseFloat(keyval[1]);
         if (keyval[0] == "url" || keyval[0] == "u") 
             this.urls.push(decodeURIComponent(keyval[1]));
+        if ((keyval[0] == "cbxInfoFormat") && (keyval[1].length > 0))
+            this.infoFormat = decodeURIComponent(keyval[1]);
+        if ((keyval[0] == "cbxExceptions") && (keyval[1].length > 0))
+            this.exceptions = decodeURIComponent(keyval[1]);
     }
-	
+    
     this.getBBox = function(){
         return {
             "eastBndLon": this.eastBndLon,
@@ -34,8 +40,14 @@ function ParamParser(){
     this.getUrls = function(){
         return this.urls
     };
+    this.getInfoFormat = function(){
+        return this.infoFormat;
+    };
+    this.getExceptions = function(){
+        return this.exceptions;
+    };
 }
 
-paramParser = new ParamParser();
+var paramParser = new ParamParser();
 
 

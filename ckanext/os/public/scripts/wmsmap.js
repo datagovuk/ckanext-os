@@ -1255,7 +1255,7 @@ var htmltooltip={
     var MapHeight = $(tooltip).height();
     var MapWidth = $(tooltip).width();
     if (MapHeight < 100 || MapWidth < 100) {
-      MapHeight = -370;
+      MapHeight = -570;
       MapWidth = 550;
     }
 

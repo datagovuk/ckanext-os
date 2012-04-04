@@ -1,3 +1,7 @@
 label { 
   display: inline;
  }
+
+div.x-panel { 
+  line-height: 12px;
+}

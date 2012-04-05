@@ -53,11 +53,6 @@ P {
 	text-align: right;
 }
 
-/*Main form*/
-#searchForm {
-	height: 10em;
-}
-
 #searchForm FIELDSET {
   /*
 	padding: 10px;

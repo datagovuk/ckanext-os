@@ -1228,6 +1228,6 @@ function fixcase(str){
 // Bootstrap tooltip
 $(function() {
   $('.htmltooltip').popover({
-    placement: 'right',
+    placement: 'right'
       })
     });

@@ -931,7 +931,7 @@ $.extend({
       }
     }
     return vars;
-  },
+  }
 });
 
 function boundaryLoadstart() {	

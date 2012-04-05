@@ -6,3 +6,6 @@ label {
 div.x-panel { 
   line-height: 12px;
 }
+#ext-gen16 > div { 
+  padding-top: 40px;
+}

@@ -59,18 +59,19 @@ P {
 }
 
 #searchForm FIELDSET {
-	padding: 10px;
-	float: left;
+//	padding: 10px;
+//	float: left;
 //	border: 1px solid #999;
-	-ms-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-o-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+//	-ms-border-radius: 5px;
+//	-moz-border-radius: 5px;
+//	-o-border-radius: 5px;
+//	-webkit-border-radius: 5px;
+//	border-radius: 5px;
 	height: 12em;
 	margin-bottom: 10px;
 }
 
+/*
 #fieldset1 {
 	width: 418px;
 	margin-right: 10px;
@@ -84,6 +85,7 @@ P {
 #fieldset3 {
 	width: 214px;
 }
+*/
 
 #searchForm LEGEND {
 	font-weight: bold;
@@ -123,12 +125,13 @@ P {
 
 /*Mapping*/
 #mapwrapper {
+	width: 935px;
 	clear: both;
 //	border: 1px solid #273397;
 	margin-top: 10px;
 }
 #mappanel {
-	width: 940px;
+	width: 935px;
 	height: 435px;
 }
 #mappanel DIV.olControlAttribution {

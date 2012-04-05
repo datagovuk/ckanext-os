@@ -58,3 +58,7 @@ div.olMap {
 select#selectGaz { 
   margin-top: 5px;
 }
+
+#wrapper-thinner {
+  width: 935px;
+}

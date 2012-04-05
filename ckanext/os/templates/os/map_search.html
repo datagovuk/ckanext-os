@@ -68,7 +68,8 @@
             	<form id="searchForm" action="/dataset" method="post">
             	
                     <p id="helplink"><a href="/doc/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
-
+            <div class="row-fluid">
+              <div class="span6">
                     <fieldset id="fieldset1" class="boxed">
 	                    <h2>Step 1 (Optional)</h2>
 	                    
@@ -86,14 +87,13 @@
 						</div>
 			
                     </fieldset>
-                	
+              </div>
+              <div class="span3">
                     <fieldset id="fieldset2" class="boxed">
                             <h2>Step 2</h2>
 				
-                            <p>Draw search area &nbsp;<a href="#" rel="htmltooltip">[quick tip]</a></p>
+                            <p>Draw search area &nbsp;<a href="#" class="htmltooltip" data-content="When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
 				
-                            <div class="htmltooltip" style="left: 427.5px; top: 590px; display: none; ">When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.</div>
-
                             <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-datagov button"/>
 							
                             <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-datagov button"/>
@@ -103,7 +103,8 @@
                             </div>
 							
                     </fieldset>
-	
+              </div>
+              <div class="span3">	
                     <fieldset id="fieldset3" class="boxed">
                         <h2>Step 3</h2>
 							
@@ -112,6 +113,8 @@
                         <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-datagov button"/>
 			
                  </fieldset>
+              </div>
+            </div>
             </form>
             <div id="mapwrapper" class="boxed-flush-top">
                 <div id="mappanel"></div>

@@ -1,4 +1,4 @@
-// CSS for the search widget for when integrated into CKAN
+/* CSS for the search widget for when integrated into CKAN */
 
 body.SearchWidget {
   background: #f4f4f4;
@@ -61,4 +61,11 @@ select#selectGaz {
 
 #wrapper-thinner {
   width: 935px;
+}
+
+#mapwrapper {
+  margin-top: 10px;
+  -moz-box-shadow: 0px 2px 6px #bbb;
+  -webkit-box-shadow: 0px 2px 6px #bbb;
+  box-shadow: 0px 2px 6px #bbb;
 }

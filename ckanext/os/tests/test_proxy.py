@@ -62,11 +62,16 @@ class TestPreviewProxy:
             'http://host.com?request=GetCapabilities&request=GetFeatureInfo'),
             'http://host.com?request=GetFeatureInfo&service=WMS')
 
+    def test_wms_url_correcter_trailing_ampersand(self):
+        assert_equal(Proxy.wms_url_correcter(
+            'http://host.com?request=GetCapabilities&'),
+            'http://host.com?request=GetCapabilities&service=WMS')
+
     def test_wms_url_correcter_bad_structure(self):
         assert_raises(ValidationError, Proxy.wms_url_correcter, 
-                      'http://host.com?request=GetCapabilities&')
+                      'http://host.com?request=')
         assert_raises(ValidationError, Proxy.wms_url_correcter, 
-                      'http://host.com?request=GetCapabilities&')
+                      'http://host.com?request=?')
 
     def test_wms_url_correcter_missing_params(self):
         assert_equal(Proxy.wms_url_correcter(

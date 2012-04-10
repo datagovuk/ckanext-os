@@ -129,6 +129,8 @@ class Proxy(BaseController):
                 params_list = []
             params = OrderedDict()
             for param_str in params_list:
+                if not param_str.strip():
+                    continue
                 key, value = param_str.split('=')
                 params[key.lower()] = value
                 # duplicates get removed here automatically

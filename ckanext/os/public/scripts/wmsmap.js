@@ -1,3 +1,4 @@
+//
 // Name				: wmsmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP search map widget
 // Author			: Peter Cotroneo, Ordnance Survey

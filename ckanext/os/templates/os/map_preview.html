@@ -23,7 +23,6 @@
         <link rel="stylesheet" type="text/css" href="/css/map_preview.css" />
         <link rel="stylesheet" type="text/css" href="/css/eval.css" />
         <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />
-        <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/examples/shared/examples.css" />
         <script type="text/javascript">
             // <![CDATA[
             document.write('<style type="text/css">#noJS{display:none;}</style>');
@@ -50,6 +49,15 @@
   <py:def function="page_title">Map Based Preview</py:def>
   <py:def function="page_heading">Map Based Preview</py:def>
   <py:def function="body_class">no-sidebar no-minornavigation</py:def>
+
+  <py:def function="blackbar_content">
+    <div style="padding: 8px 10px 0 10px; text-align: center; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 18px;">
+      <a href="#" style="float: left;">&laquo; Back to search</a>
+      Map Preview
+      <span style="float: right; font-weight: 100;">DATA.GOV.UK</span>
+    </div>
+  </py:def>
+
 
   <div py:match="content" class="map-preview">
         <div>

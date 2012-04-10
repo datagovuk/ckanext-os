@@ -53,20 +53,16 @@ P {
 	text-align: right;
 }
 
-/*Main form*/
-#searchForm {
-	height: 10em;
-}
-
 #searchForm FIELDSET {
-//	padding: 10px;
-//	float: left;
-//	border: 1px solid #999;
-//	-ms-border-radius: 5px;
-//	-moz-border-radius: 5px;
-//	-o-border-radius: 5px;
-//	-webkit-border-radius: 5px;
-//	border-radius: 5px;
+  /*
+	padding: 10px;
+	border: 1px solid #999;
+	-ms-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+  */
 	height: 12em;
 	margin-bottom: 10px;
 }
@@ -99,7 +95,7 @@ P {
 }
 
 #searchArea {
-//	border: 1px solid #000;
+/*	border: 1px solid #000; */
 	font-family: inherit;
 	padding: 4px 5px;
 	width: 350px;
@@ -108,15 +104,17 @@ P {
 /*Form buttons*/
 #buttonID, #buttonDrawID, #buttonClearID, #buttonSearchID {
 	padding: 4px 5px;
-//	border: 1px solid #000;
-//	background-color: #eee;
-//	color: #000;
+/*	border: 1px solid #000; */
+/*	background-color: #eee; */
+/*	color: #000; */
 	cursor: pointer;
 }
 
-//#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
-//  background-color: #cdcdcd;
-//}
+/*
+#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
+  background-color: #cdcdcd;
+}
+*/
 
 /*Gazetteer search results*/
 #searchForm #selectGaz {
@@ -127,7 +125,7 @@ P {
 #mapwrapper {
 	width: 935px;
 	clear: both;
-//	border: 1px solid #273397;
+/*	border: 1px solid #273397; */
 	margin-top: 10px;
 }
 #mappanel {

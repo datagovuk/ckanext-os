@@ -4,9 +4,11 @@ import urllib2
 from urllib2 import HTTPError
 from urllib import quote
 
+from pylons import session as pylons_session
+
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
 from ckan import model
-from ckan.lib.helpers import OrderedDict
+from ckan.lib.helpers import OrderedDict, json
 
 # move to configuration?
 SEARCH_BASE_URL_OS = '<base href="http://vmlin74/inspire/2_2_1_1/"/>'
@@ -249,3 +251,39 @@ if (validateUrl()){
 
 }
 '''
+
+# Preview list 'Shopping basket'
+class PreviewList(BaseController):
+    def add(self, id):
+        if not id:
+            abort(409, 'Dataset not identified')
+        preview_list = pylons_session.get('preview_list', [])
+        pkg = model.Package.get(id)
+        if pkg.id not in preview_list:
+            if not pkg:
+                abort(404, 'Dataset not found')
+            import pdb; pdb.set_trace()
+            preview_list.append(pkg.id)
+            pylons_session['preview_list'] = preview_list
+            pylons_session.save()
+        return self.view()
+
+    def remove(self, id):
+        if not id:
+            abort(409, 'Dataset not identified')
+        preview_list = pylons_session.get('preview_list', [])
+        pkg = model.Package.get(id)
+        if not pkg:
+            abort(404, 'Dataset not found')
+        if pkg.id not in preview_list:
+            abort(409, 'Dataset not in preview list')            
+        preview_list = preview_list.remove(pkg.id)
+        pylons_session['preview_list'] = preview_list
+        pylons_session.save()
+        return self.view()
+
+
+    def view(self):
+        preview_list = pylons_session.get('preview_list', [])
+        response.headers['Content-Type'] = 'application/json;charset=utf-8'
+        return json.dumps(preview_list)

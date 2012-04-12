@@ -56,6 +56,17 @@ class PreviewWidget(SingletonPlugin):
         map.connect('/geoserver/{url_suffix:.*}',
                     controller='ckanext.os.controller:Proxy',
                     action='geoserver_proxy')
+
+        # Preview list 'Shopping basket'
+        map.connect('/api/2/util/preview_list/add/{id}',
+                    controller='ckanext.os.controller:PreviewList',
+                    action='add')
+        map.connect('/api/2/util/preview_list/remove/{id}',
+                    controller='ckanext.os.controller:PreviewList',
+                    action='remove')
+        map.connect('/api/2/util/preview_list',
+                    controller='ckanext.os.controller:PreviewList',
+                    action='view')
         return map
 
     def update_config(self, config):

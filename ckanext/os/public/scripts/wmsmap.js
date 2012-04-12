@@ -887,8 +887,6 @@ function submitBox(){
 
             // We replace any existing co-ords in the search url, then 
             // append the ones that have been selected.
-            // This is just a temporary measure pending getting proper 
-            // geo-search faceting working.
             if (window.location.href.indexOf('?') != -1) {
               var pageUrlBase = window.location.href.slice(0, window.location.href.indexOf('?'));
               var existingParams = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -900,17 +898,14 @@ function submitBox(){
             // extract existing params and remove any existing bbox ones
             for(var i = 0; i < existingParams.length; i++) {
                 param = existingParams[i].split('=');
-                if (param[0].match(/^bb[nsew]$/) == null) {
+                if (param[0].match(/^ext_bbox$/) == null) {
                   params.push(param[0] + '=' + param[1]);
                 }
               }
-            //pageUrl = pageUrl.replace('[&?]bb[nsew]=(-)?\d*\.\d*');
-            //pageUrl.replace(/[&?]bb[eswn]=-?\d*\.\d*/g, '');
             // add new bounding box to params
-            params.push('bbw'+'='+bBox[0]);
-            params.push('bbe'+'='+bBox[1]);
-            params.push('bbs'+'='+bBox[3]);
-            params.push('bbn'+'='+bBox[2]);
+            // bBox is in order: w e n s
+            // ext_bbox needs it in order: minx,miny,maxx,maxy = w s e n
+            params.push('ext_bbox'+'='+bBox[0]+','+bBox[3]+','+bBox[1]+','+bBox[2]);
 
             // Assemble full pageUrl
             var pageUrl = pageUrlBase + '?';

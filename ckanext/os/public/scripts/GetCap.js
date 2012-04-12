@@ -35,8 +35,16 @@ os.WMSCapabilitiesLoader = Ext.extend(GeoExt.tree.WMSCapabilitiesLoader,{
      *  Private processResponse override.
      */
     processResponse : function(response, node, callback, scope){
+        /*
+         * NOTE: This causes IE to crash, as it recieves a malformed response.responseXML object.
+         * The responseXML has a null documentElement, which chain-reactions into a crash.
+         * Safer option is to parse the raw text.
+         * ---
         var capabilities = new OpenLayers.Format.WMSCapabilities().read(
             response.responseXML || response.responseText);
+         * ---
+         */
+        var capabilities = new OpenLayers.Format.WMSCapabilities().read(response.responseText);
 
         if(!capabilities.capability){
             this.hasLayers = false;

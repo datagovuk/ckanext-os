@@ -17,9 +17,27 @@ To enable it, in your CKAN config add to ckan.plugins items, as follows::
  ckan.plugins = os_search os_preview
 
 
+Preview List
+============
+
+This extension provides an API to help store a 'shopping basket'-style list of packages to preview. You can add and remove items from it and request a list.
+
+Examples
+--------
+
+Add: a request to ``api/2/util/preview_list/add/-municipal-waste-generation-in-england-from-2000-01-to-2009-10`` adds this package to the list. The package can be specified as either an ID or name. The response is the full preview list (JSON-encoded).
+
+Remove: a request to ``api/2/util/preview_list/remove/-municipal-waste-generation-in-england-from-2000-01-to-2009-10`` then removes it again. Again the response contains the full list.
+
+List: You can also just request the list using ``/api/2/util/preview_list``.
+
+In an HTML template the list can be accessed as: ``${session.get('preview_list', []}``
+
+
 Tests
 =====
 
 Run the tests like this::
 
  nosetests --ckan pyenv/src/ckanext-os/ckanext/os/tests/
+

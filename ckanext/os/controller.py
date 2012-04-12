@@ -262,7 +262,6 @@ class PreviewList(BaseController):
         if pkg.id not in preview_list:
             if not pkg:
                 abort(404, 'Dataset not found')
-            import pdb; pdb.set_trace()
             preview_list.append(pkg.id)
             pylons_session['preview_list'] = preview_list
             pylons_session.save()

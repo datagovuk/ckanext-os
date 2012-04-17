@@ -1,9 +1,5 @@
 /* CSS for the search widget for when integrated into CKAN */
 
-body.SearchWidget {
-  background: #f4f4f4;
-}
-
 body.SearchWidget h1 {
   font-size: 32px;
 }

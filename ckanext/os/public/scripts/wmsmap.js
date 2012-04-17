@@ -890,6 +890,9 @@ function submitBox(){
             if (window.location.href.indexOf('?') != -1) {
               var pageUrlBase = window.location.href.slice(0, window.location.href.indexOf('?'));
               var existingParams = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+              if (existingParams.toString() == "") {
+                existingParams = [];
+              }
             } else {
               var pageUrlBase = window.location.href;
               var existingParams = [];

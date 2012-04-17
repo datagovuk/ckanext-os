@@ -276,7 +276,7 @@ class PreviewList(BaseController):
             abort(404, 'Dataset not found')
         if pkg.id not in preview_list:
             abort(409, 'Dataset not in preview list')            
-        preview_list = preview_list.remove(pkg.id)
+        preview_list.remove(pkg.id)
         pylons_session['preview_list'] = preview_list
         pylons_session.save()
         return self.view()

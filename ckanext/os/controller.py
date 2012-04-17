@@ -3,6 +3,7 @@ import re
 import urllib2
 from urllib2 import HTTPError
 from urllib import quote
+from urllib import urlencode
 
 from pylons import session as pylons_session
 
@@ -254,15 +255,37 @@ if (validateUrl()){
 
 # Preview list 'Shopping basket'
 class PreviewList(BaseController):
+    def _get(self, id):
+        preview_list = pylons_session.get('preview_list', [])
+        for entry in preview_list:
+            if entry['id'] == id: 
+                return entry
+
+    def _querystring(self, pkg):
+        out = []
+        for r in pkg.resources:
+            if r.format.lower() == 'wms':
+                out.append(('url',r.url))
+        return urlencode(out)
+
+    def reset(self):
+        pylons_session['preview_list'] = []
+        pylons_session.save()
+        return self.view()
+        
     def add(self, id):
         if not id:
             abort(409, 'Dataset not identified')
         preview_list = pylons_session.get('preview_list', [])
         pkg = model.Package.get(id)
-        if pkg.id not in preview_list:
+        if not self._get(pkg.id):
             if not pkg:
                 abort(404, 'Dataset not found')
-            preview_list.append(pkg.id)
+            preview_list.append({
+                'id': pkg.id,
+                'querystring': self._querystring(pkg),
+                'name': pkg.name
+                })
             pylons_session['preview_list'] = preview_list
             pylons_session.save()
         return self.view()
@@ -274,13 +297,13 @@ class PreviewList(BaseController):
         pkg = model.Package.get(id)
         if not pkg:
             abort(404, 'Dataset not found')
-        if pkg.id not in preview_list:
+        entry = self._get(pkg.id)
+        if not entry:
             abort(409, 'Dataset not in preview list')            
-        preview_list.remove(pkg.id)
+        preview_list.remove(entry)
         pylons_session['preview_list'] = preview_list
         pylons_session.save()
         return self.view()
-
 
     def view(self):
         preview_list = pylons_session.get('preview_list', [])

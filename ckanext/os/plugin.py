@@ -64,6 +64,9 @@ class PreviewWidget(SingletonPlugin):
         map.connect('/api/2/util/preview_list/remove/{id}',
                     controller='ckanext.os.controller:PreviewList',
                     action='remove')
+        map.connect('/api/2/util/preview_list/reset',
+                    controller='ckanext.os.controller:PreviewList',
+                    action='reset')
         map.connect('/api/2/util/preview_list',
                     controller='ckanext.os.controller:PreviewList',
                     action='view')

@@ -23,7 +23,7 @@ var boxLayer = null,
 
 //OpenLayers.ProxyHost = "proxy.php?url=";
 window.alert = function (str) {
-    Ext.MessageBox.show({
+      Ext.MessageBox.show({
         title: 'Information',
         msg: str,
         buttons: Ext.MessageBox.OK,
@@ -555,9 +555,9 @@ function gazInfo(gazTxt){
     var gazEntries_length = gazEntries.length;
     if (gazEntries_length >= 1) {
         locationFound = 1;
-        o = document.createElement("OPTION");
+        o = new Option();
         o.text = "Select place name from list";
-        da.options.add(o);
+        da.options[da.options.length] = o;
         
         // Build list box
         for (var i = 0; i < gazEntries_length; i++) {
@@ -571,7 +571,7 @@ function gazInfo(gazTxt){
             lrType = type[0].firstChild.data;
             if (lrTypeBuffer == "" || lrTypeBuffer.substring(0,lrTypeBuffer.length - 1) != lrType.substring(0,lrTypeBuffer.length - 1)) {
                 lrTypeBuffer = lrType;
-                o = document.createElement("OPTION");
+                o = new Option();
                 o.style.color = 'blue';
                 o.style.fontWeight = 'bold';
                 o.text = '---';
@@ -620,7 +620,7 @@ function gazInfo(gazTxt){
                 numberHeaders = numberHeaders + 1;
             }
             // Adding an entity
-            o = document.createElement("OPTION");
+            o = new Option();
             try {
                 if (county[0].firstChild.data == "County") {
                     outputStr = name[0].firstChild.data;

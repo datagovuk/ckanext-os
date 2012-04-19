@@ -80,7 +80,7 @@
 	                    
                     	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate"/>
 			
-						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" class="btn btn-datagov button"/>
+						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" class="btn btn-primary button"/>
 					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
 		  	
 					  	<div id="gazContainer">
@@ -94,9 +94,9 @@
 				
                             <p>Draw search area &nbsp;<a href="#" class="htmltooltip" data-content="When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
 				
-                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-datagov button"/>
+                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary button"/>
 							
-                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-datagov button"/>
+                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-primary button"/>
 
                             <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K">
                                 <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
@@ -110,7 +110,7 @@
 							
                         <p>Find data for selected area</p>
 							
-                        <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-datagov button"/>
+                        <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-primary button"/>
 			
                  </fieldset>
               </div>

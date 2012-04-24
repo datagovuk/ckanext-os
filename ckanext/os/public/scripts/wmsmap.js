@@ -122,7 +122,7 @@ function inspireinit() {
         			CLASS_NAME: "OSInspire.Layer.WMS"
     		});
     
-    		var gwcLayer;
+    		//var gwcLayer;
     
     		OpenLayers.DOTS_PER_INCH = 90.71428571428572;
     
@@ -142,7 +142,7 @@ function inspireinit() {
     
     		// setup tiled layer
     		tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", //"http://46.137.180.108:80/geoserver/wms", {
-			"http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/gwc/service/wms", {
+			CKANEXT_OS_TILES_URL, {
 		        //LAYERS: 'sea_dtm,InspireVectorStack',
 				LAYERS: 'InspireETRS89',
 		        STYLES: '',
@@ -215,7 +215,7 @@ function inspireinit() {
 		    };
     
 		    // Define the OS mapping layer
-		    gwcLayer = new OSInspire.Layer.WMS("INSPIRE", "http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/wms", wmsParams, wmsOptions);
+		    //gwcLayer = new OSInspire.Layer.WMS("INSPIRE", "http://46.137.172.224/geoserver/wms", wmsParams, wmsOptions);
     
 		    // Boundaries
 		    defBoundaryStyle = {

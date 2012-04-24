@@ -6,23 +6,24 @@ from urllib import quote
 from urllib import urlencode
 
 from pylons import session as pylons_session
+from pylons import config
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
 from ckan import model
 from ckan.lib.helpers import OrderedDict, json
 
-# move to configuration?
-SEARCH_BASE_URL_OS = '<base href="http://vmlin74/inspire/2_2_1_1/"/>'
-SEARCH_BASE_URL_CKAN = '<base href="/os"/>'
-PREVIEW_BASE_URL_OS = '<base href="http://localhost/inspireeval/2_2_0_7/" />'
-PREVIEW_BASE_URL_CKAN = '<base href="/os"/>'
-MAP_TILE_HOST = 'osinspiremappingprod.ordnancesurvey.co.uk' # Not '46.137.180.108'
-GAZETTEER_HOST = 'osinspiremappingprod.ordnancesurvey.co.uk' # was 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
-#LIBRARIES_HOST = 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
-LIBRARIES_HOST = 'osinspiremappingprod.ordnancesurvey.co.uk' #'46.137.180.108'
-LIBRARIES_OS = 'http://46.137.180.108/libraries'
-TILES_URL_OS = 'http://46.137.180.108/geoserver/gwc/service/wms'
-TILES_URL_CKAN = 'http://%s/geoserver/gwc/service/wms' % MAP_TILE_HOST
+# Configuration
+GEOSERVER_HOST = config.get('ckanext-os.geoserver.host',
+                            'osinspiremappingprod.ordnancesurvey.co.uk') # Not '46.137.180.108'
+GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
+                            'osinspiremappingprod.ordnancesurvey.co.uk') # was 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
+LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
+                            'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
+TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
+
+api_key = config.get('ckanext-os.tiles.apikey', '')
+if api_key:
+    TILES_URL_CKAN += '?key=%s' % quote(api_key)
 
 class ValidationError(Exception):
     pass
@@ -47,33 +48,19 @@ class BaseWidget(BaseController):
             f.close()
         for existing, replacement in substitution_map.items():
             assert existing in content, '%s not found' % existing
-            content = content.replace(existing, replacement)
+            content = re.sub(existing, replacement, content)
         return content
     
 
 class SearchWidget(BaseWidget):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
-        # OS had http://46.137.180.108/libraries
         return render('os/map_search.html')
-
-    def wmsmap(self):
-        return self.read_file_and_substitute_text(
-            'inspire_search/scripts/wmsmap.js', {
-                TILES_URL_OS: TILES_URL_CKAN,
-                })        
 
 class PreviewWidget(BaseWidget):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
-        # OS had http://46.137.180.108/libraries
         return render('os/map_preview.html')
-
-    def wmsevalmap(self):
-        return self.read_file_and_substitute_text(
-            'inspire_search/scripts/wmsevalmap.js', {
-                TILES_URL_OS: TILES_URL_CKAN,
-                })        
 
 class Proxy(BaseController):
     def gazetteer_proxy(self):
@@ -109,9 +96,20 @@ class Proxy(BaseController):
         return f.read()
         
     def geoserver_proxy(self, url_suffix):
-        # for boundary information etc.
+        '''Proxy for geoserver services.
+        Depending on the geoserver provider, calls may require a key parameter -
+        a secret value to trace authorized client software / users.
+
+        /geoserver/gwc/service/wms - OS base map tiles (via GeoWebCache) (for Search & Preview)
+                                     NB Tile requests appear to go direct to that server
+                                        (not via this proxy)
+        /geoserver/wfs - Boundaries info (for Search)
+        '''
+        if url_suffix not in ('gwc/service/wms', 'wfs'):
+            response.status_int = 404
+            return 'Path not proxied'
         url = 'http://%s/geoserver/%s' % \
-              (MAP_TILE_HOST, url_suffix)
+              (GEOSERVER_HOST, url_suffix)
         return self._read_url(url, post_data=request.body,
                               content_type=request.headers.get('Content-Type'))
 

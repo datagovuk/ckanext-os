@@ -368,7 +368,7 @@ Ext.onReady(function(){
     "Contains bathymetry data by GEBCO (c) Copyright [2012].<br>" +
     "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
     
-    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", "http://osinspiremappingprod.ordnancesurvey.co.uk/geoserver/gwc/service/wms", {
+    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", CKANEXT_OS_TILES_URL, {
         LAYERS: 'InspireETRS89',
         styles: '',
         format: 'image/png',

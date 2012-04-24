@@ -46,6 +46,12 @@
         </script>
         <script type="text/javascript" src="/scripts/GetCap.js" >
         </script>
+        <script type="text/javascript">
+        <?python
+           from ckanext.os.controller import *
+        ?>
+          CKANEXT_OS_TILES_URL = "${TILES_URL_CKAN}"
+        </script>
         <script src="/scripts/wmsmap.js" type="text/javascript">
         </script>
   </py:def>
@@ -93,7 +99,7 @@
                     <fieldset id="fieldset2" class="boxed">
                             <h2>Step 2</h2>
 				
-                            <p>Draw search area &nbsp;<a href="#" class="htmltooltip" data-content="When drawing a search box, if the cursor touches the map frame the box will disappear. Please zoom out and redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
+                            <p>Draw search area &nbsp;<a href="#" class="htmltooltip" data-content="When drawing a search box, if the cursor touches the map frame the box will freeze. Please zoom out, click &quot;Clear&quot;, click &quot;Draw&quot;, then redraw the search box ensuring the cursor remains further inside the map frame.">[quick tip]</a></p>
 				
                             <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary button"/>
 							

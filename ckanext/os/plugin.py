@@ -53,9 +53,9 @@ class PreviewWidget(SingletonPlugin):
         map.connect('/data/preview_getinfo',
                     controller='ckanext.os.controller:Proxy',
                     action='preview_getinfo')
-        map.connect('/geoserver/{url_suffix:.*}',
-                    controller='ckanext.os.controller:Proxy',
-                    action='geoserver_proxy')
+##        map.connect('/geoserver/{url_suffix:.*}',
+##                    controller='ckanext.os.controller:Proxy',
+##                    action='geoserver_proxy')
 
         # Preview list 'Shopping basket'
         map.connect('/api/2/util/preview_list/add/{id}',
@@ -76,12 +76,12 @@ class PreviewWidget(SingletonPlugin):
         here = os.path.dirname(__file__)
         rootdir = os.path.dirname(os.path.dirname(here))
         our_public_dir = os.path.join(rootdir, 'ckanext',
-                                      'os', 'inspire_evaluation')
+                                      'os', 'public')
         template_dir = os.path.join(rootdir, 'ckanext',
-                                    'os', 'inspire_evaluation')
+                                    'os', 'templates')
         # set our local template and resource overrides
-        #config['extra_public_paths'] = ','.join([our_public_dir,
-        #        config.get('extra_public_paths', '')])
-        #config['extra_template_paths'] = ','.join([template_dir,
-        #        config.get('extra_template_paths', '')])
+        config['extra_public_paths'] = ','.join([our_public_dir,
+                config.get('extra_public_paths', '')])
+        config['extra_template_paths'] = ','.join([template_dir,
+                config.get('extra_template_paths', '')])
 

@@ -16,6 +16,14 @@ To enable it, in your CKAN config add to ckan.plugins items, as follows::
 
  ckan.plugins = os_search os_preview
 
+To configure the servers used in the widgets, put the following lines in your ckan configuration file and change the values from the defaults shown::
+
+ ckanext-os.geoserver.host = osinspiremappingprod.ordnancesurvey.co.uk
+ ckanext-os.gazetteer.host = osinspiremappingprod.ordnancesurvey.co.uk
+ ckanext-os.libraries.host = osinspiremappingprod.ordnancesurvey.co.uk
+ ckanext-os.tiles.url = http://osinspiremappingprod.ordnancesurvey.co.uk/geoserver/gwc/service/wms
+ ckanext-os.tiles.apikey = 
+
 
 Preview List
 ============

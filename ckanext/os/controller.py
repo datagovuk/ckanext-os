@@ -262,7 +262,8 @@ class PreviewList(BaseController):
     def _querystring(self, pkg):
         out = []
         for r in pkg.resources:
-            if r.format.lower() == 'wms':
+            # NB This WMS detection condition must match that in dgu/ckanext/dgu/lib/helpers.py
+            if 'wms' in r.url.lower() or r.format.lower() == 'wms':
                 out.append(('url',r.url))
         return urlencode(out)
 
@@ -279,10 +280,15 @@ class PreviewList(BaseController):
         if not self._get(pkg.id):
             if not pkg:
                 abort(404, 'Dataset not found')
+            extent = (pkg.extras.get('bbox-north-lat'),
+                      pkg.extras.get('bbox-west-long'),
+                      pkg.extras.get('bbox-east-long'),
+                      pkg.extras.get('bbox-south-lat'))
             preview_list.append({
                 'id': pkg.id,
                 'querystring': self._querystring(pkg),
-                'name': pkg.name
+                'name': pkg.name,
+                'extent': extent,
                 })
             pylons_session['preview_list'] = preview_list
             pylons_session.save()

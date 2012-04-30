@@ -1,7 +1,7 @@
 import os
 import re
 import urllib2
-from urllib2 import HTTPError
+from urllib2 import HTTPError, URLError
 from urllib import quote
 from urllib import urlencode
 
@@ -93,6 +93,12 @@ class Proxy(BaseController):
         except HTTPError, e:
             response.status_int = 400
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
+        except URLError, e:
+            err = str(e)
+            if 'Connection timed out' in err:
+                response.status_int = 504
+                return 'Proxied server timed-out: %s' % err
+            raise e # Send an exception email to handle it better
         return f.read()
         
     def geoserver_proxy(self, url_suffix):

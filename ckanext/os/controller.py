@@ -4,6 +4,7 @@ import urllib2
 from urllib2 import HTTPError, URLError
 from urllib import quote
 from urllib import urlencode
+import logging
 
 from pylons import session as pylons_session
 from pylons import config
@@ -11,6 +12,8 @@ from pylons import config
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
 from ckan import model
 from ckan.lib.helpers import OrderedDict, json
+
+log = logging.getLogger(__name__)
 
 # Configuration
 GEOSERVER_HOST = config.get('ckanext-os.geoserver.host',
@@ -20,10 +23,13 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
+WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
+
 
 api_key = config.get('ckanext-os.tiles.apikey', '')
 if api_key:
     TILES_URL_CKAN += '?key=%s' % quote(api_key)
+    WFS_URL_CKAN += '?key=%s' % quote(api_key)
 
 class ValidationError(Exception):
     pass
@@ -88,6 +94,7 @@ class Proxy(BaseController):
     def _read_url(self, url, post_data=None, content_type=None):
         headers = {'Content-Type': content_type} if content_type else {}
         request = urllib2.Request(url, post_data, headers)
+        log.info('Proxied request to URL: %s', url)
         try:
             f = urllib2.urlopen(request)
         except HTTPError, e:
@@ -98,24 +105,32 @@ class Proxy(BaseController):
             if 'Connection timed out' in err:
                 response.status_int = 504
                 return 'Proxied server timed-out: %s' % err
+            log.error('Proxy URL error. URL: %r Error: %s', url, s)
             raise e # Send an exception email to handle it better
-        return f.read()
+        res = f.read()
+        log.debug('Proxy reponse %s: %s', f.code, res[:100])
+        return res
         
     def geoserver_proxy(self, url_suffix):
         '''Proxy for geoserver services.
-        Depending on the geoserver provider, calls may require a key parameter -
-        a secret value to trace authorized client software / users.
+        Depending on the geoserver provider, calls may require a key parameter
+        - an API key only to be used by authorized clients software / users.
 
         /geoserver/gwc/service/wms - OS base map tiles (via GeoWebCache) (for Search & Preview)
                                      NB Tile requests appear to go direct to that server
                                         (not via this proxy)
         /geoserver/wfs - Boundaries info (for Search)
         '''
+        key = request.params.get('key')
+        loggable_key = (key[:2] + 'x'*(len(key)-2)) if key else None
+        log.debug('Geoserver proxy for url_suffix=%r key=%r', url_suffix, loggable_key)
         if url_suffix not in ('gwc/service/wms', 'wfs'):
             response.status_int = 404
             return 'Path not proxied'
         url = 'http://%s/geoserver/%s' % \
               (GEOSERVER_HOST, url_suffix)
+        if key:
+            url += '?key=%s' % quote(key)
         return self._read_url(url, post_data=request.body,
                               content_type=request.headers.get('Content-Type'))
 

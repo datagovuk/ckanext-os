@@ -1,22 +1,11 @@
-Ext.namespace("GeoExt.tree");
+Ext.namespace("os");
 
-/** api: (define)
- *  module = GeoExt.tree
- *  class = WMSCapabilitiesLoader
- *  base_link = `Ext.tree.TreeLoader <http://www.extjs.com/deploy/dev/docs/?class=Ext.tree.TreeLoader>`_
- */
-/** api: constructor
- *  .. class:: WMSCapabilitiesLoader
- *
- *      A loader that will load all layers of a Web Map Service (WMS).
- */
-GeoExt.tree.WMSCapabilitiesLoader = function(config){
-    Ext.apply(this, config);
-    GeoExt.tree.WMSCapabilitiesLoader.superclass.constructor.call(this);
-};
+os.WMSCapabilitiesLoader = Ext.extend(GeoExt.tree.WMSCapabilitiesLoader,{
 
-Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
-
+	capabilitiesStore:null,
+	infoFormat: null,
+	exceptionFormat: null,
+	
     /** api: config[url]
      *  ``String``
      *  The online resource of the Web Map Service.
@@ -35,27 +24,9 @@ Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
      *  Optional parameters to set on the WMS layers which will be created by
      *  this loader.
      */
-    layerParams: null,
-    
-	/** has layers? **/
-	hasLayers: true,
+    layerParams: null,	
 	
-    /** private: property[requestMethod]
-     *  ``String`` WMS GetCapabilities request needs to be done using HTTP GET
-     */
-    requestMethod: 'GET',
-    
-    /** private: method[getParams]
-     *  Private getParams override.
-     */
-    getParams: function(node){
-        return {
-            'service': 'WMS',
-            'request': 'GetCapabilities'
-        };
-    },
-    
-    /** private: method[processResponse]
+	/** private: method[processResponse]
      *  :param response: ``Object`` The XHR object
      *  :param node: ``Ext.tree.TreeNode``
      *  :param callback: ``Function``
@@ -63,13 +34,6 @@ Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
      *
      *  Private processResponse override.
      */
-    // processResponse: function(response, node, callback, scope){
-        // var capabilities = new OpenLayers.Format.WMSCapabilities().read(response.responseXML || response.responseText);
-		// this.processLayer(capabilities.capability, capabilities.capability.request.getmap.href, node);   
-	    // if (typeof callback == "function") {
-            // callback.apply(scope || node, [node]);
-        // }
-    // },
     processResponse : function(response, node, callback, scope){
         var capabilities = new OpenLayers.Format.WMSCapabilities().read(
             response.responseXML || response.responseText);
@@ -77,20 +41,61 @@ Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
         if(!capabilities.capability){
             this.hasLayers = false;
 			scope.loading = false;
-            //node.wmsbrowser.fireEvent('getcapabilitiesfail');
-			
         }
-        else{
+        else{	
+			this.hasLayers = true;		
+			this.capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({data:capabilities});
+        	
+			var infoFormatsArr = capabilities.capability.request.getfeatureinfo.formats;
+			var exceptionFormatsArr = capabilities.capability.exception.formats;			
+			
+			// choose preferred info_format
+			// not supported: application/vnd.esri.wms_raw_xml, application/vnd.esri.wms_featureinfo_xml
+			infoFormat = "";
+			if (infoFormatsArr.indexOf("application/vnd.ogc.wms_xml") > -1) {
+				infoFormat = "application/vnd.ogc.wms_xml";
+			} else {
+				if (infoFormatsArr.indexOf("text/xml") > -1) {
+					infoFormat = "text/xml";
+				} else {
+					if (infoFormatsArr.indexOf("application/vnd.ogc.gml") > -1) {
+						infoFormat = "application/vnd.ogc.gml";
+					} else {						
+						if (infoFormatsArr.indexOf("text/html") > -1) {
+							infoFormat = "text/html";
+						} else {
+							if (infoFormatsArr.indexOf("text/plain") > -1) {
+								infoFormat = "text/plain";
+							}
+						}		
+					}					
+				}
+			}
+
+			// choose preferred exception format
+			exceptionFormat = "";
+			if (exceptionFormatsArr.indexOf("application/vnd.ogc.se_xml") > -1) {
+				exceptionFormat = "application/vnd.ogc.se_xml";
+			} else {
+				if (exceptionFormatsArr.indexOf("XML") > -1) {
+					exceptionFormat = "XML";
+				} else {
+					if (exceptionFormatsArr.indexOf("text/xml") > -1) {
+						exceptionFormat = "text/xml";
+					} 	
+				}		
+			}			
+			
             this.processLayer(capabilities.capability,
                 capabilities.capability.request.getmap.href, node);
-            if (typeof callback == "function") {
+            
+        	if (typeof callback == "function") {
                 callback.apply(scope || node, [node]);
             }
         }
     },
-	
-	
-    /** private: method[createWMSLayer]
+    
+	 /** private: method[createWMSLayer]
      *  :param layer: ``Object`` The layer object from the WMS GetCapabilities
      *  parser
      *  :param url: ``String`` The online resource of the WMS
@@ -103,21 +108,31 @@ Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
     createWMSLayer: function(layer, url){
         if (layer.name) {
 			//this.hasLayers = true;
-            return new OpenLayers.Layer.WMS(layer.title, url, OpenLayers.Util.extend({
+            var newLayer = new OpenLayers.Layer.WMS(layer.title, url, OpenLayers.Util.extend({
                 formats: layer.formats[0],
                 layers: layer.name
             }, this.layerParams), OpenLayers.Util.extend({
                 minScale: layer.minScale,
                 queryable: layer.queryable,
                 maxScale: layer.maxScale,
+				//attribution: layer.attribution,
                 metadata: layer
             }, this.layerOptions));
+			if (layer.attribution)
+			{
+				if (layer.attribution.title) {
+					newLayer.attribution = ""; //layer.attribution.title;
+				} else {
+					newLayer.attribution = ""; //layer.attribution;
+				}
+			}
+			return newLayer;
         }
         else {
             return null;
         }
     },
-    
+	
     /** private: method[processLayer]
      *  :param layer: ``Object`` The layer object from the WMS GetCapabilities
      *  parser
@@ -129,22 +144,39 @@ Ext.extend(GeoExt.tree.WMSCapabilitiesLoader, Ext.tree.TreeLoader, {
      */
     processLayer: function(layer, url, node){
         Ext.each(layer.nestedLayers, function(el){
-            var n = this.createNode({
+            var lyr;
+            if(el.name){
+            	var ndx = this.capabilitiesStore.findBy(function(rec){
+            		return el.name == rec.get('name') && el.title == rec.get('title') && el.prefix == rec.get('prefix');
+            	})
+            	if(ndx>-1){
+            		lyr = this.capabilitiesStore.getAt(ndx);
+        		}
+            }
+        	var n = this.createNode({
                 text: el.title || el.name,
 				// use nodeType 'node' so no AsyncTreeNodes are created
                 nodeType: 'node',
-                layer: this.createWMSLayer(el, url),
-                leaf: (el.nestedLayers.length === 0),
-				
-                expanded: true// Added for INSPIRE
-            
+				layer: lyr,
+				leaf: (el.nestedLayers.length === 0),			
+                expanded: true // Added for INSPIRE            
 			});
             if (n) {
+				if (n.attributes.layer)
+				{
+					n.attributes.layer.data.INFO_FORMAT = infoFormat;
+					n.attributes.layer.data.EXCEPTIONS = exceptionFormat;
+					n.attributes.layer.data.layer = this.createWMSLayer(el, url);
+				}
                 node.appendChild(n);
             }
             if (el.nestedLayers) {
                 this.processLayer(el, url, n);
             }
         }, this);
-    }
+    },
+	
+	getHasLayers: function(){
+		return this.hasLayers;
+	}
 });

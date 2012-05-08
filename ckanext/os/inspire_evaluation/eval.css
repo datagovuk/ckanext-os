@@ -16,7 +16,7 @@
 /*Failed images to be hidden rather than to be shown as pink */	
 .olImageLoadError { 
     visibility: hidden; 
-    display: none;
+	display: none; 
 }	
 	
 /*Set main bpage properties and centre page*/
@@ -192,6 +192,8 @@ table.popup td {
 	background-color: rgb(255, 255, 240);
 	-moz-border-radius: ;
 }
+
+
 
 
 

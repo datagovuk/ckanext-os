@@ -9,17 +9,17 @@ var tree, mapPanel, map, xmlHttp, leftPanel;
 var urls, reachableUrls, unreachableUrls;
 var intervalID, bBoxErr;
 var gwcLayer;
-var bBox;                                         // array to store the parsed parameters
-var mapBounds;                                     // OpenLayers.Bounds of the parsed parameters
-var mapExtent;                                     // OpenLayers.Bounds transformed to correct projection
-var boxes;                                         // OpenLayers.Layer to store area of interest
-var redBox;                                     // OpenLayers.Marker to store area of interest
-var borderColor;                                
-var clickControl;                                // OpenLayers.WMSGetFeatureInfo Control to handle get feature info requests
-var loadingPanel;                                // OpenLayers.Control.LoadingPanel to handle loading information
-var myLayerURLs;                                // array to store URLs against each external map layer
-var myLayers;                                    // array to store external map layers in map
-var paramsParsed;                                // object that holds bounding box, urls and info Format / Exceptions format for testing
+var bBox; 										// array to store the parsed parameters
+var mapBounds; 									// OpenLayers.Bounds of the parsed parameters
+var mapExtent; 									// OpenLayers.Bounds transformed to correct projection
+var boxes; 										// OpenLayers.Layer to store area of interest
+var redBox; 									// OpenLayers.Marker to store area of interest
+var borderColor;								
+var clickControl;								// OpenLayers.WMSGetFeatureInfo Control to handle get feature info requests
+var loadingPanel;								// OpenLayers.Control.LoadingPanel to handle loading information
+var myLayerURLs;								// array to store URLs against each external map layer
+var myLayers;									// array to store external map layers in map
+var paramsParsed;								// object that holds bounding box, urls and info Format / Exceptions format for testing
 
 /*
  * Projection definitions
@@ -40,7 +40,7 @@ Ext.QuickTips.init();
 
 Ext.onReady(function(){
 
-    OSInspire = {};
+	OSInspire = {};
     
     OSInspire.Layer = {};
     
@@ -61,8 +61,8 @@ Ext.onReady(function(){
         CLASS_NAME: "OSInspire.Layer.WMS"    
     });
     
-    OSInspire.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.WMSGetFeatureInfo, {
-        read : function(data){
+	OSInspire.WMSGetFeatureInfo = OpenLayers.Class(OpenLayers.Format.WMSGetFeatureInfo, {
+		read : function(data){
             if (typeof data == "object") {
                 // possibly XML document
                 if (data.doctype)
@@ -97,232 +97,232 @@ Ext.onReady(function(){
             }
             return features;
         },
-        CLASS_NAME: "OSInspire.WMSGetFeatureInfo"
-    });
-    
-    OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
+		CLASS_NAME: "OSInspire.WMSGetFeatureInfo"
+	});
+	
+	OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
 
-        /**
-         * Property: counter
-         * {Integer} A counter for the number of layers loading
-         */ 
-        counter: 0,
+		/**
+		 * Property: counter
+		 * {Integer} A counter for the number of layers loading
+		 */ 
+		counter: 0,
 
-        /**
-         * Property: maximized
-         * {Boolean} A boolean indicating whether or not the control is maximized
-        */
-        maximized: false,
+		/**
+		 * Property: maximized
+		 * {Boolean} A boolean indicating whether or not the control is maximized
+		*/
+		maximized: false,
 
-        /**
-         * Property: visible
-         * {Boolean} A boolean indicating whether or not the control is visible
-        */
-        visible: true,
+		/**
+		 * Property: visible
+		 * {Boolean} A boolean indicating whether or not the control is visible
+		*/
+		visible: true,
 
-        /**
-         * Constructor: OpenLayers.Control.LoadingPanel
-         * Display a panel across the map that says 'loading'. 
-         *
-         * Parameters:
-         * options - {Object} additional options.
-         */
-        initialize: function(options) {
-             OpenLayers.Control.prototype.initialize.apply(this, [options]);
-        },
+		/**
+		 * Constructor: OpenLayers.Control.LoadingPanel
+		 * Display a panel across the map that says 'loading'. 
+		 *
+		 * Parameters:
+		 * options - {Object} additional options.
+		 */
+		initialize: function(options) {
+			 OpenLayers.Control.prototype.initialize.apply(this, [options]);
+		},
 
-        /**
-         * Function: setVisible
-         * Set the visibility of this control
-         *
-         * Parameters:
-         * visible - {Boolean} should the control be visible or not?
-        */
-        setVisible: function(visible) {
-            this.visible = visible;
-            if (visible) {
-                OpenLayers.Element.show(this.div);
-            } else {
-                OpenLayers.Element.hide(this.div);
-            }
-        },
+		/**
+		 * Function: setVisible
+		 * Set the visibility of this control
+		 *
+		 * Parameters:
+		 * visible - {Boolean} should the control be visible or not?
+		*/
+		setVisible: function(visible) {
+			this.visible = visible;
+			if (visible) {
+				OpenLayers.Element.show(this.div);
+			} else {
+				OpenLayers.Element.hide(this.div);
+			}
+		},
 
-        getWaitText: function() {
-            //return ("Waiting for") + ' ' + this.counter + ' ' + (this.counter <= 1 ? ('map service to load.') : ('map services to load.'));
-            //console.log("waiting for " + this.counter);
-            return ("Waiting for map services to load.");            
-        },
-        
-        /**
-         * Function: getVisible
-         * Get the visibility of this control
-         *
-         * Returns:
-         * {Boolean} the current visibility of this control
-        */
-        getVisible: function() {
-            return this.visible;
-        },
+		getWaitText: function() {
+			//return ("Waiting for") + ' ' + this.counter + ' ' + (this.counter <= 1 ? ('map service to load.') : ('map services to load.'));
+			//console.log("waiting for " + this.counter);
+			return ("Waiting for map services to load.");			
+		},
+		
+		/**
+		 * Function: getVisible
+		 * Get the visibility of this control
+		 *
+		 * Returns:
+		 * {Boolean} the current visibility of this control
+		*/
+		getVisible: function() {
+			return this.visible;
+		},
 
-        /**
-         * APIMethod: hide
-         * Hide the loading panel control
-        */
-        hide: function() {
-            this.setVisible(false);
-        },
+		/**
+		 * APIMethod: hide
+		 * Hide the loading panel control
+		*/
+		hide: function() {
+			this.setVisible(false);
+		},
 
-        /**
-         * APIMethod: show
-         * Show the loading panel control
-        */
-        show: function() {
-            this.setVisible(true);
-        },
+		/**
+		 * APIMethod: show
+		 * Show the loading panel control
+		*/
+		show: function() {
+			this.setVisible(true);
+		},
 
-        /**
-         * APIMethod: toggle
-         * Toggle the visibility of the loading panel control
-        */
-        toggle: function() {
-            this.setVisible(!this.getVisible());
-        },
+		/**
+		 * APIMethod: toggle
+		 * Toggle the visibility of the loading panel control
+		*/
+		toggle: function() {
+			this.setVisible(!this.getVisible());
+		},
 
-        /**
-         * Method: addLayer
-         * Attach event handlers when new layer gets added to the map
-         *
-         * Parameters:
-         * evt - {Event}
-        */
-        addLayer: function(evt) {
-            if (evt.layer) {
-                evt.layer.events.register('loadstart', this, this.increaseCounter);
-                evt.layer.events.register('loadend', this, this.decreaseCounter);
-            }
-        },
+		/**
+		 * Method: addLayer
+		 * Attach event handlers when new layer gets added to the map
+		 *
+		 * Parameters:
+		 * evt - {Event}
+		*/
+		addLayer: function(evt) {
+			if (evt.layer) {
+				evt.layer.events.register('loadstart', this, this.increaseCounter);
+				evt.layer.events.register('loadend', this, this.decreaseCounter);
+			}
+		},
 
-        /**
-         * Method: setMap
-         * Set the map property for the control and all handlers.
-         *
-         * Parameters: 
-         * map - {<OpenLayers.Map>} The control's map.
-         */
-        setMap: function(map) {
-            OpenLayers.Control.prototype.setMap.apply(this, arguments);
-            this.map.events.register('preaddlayer', this, this.addLayer);
-            for (var i = 0; i < this.map.layers.length; i++) {
-                var layer = this.map.layers[i];
-                layer.events.register('loadstart', this, this.increaseCounter);
-                layer.events.register('loadend', this, this.decreaseCounter);
-            }
-        },
+		/**
+		 * Method: setMap
+		 * Set the map property for the control and all handlers.
+		 *
+		 * Parameters: 
+		 * map - {<OpenLayers.Map>} The control's map.
+		 */
+		setMap: function(map) {
+			OpenLayers.Control.prototype.setMap.apply(this, arguments);
+			this.map.events.register('preaddlayer', this, this.addLayer);
+			for (var i = 0; i < this.map.layers.length; i++) {
+				var layer = this.map.layers[i];
+				layer.events.register('loadstart', this, this.increaseCounter);
+				layer.events.register('loadend', this, this.decreaseCounter);
+			}
+		},
 
-        /**
-         * Method: increaseCounter
-         * Increase the counter and show control
-        */
-        increaseCounter: function() {
-            this.counter++;
-            if (this.counter > 0) { 
-                this.div.innerHTML = this.getWaitText();
-                if (!this.maximized && this.visible) {
-                    this.maximizeControl(); 
-                }
-            }
-        },
-        
-        /**
-         * Method: decreaseCounter
-         * Decrease the counter and hide the control if finished
-        */
-        decreaseCounter: function() {
-            if (this.counter > 0) {
-                this.div.innerHTML = this.getWaitText();
-                this.counter--;
-            }
-            if (this.counter == 0) {
-                if (this.maximized && this.visible) {
-                    this.minimizeControl();
-                }
-            }
-        },
+		/**
+		 * Method: increaseCounter
+		 * Increase the counter and show control
+		*/
+		increaseCounter: function() {
+			this.counter++;
+			if (this.counter > 0) { 
+				this.div.innerHTML = this.getWaitText();
+				if (!this.maximized && this.visible) {
+					this.maximizeControl(); 
+				}
+			}
+		},
+		
+		/**
+		 * Method: decreaseCounter
+		 * Decrease the counter and hide the control if finished
+		*/
+		decreaseCounter: function() {
+			if (this.counter > 0) {
+				this.div.innerHTML = this.getWaitText();
+				this.counter--;
+			}
+			if (this.counter == 0) {
+				if (this.maximized && this.visible) {
+					this.minimizeControl();
+				}
+			}
+		},
 
-        /**
-         * Method: draw
-         * Create and return the element to be splashed over the map.
-         */
-        draw: function () {
-            OpenLayers.Control.prototype.draw.apply(this, arguments);
-            return this.div;
-        },
-         
-        /**
-         * Method: minimizeControl
-         * Set the display properties of the control to make it disappear.
-         *
-         * Parameters:
-         * evt - {Event}
-         */
-        minimizeControl: function(evt) {
-            this.div.style.display = "none"; 
-            this.maximized = false;
-        
-            if (evt != null) {
-                OpenLayers.Event.stop(evt);
-            }
-        },
-        
-        /**
-         * Method: maximizeControl
-         * Make the control visible.
-         *
-         * Parameters:
-         * evt - {Event}
-         */
-        maximizeControl: function(evt) {
-            this.div.style.display = "block";
-            this.maximized = true;
-        
-            if (evt != null) {
-                OpenLayers.Event.stop(evt);
-            }
-        },
+		/**
+		 * Method: draw
+		 * Create and return the element to be splashed over the map.
+		 */
+		draw: function () {
+			OpenLayers.Control.prototype.draw.apply(this, arguments);
+			return this.div;
+		},
+		 
+		/**
+		 * Method: minimizeControl
+		 * Set the display properties of the control to make it disappear.
+		 *
+		 * Parameters:
+		 * evt - {Event}
+		 */
+		minimizeControl: function(evt) {
+			this.div.style.display = "none"; 
+			this.maximized = false;
+		
+			if (evt != null) {
+				OpenLayers.Event.stop(evt);
+			}
+		},
+		
+		/**
+		 * Method: maximizeControl
+		 * Make the control visible.
+		 *
+		 * Parameters:
+		 * evt - {Event}
+		 */
+		maximizeControl: function(evt) {
+			this.div.style.display = "block";
+			this.maximized = true;
+		
+			if (evt != null) {
+				OpenLayers.Event.stop(evt);
+			}
+		},
 
-        /** 
-         * Method: destroy
-         * Destroy control.
-         */
-        destroy: function() {
-            if (this.map) {
-                this.map.events.unregister('preaddlayer', this, this.addLayer);
-                if (this.map.layers) {
-                    for (var i = 0; i < this.map.layers.length; i++) {
-                        var layer = this.map.layers[i];
-                        layer.events.unregister('loadstart', this, 
-                            this.increaseCounter);
-                        layer.events.unregister('loadend', this, 
-                            this.decreaseCounter);
-                    }
-                }
-            }
-            OpenLayers.Control.prototype.destroy.apply(this, arguments);
-        },     
+		/** 
+		 * Method: destroy
+		 * Destroy control.
+		 */
+		destroy: function() {
+			if (this.map) {
+				this.map.events.unregister('preaddlayer', this, this.addLayer);
+				if (this.map.layers) {
+					for (var i = 0; i < this.map.layers.length; i++) {
+						var layer = this.map.layers[i];
+						layer.events.unregister('loadstart', this, 
+							this.increaseCounter);
+						layer.events.unregister('loadend', this, 
+							this.decreaseCounter);
+					}
+				}
+			}
+			OpenLayers.Control.prototype.destroy.apply(this, arguments);
+		},     
 
-        CLASS_NAME: "OpenLayers.Control.LoadingPanel"
+		CLASS_NAME: "OpenLayers.Control.LoadingPanel"
 
-    });
-    
+	});
+	
     OpenLayers.DOTS_PER_INCH = 90.71428571428572;
 
-    OpenLayers.ProxyHost = "preview_getinfo?url=";
+	OpenLayers.ProxyHost = "getinfo.php?url=";
     
     OpenLayers.Util.onImageLoadError = function(){
     
         //now defunct OpenLayers.Util.onImageLoadError
-        
-        // this.src provides the wms request
+		
+		// this.src provides the wms request
         var errorStr = this.src.substring(0, (this.src.indexOf("?") + 1));
         var childStr = "";
         
@@ -358,7 +358,7 @@ Ext.onReady(function(){
         units: 'degrees',
         maxExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
         displayProjection: new OpenLayers.Projection("EPSG:4326"),
-        scales: [15000000, 10000000, 5000000, 1000000, 250000, 75000, 50000, 25000, 10000, 5000, 2500,1000],    
+        scales: [15000000, 10000000, 5000000, 1000000, 250000, 75000, 50000, 25000, 10000, 5000, 2500,1000],	
         restrictedExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
         tileSize: new OpenLayers.Size(250, 250)
     };
@@ -368,8 +368,8 @@ Ext.onReady(function(){
     "Contains bathymetry data by GEBCO (c) Copyright [2012].<br>" +
     "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
     
-    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", CKANEXT_OS_TILES_URL, {
-        LAYERS: 'InspireETRS89',
+    tiled = new OpenLayers.Layer.WMS("OS Base Mapping", "http://46.137.172.224/geoserver/gwc/service/wms", {
+		LAYERS: 'InspireETRS89',
         styles: '',
         format: 'image/png',
         tiled: true
@@ -379,7 +379,7 @@ Ext.onReady(function(){
         isBaseLayer: true,
         attribution: copyrightStatements,
         transitionEffect: 'resize',
-        queryable: false
+		queryable: false
     });
     
     var wmsParams = {
@@ -391,7 +391,7 @@ Ext.onReady(function(){
         attribution: copyrightStatements
     };
     
-    map = new OpenLayers.Map("mappanel", options);
+	map = new OpenLayers.Map("mappanel", options);
     
     map.events.on({
         "zoomend": function(e){
@@ -402,295 +402,295 @@ Ext.onReady(function(){
     });    
     map.events.on({
         "moveend": function(e){
-            //loadingPanel.moveend();
+			//loadingPanel.moveend();
             // loadingPanel = new OpenLayers.Control.LoadingPanel();
-            // map.addControl(loadingPanel);
+			// map.addControl(loadingPanel);
         }
     });
     
-    // The OpenLayers.Control.Click object is used as a workaround to a known bug in OpenLayers
-    // Right-click on map and left-click can stop working
-    // We use a click control to grab the right-click and bump the getFeatureInfo control into life
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-        defaultHandlerOptions: {
-            'single': true,
-            'double': true,
-            'pixelTolerance': null,
-            'stopSingle': false,
-            'stopDouble': false
-        },
-        handleRightClicks:true,
-        initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-                {}, this.defaultHandlerOptions
-            );
-            OpenLayers.Control.prototype.initialize.apply(this, arguments); 
-            this.handler = new OpenLayers.Handler.Click(
-                this, this.eventMethods, this.handlerOptions
-            );
-        },
-        CLASS_NAME: "OpenLayers.Control.Click"
-    });
-    // Add an instance of the Click control that listens to various click events:
-    var oClick = new OpenLayers.Control.Click({eventMethods:{
-        'rightclick': function(e) {
-            clickControl.deactivate();
-            clickControl.activate();
-            //alert('rightclick at '+e.xy.x+','+e.xy.y);
-        },
-        'click': function(e) {
-            //alert('click at '+e.xy.x+','+e.xy.y);
-        },
-        'dblclick': function(e) {
-            //alert('dblclick at '+e.xy.x+','+e.xy.y);
-        },
-        'dblrightclick': function(e) {
-            //alert('dblrightclick at '+e.xy.x+','+e.xy.y);
-        }
-    }});    
-    map.addControl(oClick);
-    oClick.activate();    
-    
-    // XMLtoString - handling of getFeatureInfo responses
-    function XMLtoString(elem){
-        // used by clickControlFormat when receiving an html file that's recognised as an XML Document
-        var serialized;    
-        try {
-            // XMLSerializer exists in current Mozilla browsers
-            serializer = new XMLSerializer();
-            serialized = serializer.serializeToString(elem);
-        } 
-        catch (e) {
-            // Internet Explorer has a different approach to serializing XML
-            serialized = elem.xml;
-        }    
-        return serialized;
-    }
-    
-    // handling of getFeatureInfo responses
-    function boolCheckForHTMLContent(strHTML){
-        // used by clickControl for HTML responses 
-        var boolContent = false;
-        var boolWithinBrackets = false;
-        var strippedHTML = strHTML.replace(/(\r\n|\n|\r)/gm,"");
-        
-        // need to remove everything before <body>
-        //var indexOfBody = strippedHTML.indexOf(">", strippedHTML.indexOf("<body"));
-        //strippedHTML = strippedHTML.substring(indexOfBody + 1, strippedHTML.length + 1);
-        
-        strippedHTML = strippedHTML.substring(strippedHTML.indexOf("<body"), strippedHTML.length + 1);
-        
-        for (i = 0; i < strippedHTML.length -1; i++)
-        {
-            if ((alphaNumericCheck(strippedHTML.charAt(i))) && (!boolWithinBrackets)){
-                boolContent = true;
-            }            
-            if (strippedHTML.charAt(i) == "<") {
-                boolWithinBrackets = true;
-            }
-            if (strippedHTML.charAt(i) == ">") {
-                boolWithinBrackets = false;
-            }
-        }
-        return boolContent;
-    }
-    
-    // handling of getFeatureInfo responses
-    function alphaNumericCheck(theChar) {
-        // used by boolCheckForHTMLContent
-        var cc = theChar.charCodeAt(0);
+	// The OpenLayers.Control.Click object is used as a workaround to a known bug in OpenLayers
+	// Right-click on map and left-click can stop working
+	// We use a click control to grab the right-click and bump the getFeatureInfo control into life
+	OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+		defaultHandlerOptions: {
+			'single': true,
+			'double': true,
+			'pixelTolerance': null,
+			'stopSingle': false,
+			'stopDouble': false
+		},
+		handleRightClicks:true,
+		initialize: function(options) {
+			this.handlerOptions = OpenLayers.Util.extend(
+				{}, this.defaultHandlerOptions
+			);
+			OpenLayers.Control.prototype.initialize.apply(this, arguments); 
+			this.handler = new OpenLayers.Handler.Click(
+				this, this.eventMethods, this.handlerOptions
+			);
+		},
+		CLASS_NAME: "OpenLayers.Control.Click"
+	});
+	// Add an instance of the Click control that listens to various click events:
+	var oClick = new OpenLayers.Control.Click({eventMethods:{
+		'rightclick': function(e) {
+			clickControl.deactivate();
+			clickControl.activate();
+			//alert('rightclick at '+e.xy.x+','+e.xy.y);
+		},
+		'click': function(e) {
+			//alert('click at '+e.xy.x+','+e.xy.y);
+		},
+		'dblclick': function(e) {
+			//alert('dblclick at '+e.xy.x+','+e.xy.y);
+		},
+		'dblrightclick': function(e) {
+			//alert('dblrightclick at '+e.xy.x+','+e.xy.y);
+		}
+	}});	
+	map.addControl(oClick);
+	oClick.activate();	
+	
+	// XMLtoString - handling of getFeatureInfo responses
+	function XMLtoString(elem){
+		// used by clickControlFormat when receiving an html file that's recognised as an XML Document
+		var serialized;	
+		try {
+			// XMLSerializer exists in current Mozilla browsers
+			serializer = new XMLSerializer();
+			serialized = serializer.serializeToString(elem);
+		} 
+		catch (e) {
+			// Internet Explorer has a different approach to serializing XML
+			serialized = elem.xml;
+		}	
+		return serialized;
+	}
+	
+	// handling of getFeatureInfo responses
+	function boolCheckForHTMLContent(strHTML){
+		// used by clickControl for HTML responses 
+		var boolContent = false;
+		var boolWithinBrackets = false;
+		var strippedHTML = strHTML.replace(/(\r\n|\n|\r)/gm,"");
+		
+		// need to remove everything before <body>
+		//var indexOfBody = strippedHTML.indexOf(">", strippedHTML.indexOf("<body"));
+		//strippedHTML = strippedHTML.substring(indexOfBody + 1, strippedHTML.length + 1);
+		
+		strippedHTML = strippedHTML.substring(strippedHTML.indexOf("<body"), strippedHTML.length + 1);
+		
+		for (i = 0; i < strippedHTML.length -1; i++)
+		{
+			if ((alphaNumericCheck(strippedHTML.charAt(i))) && (!boolWithinBrackets)){
+				boolContent = true;
+			}			
+			if (strippedHTML.charAt(i) == "<") {
+				boolWithinBrackets = true;
+			}
+			if (strippedHTML.charAt(i) == ">") {
+				boolWithinBrackets = false;
+			}
+		}
+		return boolContent;
+	}
+	
+	// handling of getFeatureInfo responses
+	function alphaNumericCheck(theChar) {
+		// used by boolCheckForHTMLContent
+		var cc = theChar.charCodeAt(0);
         if((cc>47 && cc<58) || (cc>64 && cc<91) || (cc>96 && cc<123))
         {
-            return true;
+			return true;
         } else {         
-            return false;
+			return false;
         }
-    }
+	}
 
-    // format control for WMSGetFeatureInfo requests    
-    var clickControlFormat = new OSInspire.WMSGetFeatureInfo();
-        
-    var colModel = new Ext.grid.ColumnModel([
-        {header: "Name", width:50, sortable: true, dataIndex:'name', id: 'name', menuDisabled:true},
-        {header: "Value", width:500, resizable:true, dataIndex: 'value', id: 'value', menuDisabled:true,
-            renderer : function(value, metadata, record) {
-                return "<p style=\"white-space: normal;word-wrap:break-word;\">" + value + "</p>";
-        }}
-     ]);
-         
-    clickControl = new OpenLayers.Control.WMSGetFeatureInfo({
-        drillDown: true,
-        autoActivate: true,        
-        maxFeatures: 11,
-        output: 'features', // object or features
-        format: clickControlFormat,
-        layers: [],
-        handlerOptions: {
-            "click": {delay: 1000}
-        },
-        eventListeners: {
-            
-            nogetfeatureinfo: function(e) {
-                Ext.MessageBox.alert('Feature Information', 'A layer must be selected before information can be retrieved.', '');            
-            },
-            
-            getfeatureinfo: function(e) {
-                if (!(Ext.isEmpty(Ext.getCmp('popup'))))
-                {
-                    popup.close();
-                }
-                var items = [];
-                var propertyGridCount = 0;                
-                for (i = 0; i < e.features.length; i++)
-                {
-                    if (i < 10) {
-                        if (e.features[i].data.rawInfo)
-                        {
-                            // probably html / text response
-                            var content = e.features[i].data.rawInfo;
-                            if (!(boolCheckForHTMLContent(content))) {
-                                content = "No features found.";
-                            }
-                            items.push({
-                                xtype: "panel",
-                                title: "Layer response",
-                                html: content,
-                                autoScroll: true
-                            });
-                        } 
-                        else 
-                        {                    
-                            var layerName = "";
-                            if (e.features[i].type) {
-                                layerName = ": " + e.features[i].type;
-                                layerName = layerName.replaceAll("."," ");
-                                layerName = layerName.replaceAll("_"," ");
-                            }
-                            propertyGridCount++;
-                            // Use html version with panel
-                            items.push({
-                                xtype: "panel",
-                                title: "Feature " + propertyGridCount + layerName,
-                                html: featuresAttributestoHTMLTable(e.features[i]),
-                                autoScroll: true
-                            });
-                            // Use xml version with propertygrid
-                            
-                            // var grid2 = new xg.Grid3({
-                                // source: e.features[i].attributes,
-                                // cm: colModel,
-                                // title: "Feature " + propertyGridCount + layerName
-                            // });
+	// format control for WMSGetFeatureInfo requests	
+	var clickControlFormat = new OSInspire.WMSGetFeatureInfo();
+		
+	var colModel = new Ext.grid.ColumnModel([
+		{header: "Name", width:50, sortable: true, dataIndex:'name', id: 'name', menuDisabled:true},
+		{header: "Value", width:500, resizable:true, dataIndex: 'value', id: 'value', menuDisabled:true,
+			renderer : function(value, metadata, record) {
+				return "<p style=\"white-space: normal;word-wrap:break-word;\">" + value + "</p>";
+		}}
+	 ]);
+		 
+	clickControl = new OpenLayers.Control.WMSGetFeatureInfo({
+		drillDown: true,
+		autoActivate: true,		
+		maxFeatures: 11,
+		output: 'features', // object or features
+		format: clickControlFormat,
+		layers: [],
+		handlerOptions: {
+			"click": {delay: 1000}
+		},
+		eventListeners: {
+			
+			nogetfeatureinfo: function(e) {
+				Ext.MessageBox.alert('Feature Information', 'A layer must be selected before information can be retrieved.', '');			
+			},
+			
+			getfeatureinfo: function(e) {
+				if (!(Ext.isEmpty(Ext.getCmp('popup'))))
+				{
+					popup.close();
+				}
+				var items = [];
+				var propertyGridCount = 0;				
+				for (i = 0; i < e.features.length; i++)
+				{
+					if (i < 10) {
+						if (e.features[i].data.rawInfo)
+						{
+							// probably html / text response
+							var content = e.features[i].data.rawInfo;
+							if (!(boolCheckForHTMLContent(content))) {
+								content = "No features found.";
+							}
+							items.push({
+								xtype: "panel",
+								title: "Layer response",
+								html: content,
+								autoScroll: true
+							});
+						} 
+						else 
+						{					
+							var layerName = "";
+							if (e.features[i].type) {
+								layerName = ": " + e.features[i].type;
+								layerName = layerName.replaceAll("."," ");
+								layerName = layerName.replaceAll("_"," ");
+							}
+							propertyGridCount++;
+							// Use html version with panel
+							items.push({
+								xtype: "panel",
+								title: "Feature " + propertyGridCount + layerName,
+								html: featuresAttributestoHTMLTable(e.features[i]),
+								autoScroll: true
+							});
+							// Use xml version with propertygrid
+							
+							// var grid2 = new xg.Grid3({
+								// source: e.features[i].attributes,
+								// cm: colModel,
+								// title: "Feature " + propertyGridCount + layerName
+							// });
 
-                            
-                            // items.push({
-                                // xtype: "propertygrid",
-                                // title: "Feature " + propertyGridCount + layerName,
-                                // stripeRows: true,
-                                // source: e.features[i].attributes,
-                                // autoScroll: true,
-                                // colModel: colModel                                
-                                // // width: 600,
-                                // // height: 800,
-                                // // autoHeight: false
-                            // });
-                            
-                            // items.push({
-                                // xtype: "grid",
-                                // title: "Feature " + propertyGridCount + layerName,
-                                // //stripeRows: true,
-                                // source: e.features[i].attributes,
-                                // autoScroll: true,
-                                // colModel: colModel                                
-                                // // width: 600,
-                                // // height: 800,
-                                // // autoHeight: false
-                            // });
-                        }        
-                    }
-                    if ((i == 10) && (e.features.length > 10))
-                    {
-                        items.push({
-                            xtype: "panel",
-                            title: "Other responses",
-                            html: "Information is limited to 10 features. Please zoom in or reduce the number of layers that are visible.",
-                            autoScroll: true
-                        });
-                    }
-                }                
-                // check for ServiceException
-                if (e.text != null)
-                {
-                    if (e.text.toLowerCase().indexOf("serviceexception") > -1)
-                    {
-                        var seXMLDoc = StringtoXML(e.text);
-                        var dq = Ext.DomQuery; 
-                        var node = dq.selectNode('ServiceException', seXMLDoc);  
-                        items.push({
-                            xtype: "panel",
-                            title: "Layer response",
-                            html: node.textContent,
-                            autoScroll: true
-                        });
-                    }
-                }
-                
-                // calculating the anchor point for the popup
-                var mapCentre = mapPanel.map.getCenter();
-                // determine height required for popUp. There's a limit of 10 features + 1 warning of too many features = 11
-                var popUpHeight;
-                var featuresCount = e.features.length;
-                if (featuresCount > 10) {
-                    featuresCount = 11;
-                }
-                popUpHeight = (featuresCount * 25) + 105;
-                if (popUpHeight < 300)
-                {
-                    popUpHeight = 300;
-                }
-                var popUpWidth = 400; 
-                // the following provides the bottom-left latlon point for the popup. no idea why it doesn't need -((popUpWidth/2)*mapPanel.map.getResolution()) on the lat but it works.
-                var popUpAnchor = new OpenLayers.LonLat((mapCentre.lon),(mapCentre.lat-((popUpHeight/2)*mapPanel.map.getResolution())));
-                
-                popup = new Ext.Window({
-                    id: 'popup',
-                    title: "Feature Information",
-                    resizable: true,
-                    width:popUpWidth,
-                    height:popUpHeight,
-                    minWidth: 400,
-                    //minHeight: 300,
-                    boxMaxWidth: 600,
-                    //boxMaxHeight: 800,
-                    layout: "accordion",
-                    draggable: true,
-                    //autoScroll: true,
-                    constrain: true,
-                    items: items
-                });
-                
-                if (items.length == 0)
-                {
-                    popup.html = 'No features found.'; 
-                    popup.minWidth = 400;
-                    popup.width = 400;
-                    popup.minHeight = 300;
-                    popup.height = 300;
-                }
-                
-                popup.show();
-                OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
-                window.status="";
-            }
-        }
-    });    
-    
-    map.addControl(clickControl);
-    
+							
+							// items.push({
+								// xtype: "propertygrid",
+								// title: "Feature " + propertyGridCount + layerName,
+								// stripeRows: true,
+								// source: e.features[i].attributes,
+								// autoScroll: true,
+								// colModel: colModel								
+								// // width: 600,
+								// // height: 800,
+								// // autoHeight: false
+							// });
+							
+							// items.push({
+								// xtype: "grid",
+								// title: "Feature " + propertyGridCount + layerName,
+								// //stripeRows: true,
+								// source: e.features[i].attributes,
+								// autoScroll: true,
+								// colModel: colModel								
+								// // width: 600,
+								// // height: 800,
+								// // autoHeight: false
+							// });
+						}		
+					}
+					if ((i == 10) && (e.features.length > 10))
+					{
+						items.push({
+							xtype: "panel",
+							title: "Other responses",
+							html: "Information is limited to 10 features. Please zoom in or reduce the number of layers that are visible.",
+							autoScroll: true
+						});
+					}
+				}				
+				// check for ServiceException
+				if (e.text != null)
+				{
+					if (e.text.toLowerCase().indexOf("serviceexception") > -1)
+					{
+						var seXMLDoc = StringtoXML(e.text);
+						var dq = Ext.DomQuery; 
+						var node = dq.selectNode('ServiceException', seXMLDoc);  
+						items.push({
+							xtype: "panel",
+							title: "Layer response",
+							html: node.textContent,
+							autoScroll: true
+						});
+					}
+				}
+				
+				// calculating the anchor point for the popup
+				var mapCentre = mapPanel.map.getCenter();
+				// determine height required for popUp. There's a limit of 10 features + 1 warning of too many features = 11
+				var popUpHeight;
+				var featuresCount = e.features.length;
+				if (featuresCount > 10) {
+					featuresCount = 11;
+				}
+				popUpHeight = (featuresCount * 25) + 105;
+				if (popUpHeight < 300)
+				{
+					popUpHeight = 300;
+				}
+				var popUpWidth = 400; 
+				// the following provides the bottom-left latlon point for the popup. no idea why it doesn't need -((popUpWidth/2)*mapPanel.map.getResolution()) on the lat but it works.
+				var popUpAnchor = new OpenLayers.LonLat((mapCentre.lon),(mapCentre.lat-((popUpHeight/2)*mapPanel.map.getResolution())));
+				
+				popup = new Ext.Window({
+					id: 'popup',
+					title: "Feature Information",
+					resizable: true,
+					width:popUpWidth,
+					height:popUpHeight,
+					minWidth: 400,
+					//minHeight: 300,
+					boxMaxWidth: 600,
+					//boxMaxHeight: 800,
+					layout: "accordion",
+					draggable: true,
+					//autoScroll: true,
+					constrain: true,
+					items: items
+				});
+				
+				if (items.length == 0)
+				{
+					popup.html = 'No features found.'; 
+					popup.minWidth = 400;
+					popup.width = 400;
+					popup.minHeight = 300;
+					popup.height = 300;
+				}
+				
+				popup.show();
+				OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
+				window.status="";
+			}
+		}
+	});	
+	
+	map.addControl(clickControl);
+	
     // Remove default PanZoom bar; will use zoom slider below 
     var ccControl = map.getControlsByClass("OpenLayers.Control.PanZoom");
     map.removeControl(ccControl[0]);
-    
+	
     // Add scale bar
     map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic: false
@@ -699,7 +699,7 @@ Ext.onReady(function(){
     // keyboard control
     map.addControl(new OpenLayers.Control.KeyboardDefaults({
         autoActivate: true
-        //observeElement: "mappanel"
+		//observeElement: "mappanel"
     }));
     
     // Add mouse position.  
@@ -714,17 +714,17 @@ Ext.onReady(function(){
     map.addControl(new OpenLayers.Control.MousePosition({
         formatOutput: formatLonlats
     }));
-    
-    // map.addControl(new OpenLayers.Control.Navigation({documentDrag: true}));
-    // map.addControl(new OpenLayers.Control.ArgParser());
-    
-    // Add attribution
-    // map.addControl(new OpenLayers.Control.Attribution());
-    
-    // Add loading panel    
-    loadingPanel = new OpenLayers.Control.LoadingPanel();
-    map.addControl(loadingPanel);    
-    
+	
+	// map.addControl(new OpenLayers.Control.Navigation({documentDrag: true}));
+	// map.addControl(new OpenLayers.Control.ArgParser());
+	
+	// Add attribution
+	// map.addControl(new OpenLayers.Control.Attribution());
+	
+	// Add loading panel    
+	loadingPanel = new OpenLayers.Control.LoadingPanel();
+	map.addControl(loadingPanel);	
+	
     // Create arrays
     reachableUrls = new Array();
     unreachableUrls = new Array();
@@ -739,12 +739,12 @@ Ext.onReady(function(){
     boxes = new OpenLayers.Layer.Boxes("Boxes");
     borderColor = "red";
     // Extract bounding box and bounds before AJAX call
-    paramsParsed = paramParser;
+	paramsParsed = paramParser;
     bBox = new Array(paramParser.getBBox().westBndLon, paramParser.getBBox().eastBndLon, paramParser.getBBox().northBndLat, paramParser.getBBox().southBndLat)
     
     // Add the default layers and make sure they're not included in getFeatureInfo requests
-    tiled.queryable = false;
-    boxes.queryable = false;   
+	tiled.queryable = false;
+	boxes.queryable = false;   
     map.addLayer(tiled);
     map.addLayer(boxes);
     
@@ -753,38 +753,38 @@ Ext.onReady(function(){
         // failed parsed box paramters - need to generate a default mapBounds & mapExtent
         //Ext.MessageBox.alert('Error', 'The values providing for the bounding box are not numerical.', '');
         bBoxErr = 1;
-        // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-        // mapExtent = mapBounds.clone();
-        // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-        // boxes.addMarker(redBox);
-    } else {
+		// mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
+		// mapExtent = mapBounds.clone();
+		// redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+		// boxes.addMarker(redBox);
+	} else {
         if (paramParser.getBBox().westBndLon < -30.00 || paramParser.getBBox().eastBndLon > 3.50 || paramParser.getBBox().southBndLat < 48.00 || paramParser.getBBox().northBndLat > 64.00) {
             // failed parsed box paramters - need to generate a default mapBounds & mapExtent
             Ext.MessageBox.alert('Error', 'The coordinates of the bounding box are outside of the searchable map bounds.', '');
             bBoxErr = 1;
-            // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-            // mapExtent = mapBounds.clone();
-            // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-            // boxes.addMarker(redBox);            
+			// mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
+			// mapExtent = mapBounds.clone();
+			// redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+			// boxes.addMarker(redBox);			
         } else {
             if (paramParser.getBBox().westBndLon > paramParser.getBBox().eastBndLon) {
                 // failed parsed box paramters - need to generate a default mapBounds & mapExtent
                 Ext.MessageBox.alert('Error', 'The west bounding longitude cannot be greater than the east bounding longitude.', '');
                 bBoxErr = 1;
-                // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-                // mapExtent = mapBounds.clone();
-                // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                // boxes.addMarker(redBox);
-            } else {
+				// mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
+				// mapExtent = mapBounds.clone();
+				// redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+				// boxes.addMarker(redBox);
+			} else {
                 if (paramParser.getBBox().southBndLat > paramParser.getBBox().northBndLat) {
                     // failed parsed box paramters - need to generate a default mapBounds & mapExtent
                     Ext.MessageBox.alert('Error', 'The south bounding latitude cannot be greater than the north bounding latitude.', '');
                     bBoxErr = 1;
-                    // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-                    // mapExtent = mapBounds.clone();
-                    // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                    // boxes.addMarker(redBox);
-                } else {
+					// mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
+					// mapExtent = mapBounds.clone();
+					// redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+					// boxes.addMarker(redBox);
+				} else {
                     // acceptable parsed box parameters - need to construct bounding box
                     mapBounds = new OpenLayers.Bounds(bBox[0], bBox[3], bBox[1], bBox[2]);
                     mapExtent = mapBounds.clone();
@@ -795,43 +795,43 @@ Ext.onReady(function(){
             }
         }
     }
-    
-    if (!(bBoxErr == 0))
-    {
-        map.layers[1].visibility = false;
-    }
+	
+	if (!(bBoxErr == 0))
+	{
+		map.layers[1].visibility = false;
+	}
     
     buildUI(urls);
 });
 
 function updateInfoArray(){
-    myLayerURLs = [];     // string array
-    myLayers = [];        // OpenLayers.Layer.WMS array
-    var len = map.layers.length;
-    if (len > 2)
-    {
-        // at least one layer of interest has been added to the map
-        // this first layer goes into the clickControl url parameter
-        clickControl.url = map.layers[1].url;
-        myLayers.push(map.layers[1]);
-        myLayerURLs.push(map.layers[1].url);
-        // // all other layers of interest go into the clickControl layerUrls parameter
-        if (len > 3)
-        {
-            for (var i = 2; i < (len - 1); i++) {
-                myLayerURLs.push(map.layers[i].url);
-                myLayers.push(map.layers[i]); //.params.LAYERS);
-            }        
-        }
-        // update the control with the new parameters
-        clickControl.layerUrls = myLayerURLs;
-        clickControl.layers = myLayers;
-    } else {
-        // update clickControl
-        clickControl.url = null;
-        clickControl.layerUrls = [];
-        clickControl.layers = [];
-    }
+	myLayerURLs = []; 	// string array
+	myLayers = [];		// OpenLayers.Layer.WMS array
+	var len = map.layers.length;
+	if (len > 2)
+	{
+		// at least one layer of interest has been added to the map
+		// this first layer goes into the clickControl url parameter
+		clickControl.url = map.layers[1].url;
+		myLayers.push(map.layers[1]);
+		myLayerURLs.push(map.layers[1].url);
+		// // all other layers of interest go into the clickControl layerUrls parameter
+		if (len > 3)
+		{
+			for (var i = 2; i < (len - 1); i++) {
+				myLayerURLs.push(map.layers[i].url);
+				myLayers.push(map.layers[i]); //.params.LAYERS);
+			}		
+		}
+		// update the control with the new parameters
+		clickControl.layerUrls = myLayerURLs;
+		clickControl.layers = myLayers;
+	} else {
+		// update clickControl
+		clickControl.url = null;
+		clickControl.layerUrls = [];
+		clickControl.layers = [];
+	}
 }
 
 // Place bounding box layer on top
@@ -892,7 +892,7 @@ function buildUI(urls){
     // Note:  Valid URLs have the syntax:  scheme://domain:port/path?query_string#fragment_id
     
     var validUrls = new Array();
-    var validUrlsEncoded = new Array();
+	var validUrlsEncoded = new Array();
     var invalidUrls = new Array();
     var validCounter = 0;
     var invalidCounter = 0;
@@ -911,7 +911,7 @@ function buildUI(urls){
         }
     }
     
-    if (invalidUrls.length > 0) {    
+	if (invalidUrls.length > 0) {    
         var errorStr = "The following WMS URLs have incorrect syntax and will not be displayed in the layer tree: <br><br>";        
         for (var i = 0; i < invalidUrls.length; i++) {
             errorStr = errorStr + invalidUrls[i] + "<br>";
@@ -930,20 +930,20 @@ function buildUI(urls){
         child = {
             text: validUrls[i],
             qtip: validUrls[i],
-            alive: true,
+			alive: true,
             loader: new os.WMSCapabilitiesLoader({
                 
-                // COI
-                url: 'preview_proxy?url=' + urlWmsSuffix, 
+				// COI
+				//url: '/sites/all/modules/_custom/UKLP_UI/eval/proxy.php?url=' + urlWmsSuffix, 
                 
-                // Ordnance Survey
-                //url: 'preview_proxy?url=' + urlWmsSuffix, 
+				// Ordnance Survey
+				url: 'proxy.php?url=' + urlWmsSuffix, 
                 layerOptions: {
                     buffer: 0
                     ,singleTile: true
                     ,ratio: 1
                     ,opacity: 0.75
-                    //,gutter: 50
+					//,gutter: 50
                 },
                 layerParams: {
                     transparent: 'true'
@@ -952,42 +952,42 @@ function buildUI(urls){
                     attr.qtip = attr.text;
                     attr.checked = attr.leaf ? false : undefined;
                     attr.expanded = attr.leaf ? undefined : true;
-                    return os.WMSCapabilitiesLoader.prototype.createNode.apply(this, [attr]);                    
+                    return os.WMSCapabilitiesLoader.prototype.createNode.apply(this, [attr]);					
                 },
-                listeners: {                    
-                    'load': function(loader, node, response){
-                        //console.log("loader has loaded: hasLayers = " + loader.hasLayers);
-                        if (!(loader.hasLayers)) {
-                            node.attributes.iconCls = 'failedwms-icon';
-                            node.getUI().iconNode.className = node.attributes.iconCls;
-                        }
-                    },
-                    'loadexception': function(loader, node, response){
-                        //console.log("loader has loaded: hasLayers = " + loader.hasLayers);
-                        node.attributes.iconCls = 'failedwms-icon';
-                        node.getUI().iconNode.className = node.attributes.iconCls;
-                    }
-                }
+				listeners: {                    
+					'load': function(loader, node, response){
+						//console.log("loader has loaded: hasLayers = " + loader.hasLayers);
+						if (!(loader.hasLayers)) {
+							node.attributes.iconCls = 'failedwms-icon';
+							node.getUI().iconNode.className = node.attributes.iconCls;
+						}
+					},
+					'loadexception': function(loader, node, response){
+						//console.log("loader has loaded: hasLayers = " + loader.hasLayers);
+						node.attributes.iconCls = 'failedwms-icon';
+						node.getUI().iconNode.className = node.attributes.iconCls;
+					}
+				}
             }),
             expanded: true
         };        
         children[i] = child;
-        
+		
     }
-        
-    var browser = navigator.userAgent;
-    if ((browser.toLowerCase().indexOf('safari') > 0) || (/MSIE (\d+\.\d+);/.test(navigator.userAgent))) {
-        // set max. length of qtip on child nodes
-        for(var i=0; i<children.length; i++) {
-            var qtipString = children[i].qtip;
-            if (qtipString.length > 50)
-            {
-                children[i].qtip = qtipString.substring(0,49) + "<br>" + qtipString.substring(50,(qtipString.length));
-            }
-        }
-    }
+    	
+	var browser = navigator.userAgent;
+	if ((browser.toLowerCase().indexOf('safari') > 0) || (/MSIE (\d+\.\d+);/.test(navigator.userAgent))) {
+		// set max. length of qtip on child nodes
+		for(var i=0; i<children.length; i++) {
+			var qtipString = children[i].qtip;
+			if (qtipString.length > 50)
+			{
+				children[i].qtip = qtipString.substring(0,49) + "<br>" + qtipString.substring(50,(qtipString.length));
+			}
+		}
+	}
     
-    // Define the root for the layer tree
+	// Define the root for the layer tree
     root = new Ext.tree.AsyncTreeNode({
         id: 'root',
         children: children
@@ -1011,127 +1011,127 @@ function buildUI(urls){
                 }
             }
         }]
-    });    
-    
+    });	
+	
     // Define the layer tree
     layerTree = new Ext.tree.TreePanel({        
         id: 'tree',
         border: false,
         width: 650,
-        root: root,        
+        root: root,		
         rootVisible: false,
         animate: true,
         lines: true, 
-        //autoScroll: true,        
+		//autoScroll: true,        
         listeners: {        
             // Add layers to the map when checked and remove when unchecked
             'checkchange': function(node, checked){
                 if (checked === true) {
-                    // set layer projection to match map projection
-                    switch (mapPanel.map.options.projection)
-                    {
-                        case "EPSG:4258":
-                            //console.log("adjusting layer to suit 4258");
-                            node.attributes.layer.get('layer').addOptions(options4258); 
-                            //console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
-                            break;
-                        case "EPSG:4326":
-                            //console.log("adjusting layer to suit 4326");
-                            node.attributes.layer.get('layer').addOptions(options4326); 
-                            //console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
-                            break;
-                        case "EPSG:27700":
-                            //console.log("adjusting layer to suit 27700");
-                            node.attributes.layer.get('layer').addOptions(options27700); 
-                            //console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
-                            break;
-                        case "EPSG:29903":
-                            //console.log("adjusting layer to suit 29903");
-                            node.attributes.layer.get('layer').addOptions(options29903); 
-                            //console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
-                            break;
-                        case "EPSG:2157":
-                            //console.log("adjusting layer to suit 2157");
-                            node.attributes.layer.get('layer').addOptions(options2157); 
-                            //console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
-                            break;
-                        default:
-                            node.attributes.layer.get('layer').addOptions(options4258); 
-                    }                    
-                    //node.attributes.layer.attribution = "";
+					// set layer projection to match map projection
+					switch (mapPanel.map.options.projection)
+					{
+						case "EPSG:4258":
+							//console.log("adjusting layer to suit 4258");
+							node.attributes.layer.get('layer').addOptions(options4258); 
+							//console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
+							break;
+						case "EPSG:4326":
+							//console.log("adjusting layer to suit 4326");
+							node.attributes.layer.get('layer').addOptions(options4326); 
+							//console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
+							break;
+						case "EPSG:27700":
+							//console.log("adjusting layer to suit 27700");
+							node.attributes.layer.get('layer').addOptions(options27700); 
+							//console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
+							break;
+						case "EPSG:29903":
+							//console.log("adjusting layer to suit 29903");
+							node.attributes.layer.get('layer').addOptions(options29903); 
+							//console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
+							break;
+						case "EPSG:2157":
+							//console.log("adjusting layer to suit 2157");
+							node.attributes.layer.get('layer').addOptions(options2157); 
+							//console.log("layer is using " + node.attributes.layer.get('layer').projection.projCode);
+							break;
+						default:
+							node.attributes.layer.get('layer').addOptions(options4258); 
+					}					
+					//node.attributes.layer.attribution = "";
                     mapPanel.layers.add(node.attributes.layer);
-                    // for testing purposes paramsParsed carries Info/Exception formats defined by testing
-                    if (paramsParsed.getInfoFormat() == null) {
-                        mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.INFO_FORMAT = node.attributes.layer.data.INFO_FORMAT;
-                    } else {
-                        mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.INFO_FORMAT = paramsParsed.getInfoFormat();
-                    }
-                    if (paramsParsed.getExceptions() == null) {
-                        mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.EXCEPTIONS = node.attributes.layer.data.EXCEPTIONS;                    
-                    } else {
-                        mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.EXCEPTIONS = paramsParsed.getExceptions();                    
-                    }
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].attribution = "";
-                    // force redraw (in case projection is not supported and we'd like to see the warning message)
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].clearGrid();
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].redraw(true);
-                    // add listener for tileerror event
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("tileerror", this, function(e) {
-                        if (e.tile)
-                        {
-                            if (e.tile.layer.url)
-                            {
-                                Ext.MessageBox.alert('Error', ("The WMS source: " + e.tile.layer.url + " has failed to load - please switch it off or try a different projection."));
-                            }
-                        }                            
-                        // this.root.node.childNodes loop for wms url match and turn off
-                    }); 
-                    // debug code for loadingPanel counter
-                    var layerName = node.attributes.layer.name;
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("added", this, function(e) {
-                        //console.log("adding layer");
-                    });
-                    mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("removed", this, function(e) {
-                        //console.log("removing layer");
-                    });                    
-                } else {
-                    mapPanel.layers.remove(node.attributes.layer);        
+					// for testing purposes paramsParsed carries Info/Exception formats defined by testing
+					if (paramsParsed.getInfoFormat() == null) {
+						mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.INFO_FORMAT = node.attributes.layer.data.INFO_FORMAT;
+					} else {
+						mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.INFO_FORMAT = paramsParsed.getInfoFormat();
+					}
+					if (paramsParsed.getExceptions() == null) {
+						mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.EXCEPTIONS = node.attributes.layer.data.EXCEPTIONS;					
+					} else {
+						mapPanel.map.layers[mapPanel.map.getNumLayers() -1].params.EXCEPTIONS = paramsParsed.getExceptions();					
+					}
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].attribution = "";
+					// force redraw (in case projection is not supported and we'd like to see the warning message)
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].clearGrid();
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].redraw(true);
+					// add listener for tileerror event
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("tileerror", this, function(e) {
+						if (e.tile)
+						{
+							if (e.tile.layer.url)
+							{
+								Ext.MessageBox.alert('Error', ("The WMS source: " + e.tile.layer.url + " has failed to load - please switch it off or try a different projection."));
+							}
+						}							
+						// this.root.node.childNodes loop for wms url match and turn off
+					}); 
+					// debug code for loadingPanel counter
+					var layerName = node.attributes.layer.name;
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("added", this, function(e) {
+						//console.log("adding layer");
+					});
+					mapPanel.map.layers[mapPanel.map.getNumLayers() -1].events.register("removed", this, function(e) {
+						//console.log("removing layer");
+					});					
+				} else {
+                    mapPanel.layers.remove(node.attributes.layer);		
                 }
                 moveLayerToTop(boxes);
-                updateInfoArray();                    
+				updateInfoArray();					
             },
-            'load': function(node){
-                // if a node receives a response and no layer child nodes are created we want to change the icon
-                // also fires if request is aborted (should this be the case though?)
-                if (!(node.isRoot)) {
-                    if (node.childNodes) {                
-                        if (node.childNodes)
-                        {
-                            if (node.childNodes.length == 0)
-                            {
-                                node.attributes.iconCls = 'failedwms-icon';
-                                node.getUI().iconNode.className = node.attributes.iconCls;
-                            }
-                        }
-                    }
-                }
-            },
-            // loadexception - is this a valid event?
-            'loadexception': function(node){
-                node.attributes.iconCls = 'failedwms-icon';
-                node.getUI().iconNode.className = node.attributes.iconCls;
-            }
+			'load': function(node){
+				// if a node receives a response and no layer child nodes are created we want to change the icon
+				// also fires if request is aborted (should this be the case though?)
+				if (!(node.isRoot)) {
+					if (node.childNodes) {				
+						if (node.childNodes)
+						{
+							if (node.childNodes.length == 0)
+							{
+								node.attributes.iconCls = 'failedwms-icon';
+								node.getUI().iconNode.className = node.attributes.iconCls;
+							}
+						}
+					}
+				}
+			},
+			// loadexception - is this a valid event?
+			'loadexception': function(node){
+				node.attributes.iconCls = 'failedwms-icon';
+				node.getUI().iconNode.className = node.attributes.iconCls;
+			}
         }
     });
     
-    // remove key press events for zoomslider - otherwise cursor up/down fire zoom in/out
-    GeoExt.ZoomSlider.prototype.onKeyDown = function(e) {};
-    
+	// remove key press events for zoomslider - otherwise cursor up/down fire zoom in/out
+	GeoExt.ZoomSlider.prototype.onKeyDown = function(e) {};
+	
     // Define the Map panel
     mapPanel = new GeoExt.MapPanel({
         map: map,
         region: 'center',
-        //renderTo: "div-map",
+		//renderTo: "div-map",
         // items: []
         items: [{
             xtype: "gx_zoomslider",
@@ -1223,50 +1223,50 @@ function buildUI(urls){
             triggerAction: "all",
             value: '4258',
             listeners: {                
-                select: function(combo, record, index){                                
-                    var epsg = "EPSG:" + combo.getValue();                    
+				select: function(combo, record, index){                				
+					var epsg = "EPSG:" + combo.getValue();                    
                     switch (epsg) {
                         case "EPSG:4258":                            
                             // ETRS89
                             var centre = mapPanel.map.getCenter();
-                            //console.log("centre: " + centre.toShortString());                            
+							//console.log("centre: " + centre.toShortString());							
                             var zoom = mapPanel.map.getZoom();
                             var srcProj = mapPanel.map.getProjectionObject();
                             // transform centre
                             centre.transform(srcProj, proj4258);
-                            //console.log("centre: " + centre.toShortString() + " 4258");
+							//console.log("centre: " + centre.toShortString() + " 4258");
                             // set sea raster
                             mapPanel.map.baseLayer.mergeNewParams({
                                 //LAYERS: 'sea_dtm,InspireVectorStack'
                                 LAYERS: 'InspireETRS89'
                             });
-                            //mapPanel.map.baseLayer.redraw();                            
+                            //mapPanel.map.baseLayer.redraw();							
                             // reset map
                             mapPanel.map.setOptions(options4258);
-                            mapPanel.map.options.projection = "EPSG:4258";                            
+							mapPanel.map.options.projection = "EPSG:4258";							
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options4258);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
                                     if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapExtent.transform(proj4326, proj4258);
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapExtent.transform(proj4326, proj4258);
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             //switchOnAllLayers();
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
-                            //console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 4258");
+							//console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 4258");
                             // for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                // mapPanel.map.layers[i].redraw();
-                                // mapPanel.map.layers[i].clearGrid();
+								// mapPanel.map.layers[i].redraw();
+								// mapPanel.map.layers[i].clearGrid();
                             // }
                             break;
                             
@@ -1274,43 +1274,43 @@ function buildUI(urls){
                             
                             // WGS84
                             var centre = mapPanel.map.getCenter();
-                            //console.log("centre: " + centre.toShortString());                            
+							//console.log("centre: " + centre.toShortString());							
                             var zoom = mapPanel.map.getZoom();
                             var srcProj = mapPanel.map.getProjectionObject();
                             // transform centre
                             centre.transform(srcProj, proj4326);
-                            //console.log("centre: " + centre.toShortString() + " 4326");
+							//console.log("centre: " + centre.toShortString() + " 4326");
                             // set sea rasters
                             mapPanel.map.baseLayer.mergeNewParams({
                                 //LAYERS: 'sea_dtm_4326,InspireVectorStack'
                                 LAYERS: 'InspireWGS84'
                             });
-                            //mapPanel.map.baseLayer.redraw();                                                        
+                            //mapPanel.map.baseLayer.redraw();														
                             // reset map
                             mapPanel.map.setOptions(options4326);
-                            mapPanel.map.options.projection = "EPSG:4326";
+							mapPanel.map.options.projection = "EPSG:4326";
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options4326);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
-                                    if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+									if (bBoxErr == 0) {
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             //switchOnAllLayers();
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
-                            //console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 4326");
+							//console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 4326");
                             // for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                // mapPanel.map.layers[i].redraw();
-                                // mapPanel.map.layers[i].clearGrid();
+								// mapPanel.map.layers[i].redraw();
+								// mapPanel.map.layers[i].clearGrid();
                             // }
                             break;
                             
@@ -1318,43 +1318,43 @@ function buildUI(urls){
                             
                             // British National Grid
                             var centre = mapPanel.map.getCenter();
-                            //console.log("centre: " + centre.toShortString());
+							//console.log("centre: " + centre.toShortString());
                             var zoom = mapPanel.map.getZoom();
                             var srcProj = mapPanel.map.getProjectionObject();
                             // transform centre
                             centre.transform(srcProj, proj27700);
-                            //console.log("centre: " + centre.toShortString() + " 27700");
+							//console.log("centre: " + centre.toShortString() + " 27700");
                             // set sea rasters
                             mapPanel.map.baseLayer.mergeNewParams({
                                 //LAYERS: 'sea_dtm,InspireVectorStack'
                                 LAYERS: 'InspireBNG'
                             });
-                            //mapPanel.map.baseLayer.redraw();                                                        
-                            // reset map                            
+                            //mapPanel.map.baseLayer.redraw();														
+                            // reset map							
                             mapPanel.map.setOptions(options27700);
-                            mapPanel.map.options.projection = "EPSG:27700";
+							mapPanel.map.options.projection = "EPSG:27700";
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options27700);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
                                     if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapExtent.transform(proj4326, proj27700);
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapExtent.transform(proj4326, proj27700);
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
-                            //console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 27700");
+							//console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 27700");
                             // for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                // mapPanel.map.layers[i].redraw();
-                                // mapPanel.map.layers[i].clearGrid();
+								// mapPanel.map.layers[i].redraw();
+								// mapPanel.map.layers[i].clearGrid();
                             // }
                             break;
                             
@@ -1362,90 +1362,90 @@ function buildUI(urls){
                             
                             // Irish Transverse Mercator
                             var centre = mapPanel.map.getCenter();
-                            //console.log("centre: " + centre.toShortString());                            
+							//console.log("centre: " + centre.toShortString());							
                             var zoom = mapPanel.map.getZoom();
                             var srcProj = mapPanel.map.getProjectionObject();
                             // transform centre
                             centre.transform(srcProj, proj2157);
-                            //console.log("centre: " + centre.toShortString() + " 2157");
+							//console.log("centre: " + centre.toShortString() + " 2157");
                             // set sea rasters
                             mapPanel.map.baseLayer.mergeNewParams({
                                 //LAYERS: 'sea_dtm,InspireVectorStack'
                                 LAYERS: 'InspireITM'
                             });
-                            // mapPanel.map.baseLayer.redraw();                            
+                            // mapPanel.map.baseLayer.redraw();							
                             // reset map
                             mapPanel.map.setOptions(options2157);
-                            mapPanel.map.options.projection = "EPSG:2157";
+							mapPanel.map.options.projection = "EPSG:2157";
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options2157);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
                                     if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapExtent.transform(proj4326, proj2157);
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapExtent.transform(proj4326, proj2157);
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             //switchOnAllLayers();
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
-                            //console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 2157");
+							//console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 2157");
                             //for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                //mapPanel.map.layers[i].redraw();
-                                //mapPanel.map.layers[i].clearGrid();
-                            //}                            
+								//mapPanel.map.layers[i].redraw();
+								//mapPanel.map.layers[i].clearGrid();
+                            //}							
                             break;
                             
                         case "EPSG:29903":
                             
                             // Irish Grid
                             var centre = mapPanel.map.getCenter();
-                            //console.log("centre: " + centre.toShortString());                            
+							//console.log("centre: " + centre.toShortString());							
                             var zoom = mapPanel.map.getZoom();
                             var srcProj = mapPanel.map.getProjectionObject();
                             // transform centre
                             centre.transform(srcProj, proj29903);
-                            //console.log("centre: " + centre.toShortString() + " 29903");
+							//console.log("centre: " + centre.toShortString() + " 29903");
                             // set sea rasters
                             mapPanel.map.baseLayer.mergeNewParams({
                                 //LAYERS: 'sea_dtm,InspireVectorStack'
                                 LAYERS: 'InspireIG'
                             });
-                            //mapPanel.map.baseLayer.redraw();                            
+                            //mapPanel.map.baseLayer.redraw();							
                             // reset map
                             mapPanel.map.setOptions(options29903);
-                            mapPanel.map.options.projection = "EPSG:29903";                            
+							mapPanel.map.options.projection = "EPSG:29903";							
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options29903);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
                                     if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapExtent.transform(proj4326, proj29903);
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapExtent.transform(proj4326, proj29903);
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             //switchOnAllLayers();
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
-                            //console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 29903");
+							//console.log("map centre: " + mapPanel.map.getCenter().toShortString() + " 29903");
                             //for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                //mapPanel.map.layers[i].redraw();
-                                //mapPanel.map.layers[i].clearGrid();
-                            //}                            
+								//mapPanel.map.layers[i].redraw();
+								//mapPanel.map.layers[i].clearGrid();
+                            //}							
                             break;
                             
                         default:
@@ -1461,40 +1461,40 @@ function buildUI(urls){
                                 //LAYERS: 'sea_dtm,InspireVectorStack'
                                 LAYERS: 'InspireETRS89'
                             });
-                            //mapPanel.map.baseLayer.redraw();                            
+                            //mapPanel.map.baseLayer.redraw();							
                             // reset map
                             mapPanel.map.setOptions(options4258);
-                            mapPanel.map.options.projection = "EPSG:4258";                            
+							mapPanel.map.options.projection = "EPSG:4258";							
                             // reset layers
                             for (var i = 0, len = mapPanel.map.layers.length; i < len; i++) {
                                 mapPanel.map.layers[i].addOptions(options4258);
                                 if (mapPanel.map.layers[i].name == "Boxes") {
                                     if (bBoxErr == 0) {
-                                        if (redBox != null) {
-                                            mapExtent = mapBounds.clone();
-                                            mapExtent.transform(proj4326, proj4258);
-                                            mapPanel.map.layers[i].removeMarker(redBox);
-                                            redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                                            mapPanel.map.layers[i].addMarker(redBox);
-                                            mapPanel.map.layers[i].redraw();
-                                        }
-                                    }
+										if (redBox != null) {
+											mapExtent = mapBounds.clone();
+											mapExtent.transform(proj4326, proj4258);
+											mapPanel.map.layers[i].removeMarker(redBox);
+											redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
+											mapPanel.map.layers[i].addMarker(redBox);
+											mapPanel.map.layers[i].redraw();
+										}
+									}
                                 }
                             }
                             //switchOnAllLayers();
                             // centre map
                             mapPanel.map.setCenter(centre, zoom, true, true);
                             //for(var i=0,len=mapPanel.map.layers.length; i<len; i++) {
-                                //mapPanel.map.layers[i].redraw();
-                                //mapPanel.map.layers[i].clearGrid();
-                            //}                            
+								//mapPanel.map.layers[i].redraw();
+								//mapPanel.map.layers[i].clearGrid();
+                            //}							
                     }
                 } // end of function for selecting combo
             } // end of combo listeners
         }] // end of items
     }); // end of formpanel def
     
-    // Define the Legend panel
+	// Define the Legend panel
     var legendPanel = new GeoExt.LegendPanel({
     
         // Remove OS base layer from the legend
@@ -1514,12 +1514,12 @@ function buildUI(urls){
             style: 'padding:5px',
             baseParams: {
                 FORMAT: 'image/png',
-                width: 600   
-            }        
+				width: 600   
+			}        
         },
         title: '<b>Legend</b>',
         collapsible: true
-                    
+    				
     });
     
     // Define the Layers panel, which will contain projection dropdown, backdrop map toggle and the layer tree
@@ -1530,7 +1530,7 @@ function buildUI(urls){
         bodyStyle: 'padding:5px', // font-family: Arial; font-weight: bold; font-size: 23px',
         //width: 348,
         autoScroll: true,
-                        
+        				
         
         items: [formPanel, checkboxes, layerTree]
     
@@ -1543,21 +1543,21 @@ function buildUI(urls){
         ,width: 358
         ,border: false
         ,bodyStyle: "padding:10px"
-        ,autoScroll: true                        
-        // renderTo: 'info',        
+        ,autoScroll: true        				
+		// renderTo: 'info',        
         ,style: 'font-family: Arial; font-size: 13px'        
-        ,html: "<a href=\"/doc/map-preview\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>"
+        ,html: "<a href=\"http://data.gov.uk/faq\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>"
         +"Please note:<br><br>"
         +"<b>&#149;</b> Where a rotating circle remains in the WMS Layers window, this indicates that the service is still waiting for a response from that publisher's WMS. This is due to their server not being available or to network problems.<br>"
-        +"<b>&#149;</b> Backdrop mapping is available at zoom levels up to the scale of 1:10 000. Additional zoom levels without backdrop mapping are provided to enable viewing of large scale data.<br>"
+		+"<b>&#149;</b> Backdrop mapping is available at zoom levels up to the scale of 1:10 000. Additional zoom levels without backdrop mapping are provided to enable viewing of large scale data.<br>"
         +"<b>&#149;</b> On selecting a layer, you may need to zoom in or out to see the data as the Publisher's WMS may restrict the scales at which it can be viewed. <br>"
         +"<b>&#149;</b> You may need to pan to view the data if it is outside current window view. <br>"
         +"<b>&#149;</b> Not all map layers support all projections. If a layer does not display then it may be possible for it to display by choosing a different projection.  <br>"
-        +"<b>&#149;</b> To view feature information about the data layers being displayed, position the mouse cursor over the point of interest and click the left button once. A pop-up window will be displayed containing information about features within each layer at that point. If no information is returned, this could be due to there being no features at the point of interest, no support for feature information by the publisher's WMS or a format returned by the WMS which is not supported by the Preview on Map tool. <br>"
-        +"<b>&#149;</b> All the backdrop mapping displayed in this window is derived from small scale data and is intended to aid evaluation of selected data sets only. It should not be used to assess their positional accuracy. <br>"
-        +"<b>&#149;</b> Users of Internet Explorer  and Opera will find the map pan tool doesn't work in the copyright section. This is a known issue with the mapping framework. A fix will be provided in a future release. <br>" 
-        +'<b>&#149;</b> Further advice and guidance on all of these notes is provided in the <a href="/doc/map-preview">Preview on Map User Guide</a>.<br>'    
-    });
+		+"<b>&#149;</b> To view feature information about the data layers being displayed, position the mouse cursor over the point of interest and click the left button once. A pop-up window will be displayed containing information about features within each layer at that point. If no information is returned, this could be due to there being no features at the point of interest, no support for feature information by the publisher's WMS or a format returned by the WMS which is not supported by the Preview on Map tool. <br>"
+		+"<b>&#149;</b> All the backdrop mapping displayed in this window is derived from small scale data and is intended to aid evaluation of selected data sets only. It should not be used to assess their positional accuracy. <br>"
+		+"<b>&#149;</b> Users of Internet Explorer  and Opera will find the map pan tool doesn't work in the copyright section. This is a known issue with the mapping framework. A fix will be provided in a future release. <br>" 
+		+'<b>&#149;</b> Further advice and guidance on all of these notes is provided in the <a href="UKLP_HELP_DOCUMENTATION">Preview on Map User Guide</a>.<br>'	
+	});
         
     // Create a panel for Layers, Legend and Information
     leftPanel = new Ext.Panel({    
@@ -1567,17 +1567,17 @@ function buildUI(urls){
         minWidth: 348,
         collapsible: true,
         collapseMode: "mini",
-        layout: 'accordion', // Only one panel can be open at a time        
-        align: 'stretch',
-        split:true,
+        layout: 'accordion', // Only one panel can be open at a time		
+		align: 'stretch',
+		split:true,
         minWidth: 200,
-        maxWidth: 348,                
+        maxWidth: 348,				
         items: [layersPanel, legendPanel, infoPanel]
     });
     
     // Define a viewport.  Left panel (Layers, Legend and Information) will be on the left, and the map will be on the right
     new Ext.Viewport({
-        layout: "fit",        
+        layout: "fit",		
         hideBorders: false,
         border: true,
         items: {
@@ -1585,26 +1585,26 @@ function buildUI(urls){
             deferredRender: false,
             items: [leftPanel, mapPanel]
         }
-        ,listeners: {
-            afterrender: function(c) {
-                // update keyboard control div with map.div
-                //var keyboardControl = map.getControlsByClass("OpenLayers.Control.KeyboardDefaults");
-                // at this point the div of map is div.olMap
-                // but this is changed at some point after...
-                
-                // keyboardControl.observerElement = "olMap";
-                //console.log("map div:" + mapPanel.map.div.id);
-                //keyboardControl.div = "cheerypie"; //mapPanel.map.div;
-                // var mapDiv = "" + mapPanel.map.div.id
-                // console.log(mapDiv);
-                // map.addControl(new OpenLayers.Control.KeyboardDefaults({
-                    // autoActivate: true,
-                    // observeElement: mapPanel.map.div //mapDiv
-                // }));
-                // var keyControl = map.getControlsByClass("OpenLayers.Control.PanZoom");
-                // keyControl.div = mapDiv;
-            }
-        }
+		,listeners: {
+			afterrender: function(c) {
+				// update keyboard control div with map.div
+				//var keyboardControl = map.getControlsByClass("OpenLayers.Control.KeyboardDefaults");
+				// at this point the div of map is div.olMap
+				// but this is changed at some point after...
+				
+				// keyboardControl.observerElement = "olMap";
+				//console.log("map div:" + mapPanel.map.div.id);
+				//keyboardControl.div = "cheerypie"; //mapPanel.map.div;
+				// var mapDiv = "" + mapPanel.map.div.id
+				// console.log(mapDiv);
+				// map.addControl(new OpenLayers.Control.KeyboardDefaults({
+					// autoActivate: true,
+					// observeElement: mapPanel.map.div //mapDiv
+				// }));
+				// var keyControl = map.getControlsByClass("OpenLayers.Control.PanZoom");
+				// keyControl.div = mapDiv;
+			}
+		}
     });
     
     // If no bounding box issues, zoom to the mapBounds
@@ -1674,69 +1674,69 @@ function getHostname(str){
 //are not returned by getFeatureInfo requests
 //now redundant - could be brought back to improve info results
 function checkForSingleLayerInWMS(wmsURL){
-    var strWMSURL = wmsURL.replace("?","");
-    var root = tree.getRootNode();
-    var children = root.childNodes;
-    var visibleLayers = 0;
-    var layerName;
-    for (var i = 0; i < children.length; i++) {
-        //alert("checking " + children[i].text.replace("?","") + " for " + strWMSURL);
-        if (children[i].text.replace("?","") == strWMSURL ) {
-            children[i].cascade(function(n){
-                var ui = n.getUI();
-                if (ui.isChecked())
-                {
-                    visibleLayers++;
-                    layerName = n.text;
-                }
-            });
-        }
-    }
-    if (visibleLayers == 1)
-    {
-        // we can be sure this is the layer in question
-        return layerName;
-    } else {
-        return "";
-    }
+	var strWMSURL = wmsURL.replace("?","");
+	var root = tree.getRootNode();
+	var children = root.childNodes;
+	var visibleLayers = 0;
+	var layerName;
+	for (var i = 0; i < children.length; i++) {
+		//alert("checking " + children[i].text.replace("?","") + " for " + strWMSURL);
+		if (children[i].text.replace("?","") == strWMSURL ) {
+			children[i].cascade(function(n){
+				var ui = n.getUI();
+				if (ui.isChecked())
+				{
+					visibleLayers++;
+					layerName = n.text;
+				}
+			});
+		}
+	}
+	if (visibleLayers == 1)
+	{
+		// we can be sure this is the layer in question
+		return layerName;
+	} else {
+		return "";
+	}
 }
 
 function StringtoXML(text){
-    if (window.ActiveXObject){
-        var doc=new ActiveXObject('Microsoft.XMLDOM');
-        doc.async='false';
-        doc.loadXML(text);
-    } else {
-        var parser=new DOMParser();
-        var doc=parser.parseFromString(text,'text/xml');
-    }
-    return doc;
+	if (window.ActiveXObject){
+		var doc=new ActiveXObject('Microsoft.XMLDOM');
+		doc.async='false';
+		doc.loadXML(text);
+	} else {
+		var parser=new DOMParser();
+		var doc=parser.parseFromString(text,'text/xml');
+	}
+	return doc;
 }
 
 function featuresAttributestoHTMLTable(feature){
-    var returnedTable = '<table class="popup">';
-    
-    for(var prop in feature.attributes) {
-        if(feature.attributes.hasOwnProperty(prop))
-            returnedTable += "<tr><td>" + prop + "</td><td>" + feature.attributes[prop] + "</td></tr>";
-    }
+	var returnedTable = '<table class="popup">';
+	
+	for(var prop in feature.attributes) {
+		if(feature.attributes.hasOwnProperty(prop))
+			returnedTable += "<tr><td>" + prop + "</td><td>" + feature.attributes[prop] + "</td></tr>";
+	}
 
-    // this doesn't work in IE7-9 :-/
-    // Object.keys(feature.attributes).forEach(function(key) {
+	// this doesn't work in IE7-9 :-/
+	// Object.keys(feature.attributes).forEach(function(key) {
         // returnedTable += "<tr><td>" + key + "</td><td>" + feature.attributes[key] + "</td></tr>";
     // });
-    
-    returnedTable += "</table>";
-    return returnedTable;
+	
+	returnedTable += "</table>";
+	return returnedTable;
 }
 
 // Replaces all instances of the given substring.
 String.prototype.replaceAll = function(strTarget, strSubString ){
-    var strText = this;
-    var intIndexOfMatch = strText.indexOf( strTarget );
-    while (intIndexOfMatch != -1){
-        strText = strText.replace( strTarget, strSubString )
-        intIndexOfMatch = strText.indexOf( strTarget );
-    }
-    return( strText );
+	var strText = this;
+	var intIndexOfMatch = strText.indexOf( strTarget );
+	while (intIndexOfMatch != -1){
+		strText = strText.replace( strTarget, strSubString )
+		intIndexOfMatch = strText.indexOf( strTarget );
+	}
+	return( strText );
 }

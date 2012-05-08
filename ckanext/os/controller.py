@@ -35,36 +35,12 @@ if api_key:
 class ValidationError(Exception):
     pass
 
-class BaseWidget(BaseController):
-    def __init__(self):
-        super(BaseWidget, self).__init__()
-        here = os.path.dirname(__file__)
-        rootdir = os.path.dirname(os.path.dirname(here))
-        self.os_dir = os.path.join(rootdir, 'ckanext', 'os')
-        
-    def read_file_and_substitute_text(self, filepath, substitution_map):
-        '''Takes a filepath and returns its contents, having made specific
-        substitutions in the text.
-
-        @param filepath is relative to self.os_dir
-        '''
-        f = open(os.path.join(self.os_dir, filepath), 'r')
-        try:
-            content = f.read()
-        finally:
-            f.close()
-        for existing, replacement in substitution_map.items():
-            assert existing in content, '%s not found' % existing
-            content = re.sub(existing, replacement, content)
-        return content
-    
-
-class SearchWidget(BaseWidget):
+class SearchWidget(BaseController):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
         return render('os/map_search.html')
 
-class PreviewWidget(BaseWidget):
+class PreviewWidget(BaseController):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
         return render('os/map_preview.html')
@@ -92,10 +68,14 @@ class Proxy(BaseController):
             response.status_int = 400
             return 'Value for t parameter not recognised'
 
+    @staticmethod
+    def obscure_apikey(txt):
+        return re.sub('key=([0-9a-f]{2})[0-9a-f]+', r'key=\1xxx', txt)
+
     def _read_url(self, url, post_data=None, content_type=None):
         headers = {'Content-Type': content_type} if content_type else {}
         request = urllib2.Request(url, post_data, headers)
-        log.info('Proxied request to URL: %s', url)
+        log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
             f = urllib2.urlopen(request)
         except HTTPError, e:
@@ -123,7 +103,7 @@ class Proxy(BaseController):
         /geoserver/wfs - Boundaries info (for Search)
         '''
         key = request.params.get('key')
-        loggable_key = (key[:2] + 'x'*(len(key)-2)) if key else None
+        loggable_key = (key[:2] + 'xxx') if key else None
         log.debug('Geoserver proxy for url_suffix=%r key=%r', url_suffix, loggable_key)
         if url_suffix not in ('gwc/service/wms', 'wfs'):
             response.status_int = 404
@@ -202,6 +182,7 @@ class Proxy(BaseController):
             wms_url = self.wms_url_correcter(wms_url)
         except ValidationError, e:
             response.status_int = 400
+            log.warning('WMS Preview proxy received invalid url: %r', wms_url)
             return 'Invalid URL: %s' % str(e)
             
         return self._read_url(wms_url)
@@ -234,44 +215,6 @@ class Proxy(BaseController):
             return 'Base of WMS URL not known: %r' % base_wms_url
 
         return self._read_url(wms_url)
-
-
-'''
-header('Content-type: text/xml; charset=utf-8');
-
-function validateUrl() {
-
-	$wmsUrl = $_GET['url'];
-
-	$str1="?";
-	$str2="request=getcapabilities";
-	$str3="request=getfeatureinfo";
-	$str4="service=wms";
-
-	$chk1 = strpos(strtolower($wmsUrl),$str1);
-	$chk2 = strpos(strtolower($wmsUrl),$str2);
-	$chk3 = strpos(strtolower($wmsUrl),$str3);
-	$chk4 = strpos(strtolower($wmsUrl),$str4);
-
-	if (($chk1 == true && $chk2 == true && $chk4 == true) || ($chk1 == true && $chk3 == true && $chk4 == true)) {
-
-		return true;
-
-	}
-	else {
-
-		return false;
-
-	}
-
- }
-
-if (validateUrl()){
-
-	echo file_get_contents($_GET['url']);
-
-}
-'''
 
 # Preview list 'Shopping basket'
 class PreviewList(BaseController):

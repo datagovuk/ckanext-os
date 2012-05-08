@@ -25,8 +25,9 @@ LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
 WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
 
-
-api_key = config.get('ckanext-os.tiles.apikey', '')
+# API Key is provided to the javascript to make calls. The proxy passes
+# on the key from the javascript, to show the caller is authorized.
+api_key = config.get('ckanext-os.geoserver.apikey', '')
 if api_key:
     TILES_URL_CKAN += '?key=%s' % quote(api_key)
     WFS_URL_CKAN += '?key=%s' % quote(api_key)

@@ -1,8 +1,7 @@
-//
 // Name				: wmsmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP search map widget
-// Author			: Peter Cotroneo, Ordnance Survey
-// Version			: 2.3.0.4
+// Author			: Peter Cotroneo, Darryl Alexander, Ordnance Survey
+// Version			: 2.3.1.3
 
 // ** Global variables **
 var mapPanel, map, zoombar, zoompopup, boxes, rectangle;
@@ -18,8 +17,9 @@ var submitFlag, sectorFlag, browserFlag;
 var alreadyrunflag = 0;
 var useVMLRenderer;
 var IEWarned = false;
-var boxLayer = null,
-    drawBoxControl = null;
+// next two variables commented for bounding box rollback
+var boxLayer = null, drawBoxControl = null;
+var ll, ur;
 
 //OpenLayers.ProxyHost = "proxy.php?url=";
 window.alert = function (str) {
@@ -58,10 +58,9 @@ if (document.addEventListener) {
   	};
 }
 
-function getInternetExplorerVersion()
+function getInternetExplorerVersion() {
 // Returns the version of Internet Explorer or a -1
 // (indicating the use of another browser).
-{
   var rv = -1; // Return value assumes failure.
   if (navigator.appName == 'Microsoft Internet Explorer') {
     var ua = navigator.userAgent;
@@ -141,14 +140,12 @@ function inspireinit() {
                 copyrightStatements = "Contains Ordnance Survey data (c) Crown copyright and database right  [2012] <br>" + "Contains Royal Mail data (c) Royal Mail copyright and database right [2012]<br>" + "Contains bathymetry data by GEBCO (c) Copyright [2012]<br>" + "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
     
     		// setup tiled layer
-    		tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", //"http://46.137.180.108:80/geoserver/wms", {
+    		tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled",
 			CKANEXT_OS_TILES_URL, {
-		        //LAYERS: 'sea_dtm,InspireVectorStack',
-				LAYERS: 'InspireETRS89',
+			LAYERS: 'InspireETRS89',
 		        STYLES: '',
 		        format: 'image/png',
 		        tiled: true
-		        // tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
     			}, {
 		        buffer: 0,
 		        displayOutsideMaxExtent: true,
@@ -748,7 +745,8 @@ function pcInfo(gazTxt){
     
 }
 
-
+// drawBoundingBox and clearBoundingBox rollbacked for
+// bounding box change request
 // Draw Search Box 
 function drawBoundingBox(){
 	// Deactivate boundaries hovering
@@ -762,64 +760,68 @@ function drawBoundingBox(){
         return;
     }
     drawMode = true;
-
-    if (boxLayer === null) {
-        var style = {
-            strokeColor: "red",
-            strokeWidth: 2,
-            fillColor: "white"
-        };
-        var styleMapConfig = {
-            "default": Ext.apply(Ext.apply({}, style), {
-                fillOpacity: 0.0
-            }),
-            "temporary": Ext.apply(Ext.apply({}, style), {
-                fillOpacity: 0.5
-            })
-        };
-        boxLayer = new OpenLayers.Layer.Vector("Box layer", {
-            styleMap: new OpenLayers.StyleMap(styleMapConfig),
-            eventListeners: {
-                "sketchcomplete": function (evt) {
-                    boxLayer.destroyFeatures();
-                }
+    // Create a bounding box control
+    boundingBoxControl = new OpenLayers.Control();
+    OpenLayers.Util.extend(boundingBoxControl, {
+        draw: function(){
+            this.box = new OpenLayers.Handler.Box(boundingBoxControl, {
+                "done": this.notice
+            }, {
+                keyMask: OpenLayers.Handler.MOD_NONE
+            });
+            this.box.activate();            
+        },
+        
+        notice: function(bounds){
+            // Remove previous bounding box, so we display only one at a time		
+            try {
+                map.removeLayer(boxes);  
+            } 
+            catch (e) {
             }
-        });
+            // Set a flag for the Submit button
+            submitFlag = 1;
+            
+            // Get longitude and latitude of the lower left and upper right of the box
+            ll = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.left, bounds.bottom));
+            ur = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.right, bounds.top));
+            // if(!isBoundingBoxDrawn()){
+				// return;
+            // }
+			drawMode = false;			
+            // Draw the bounding box
+            boxes = new OpenLayers.Layer.Boxes("Boxes");
+            bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
+            var borderColor = "red";
+            rectangle = new OpenLayers.Marker.Box(bounds, borderColor);
+            boxes.addMarker(rectangle);
+            
+            map.addLayer(boxes);
+            
+            // Deactivate the control
+            this.box.deactivate();
 
-        map.addLayer(boxLayer);
-    }
-    if (drawBoxControl === null) {
-        drawBoxControl = new OpenLayers.Control.DrawFeature(boxLayer, OpenLayers.Handler.RegularPolygon, {
-            handlerOptions: {
-                sides: 4,
-                irregular: true
-            },
-            eventListeners: {
-                "featureadded": function (evt) {
-                    drawMode = false;
-                    // Set a flag for the Submit button
-                    submitFlag = 1;
-                    var bounds = evt.feature.geometry.getBounds();
-                    // Get longitude and latitude of the lower left and upper right of the box
-                    ll = new OpenLayers.Pixel(bounds.left, bounds.bottom);
-                    ur = new OpenLayers.Pixel(bounds.right, bounds.top);
-                    evt.object.deactivate();
-                    // Reactivate boundaries hovering
-                    if (selectHover != undefined) {
-                        selectHover.activate();
-                    }
-                }
-            }
-        });
-        map.addControl(drawBoxControl);
-    }
+            // Reactivate boundaries hovering
+            if (selectHover != undefined) {
+            	selectHover.activate();
+   			};
+        }
+    })
 
-    drawBoxControl.activate();
+    // Add the bounding box control to the map
+    map.addControl(boundingBoxControl);
 }
+
 // Clear the bounding box
 function clearBoundingBox() {
-    drawBoxControl.deactivate();
-    boxLayer.destroyFeatures();
+    //  Dont need to add it again, theres a default one
+    //map.addControl(new OpenLayers.Control.Navigation());    
+    try {
+           map.removeLayer(boxes);
+    } 
+    catch (e) {
+    
+    }    
     // Set a flag for the Submit button
     submitFlag = 0;
 }
@@ -828,10 +830,10 @@ function isBoundingBoxDrawn() {
     if (ll == undefined || ur == undefined) {
         return false;
     }
-    var wblon = ll.x.toFixed(2);
-    var eblon = ur.x.toFixed(2);
-    var nblat = ur.y.toFixed(2);
-    var sblat = ll.y.toFixed(2);
+    var wblon = ll.lon.toFixed(2);
+    var eblon = ur.lon.toFixed(2);
+    var nblat = ur.lat.toFixed(2);
+    var sblat = ll.lat.toFixed(2);
     if (!isNaN(wblon) && !isNaN(eblon) && !isNaN(nblat) && !isNaN(sblat) && submitFlag == 1) {
         return true;
     }
@@ -845,10 +847,10 @@ function submitBox(){
 		return;
     }	
     // Prepare coordinates per UK Gemini 2.1 spec 
-        var wblon = ll.x.toFixed(2);
-        var eblon = ur.x.toFixed(2);
-        var nblat = ur.y.toFixed(2);
-        var sblat = ll.y.toFixed(2);
+        var wblon = ll.lon.toFixed(2);
+        var eblon = ur.lon.toFixed(2);
+        var nblat = ur.lat.toFixed(2);
+        var sblat = ll.lat.toFixed(2);
         
         if (wblon < -30.00 || eblon > 3.50 || sblat < 48.00 || nblat > 64.00) {
           alert('Coordinates are outside of the searchable map  bounds.');   
@@ -857,9 +859,9 @@ function submitBox(){
             // UK Gemini2.1 variables to be passed to CKAN
             var bBox = new Array(wblon, eblon, nblat, sblat);
             
-            /*
            
              //TEST: Display coordinates of bounding box in popup
+            /*
             
              alert("   *** Submit Test ***" +
             
@@ -1110,6 +1112,8 @@ function removeBoundaries() {
 	map.removeControl(navigationControl);
 }
 
+//boundaryHovering function rollbacked for
+//bounding box change request
 function boundaryHovering() {
 	var report = function(e){
 		// Add navigation to re-enable panning

@@ -1,7 +1,7 @@
 // Name				: wmsevalmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP evaluation map widget (evalmapwms.htm)
 // Author			: Peter Cotroneo, Ordnance Survey, Andrew Bailey (C)
-// Version			: 2.3.0.3
+// Version			: 2.3.2.1
 // Notes			: This version does not turn layers off automatically after receiving an image load error
 //					: On deployment: change UKLP_HELP_DOCUMENTATION to suit DGU href
 
@@ -751,39 +751,22 @@ Ext.onReady(function(){
     // Bounding box logic        
     if (isNaN(paramParser.getBBox().westBndLon) || isNaN(paramParser.getBBox().eastBndLon) || isNaN(paramParser.getBBox().southBndLat) || isNaN(paramParser.getBBox().northBndLat)) {
         // failed parsed box paramters - need to generate a default mapBounds & mapExtent
-        //Ext.MessageBox.alert('Error', 'The values providing for the bounding box are not numerical.', '');
         bBoxErr = 1;
-        // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-        // mapExtent = mapBounds.clone();
-        // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-        // boxes.addMarker(redBox);
     } else {
         if (paramParser.getBBox().westBndLon < -30.00 || paramParser.getBBox().eastBndLon > 3.50 || paramParser.getBBox().southBndLat < 48.00 || paramParser.getBBox().northBndLat > 64.00) {
             // failed parsed box paramters - need to generate a default mapBounds & mapExtent
-            Ext.MessageBox.alert('Error', 'The coordinates of the bounding box are outside of the searchable map bounds.', '');
+            //Ext.MessageBox.alert('Error', 'The coordinates of the bounding box are outside of the searchable map bounds.', '');
             bBoxErr = 1;
-            // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-            // mapExtent = mapBounds.clone();
-            // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-            // boxes.addMarker(redBox);            
         } else {
             if (paramParser.getBBox().westBndLon > paramParser.getBBox().eastBndLon) {
                 // failed parsed box paramters - need to generate a default mapBounds & mapExtent
-                Ext.MessageBox.alert('Error', 'The west bounding longitude cannot be greater than the east bounding longitude.', '');
+                //Ext.MessageBox.alert('Error', 'The west bounding longitude cannot be greater than the east bounding longitude.', '');
                 bBoxErr = 1;
-                // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-                // mapExtent = mapBounds.clone();
-                // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                // boxes.addMarker(redBox);
             } else {
                 if (paramParser.getBBox().southBndLat > paramParser.getBBox().northBndLat) {
                     // failed parsed box paramters - need to generate a default mapBounds & mapExtent
-                    Ext.MessageBox.alert('Error', 'The south bounding latitude cannot be greater than the north bounding latitude.', '');
+                    //Ext.MessageBox.alert('Error', 'The south bounding latitude cannot be greater than the north bounding latitude.', '');
                     bBoxErr = 1;
-                    // mapBounds = new OpenLayers.Bounds(-30.0, 48.0, 3.5, 64.0);
-                    // mapExtent = mapBounds.clone();
-                    // redBox = new OpenLayers.Marker.Box(mapExtent, borderColor);
-                    // boxes.addMarker(redBox);
                 } else {
                     // acceptable parsed box parameters - need to construct bounding box
                     mapBounds = new OpenLayers.Bounds(bBox[0], bBox[3], bBox[1], bBox[2]);

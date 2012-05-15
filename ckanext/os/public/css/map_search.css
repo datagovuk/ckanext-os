@@ -65,3 +65,8 @@ select#selectGaz {
   -webkit-box-shadow: 0px 2px 6px #bbb;
   box-shadow: 0px 2px 6px #bbb;
 }
+
+div.olControlMousePosition.olControlNoSelect { 
+  font-size: small; 
+  color: #555;
+ }

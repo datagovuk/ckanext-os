@@ -14,3 +14,7 @@ body > .x-panel > div > div > div {
 input#projectionCombo { 
   cursor: pointer;
  }
+div.olControlMousePosition.olControlNoSelect { 
+  font-size: small; 
+  color: #555;
+}

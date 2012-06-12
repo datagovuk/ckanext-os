@@ -228,7 +228,7 @@ class PreviewList(BaseController):
         out = []
         for r in pkg.resources:
             # NB This WMS detection condition must match that in dgu/ckanext/dgu/lib/helpers.py
-            if 'wms' in r.url.lower() or r.format.lower() == 'wms':
+            if 'wms' in (r.url or '').lower() or (r.format  or '').lower() == 'wms':
                 out.append(('url',r.url))
         return urlencode(out)
 

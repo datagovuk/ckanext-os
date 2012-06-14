@@ -1,5 +1,9 @@
 Ext.namespace("os");
 
+if (!window.console) console = {};
+console.log = console.log || function(){};
+console.warn = console.warn || function(){};
+
 os.WMSCapabilitiesLoader = Ext.extend(GeoExt.tree.WMSCapabilitiesLoader,{
 
 	capabilitiesStore:null,
@@ -46,9 +50,13 @@ os.WMSCapabilitiesLoader = Ext.extend(GeoExt.tree.WMSCapabilitiesLoader,{
          */
         var capabilities = new OpenLayers.Format.WMSCapabilities().read(response.responseText);
 
+        console.log(capabilities);
         if(!capabilities.capability){
             this.hasLayers = false;
-			scope.loading = false;
+            scope.loading = false;
+            console.log('getCapabilities response: ' + response.responseText)
+            console.warn('getCapabilities response unsatisfactory:')
+            console.warn(capabilities);
         }
         else{
             this.hasLayers = true;        

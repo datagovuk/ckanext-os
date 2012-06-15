@@ -4,12 +4,17 @@ header('Content-type: text/xml; charset=utf-8');
 
 function validateUrl() {
 
+			// set to false for debugging purposes
 			return true;
 
 	}
 
+	
 
 if (validateUrl()) {
+
+
+
 
   $split_array = explode('?', $_GET['url']);
 
@@ -44,10 +49,15 @@ if (validateUrl()) {
     $variables = array();
     foreach ($distinct_variables as $key => $value){
       $variables[] = $key . '=' . $value;
+
+
+
+
     }
 
     //create properly formatted url
     $proper_url = $split_array[0] . '?' . implode('&',$variables);
+
     echo file_get_contents($proper_url);
   }
 }

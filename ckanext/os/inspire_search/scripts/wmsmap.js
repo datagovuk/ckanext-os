@@ -1,8 +1,7 @@
 // Name				: wmsmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP search map widget
 // Author			: Peter Cotroneo, Darryl Alexander, Ordnance Survey
-// Version			: 2.3.1.3
-
+// Version			: 2.4.0.2
 // ** Global variables **
 var mapPanel, map, zoombar, zoompopup, boxes, rectangle;
 var globalGazZoomType, globalGazCoords, globalGazTypes;
@@ -17,11 +16,9 @@ var submitFlag, sectorFlag, browserFlag;
 var alreadyrunflag = 0;
 var useVMLRenderer;
 var IEWarned = false;
-// next two variables commented for bounding box rollback
-var boxLayer = null, drawBoxControl = null;
-var ll, ur;
+var hist, argParserControl, attributionControl, overview;
+var previousButton, fullExtentButton, nextButton;
 
-//OpenLayers.ProxyHost = "proxy.php?url=";
 window.alert = function (str) {
     Ext.MessageBox.show({
         title: 'Information',
@@ -58,10 +55,10 @@ if (document.addEventListener) {
     };
 }
 
-function getInternetExplorerVersion(){
+function getInternetExplorerVersion()
 // Returns the version of Internet Explorer or a -1
 // (indicating the use of another browser).
-
+{
     var rv = -1; // Return value assumes failure.
     if (navigator.appName == 'Microsoft Internet Explorer') {
         var ua = navigator.userAgent;
@@ -120,27 +117,28 @@ function inspireinit() {
         CLASS_NAME: "OSInspire.Layer.WMS"
     });
 
-    var gwcLayer;
-
     OpenLayers.DOTS_PER_INCH = 90.71428571428572;
 
     var options = {
         size: new OpenLayers.Size(903, 435),
-        //resolutions: resolutions,
         scales: [15000000, 10000000, 5000000, 1000000, 250000, 75000],
         maxExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
         restrictedExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
         tileSize: new OpenLayers.Size(250, 250),
         units: 'degrees',
-        projection: "EPSG:4258"
+        projection: "EPSG:4258",
+        controls: [],
+        eventListeners: {
+            "zoomend": zoomEnd,
+            "mousemove": mouseMove
+        }
     };
 
     // Set the copyright statements
     copyrightStatements = "Contains Ordnance Survey data (c) Crown copyright and database right  [2012] <br>" + "Contains Royal Mail data (c) Royal Mail copyright and database right [2012]<br>" + "Contains bathymetry data by GEBCO (c) Copyright [2012]<br>" + "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
 
     // setup tiled layer
-    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled",
-    "http://46.137.172.224/geoserver/gwc/service/wms?key=geoserverkey", {	
+    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", "http://46.137.172.224/geoserver/gwc/service/wms?key=c4e45b94936e11e1955d183da21c99ac", {
         LAYERS: 'InspireETRS89',
         STYLES: '',
         format: 'image/png',
@@ -151,6 +149,14 @@ function inspireinit() {
         isBaseLayer: true,
         attribution: copyrightStatements,
         transitionEffect: 'resize'
+    });
+
+    //setup overview map layer group
+    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", "http://46.137.172.224/geoserver/wms?key=c4e45b94936e11e1955d183da21c99ac", {
+        LAYERS: 'sea_dtm,overview_layers',
+        STYLES: '',
+        format: 'image/png',
+        tiled: false
     });
 
     function zoomEnd(event) {
@@ -187,30 +193,9 @@ function inspireinit() {
             cursorYp = evt.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
         }
     }
+
     // Create a map with a listener that checks for zoom ends
-    map = new OpenLayers.Map("mappanel", {
-        eventListeners: {
-            "zoomend": zoomEnd,
-            "mousemove": mouseMove
-        }
-    });
-
-    // Set the options on the map
-    map.setOptions(options);
-
-    // Set the WMS parameters  
-    var wmsParams = {
-        format: 'image/png'
-    };
-
-    // Set the WMS options
-    var wmsOptions = {
-        buffer: 0,
-        attribution: copyrightStatements
-    };
-
-    // Define the OS mapping layer
-    gwcLayer = new OSInspire.Layer.WMS("INSPIRE", "http://46.137.172.224/geoserver/wms?key=geoserverkey", wmsParams, wmsOptions);
+    map = new OpenLayers.Map("mappanel", options);
 
     // Boundaries
     defBoundaryStyle = {
@@ -233,26 +218,38 @@ function inspireinit() {
 
     map.addLayers([tiled]);
 
-    // Remove default PanZoom bar; will use zoom slider below 
-    var ccControl = map.getControlsByClass("OpenLayers.Control.PanZoom");
-    map.removeControl(ccControl[0]);
+    // add argParser control for map info on page refresh/load
+    argParserControl = new OpenLayers.Control.ArgParser();
+    map.addControl(argParserControl);
+
+    // add attribution control for map display attribution
+    attributionControl = new OpenLayers.Control.Attribution();
+    map.addControl(attributionControl);
+
+    // add navigation control to allow panning and zooming
+    navigationControl = new OpenLayers.Control.Navigation();
+    map.addControl(navigationControl);
 
     // Add scale bar
     map.addControl(new OpenLayers.Control.ScaleLine({
         geodesic: true
     }));
 
-    keyBoardDefaultControl = new OpenLayers.Control.KeyboardDefaults();
-
     // keyboard navigation
+    keyBoardDefaultControl = new OpenLayers.Control.KeyboardDefaults();
     map.addControl(keyBoardDefaultControl);
 
     // Navigation control to be used when admin area turned on
-    navigationControl = new OpenLayers.Control.Navigation({
-        zoomWheelEnabled: false,
+    boundsNavigationControl = new OpenLayers.Control.Navigation({
+        autoActivate: false,
+        zoomWheelEnabled: true,
         documentDrag: true
     });
-    map.addControl(navigationControl);
+    map.addControl(boundsNavigationControl);
+
+    //Add navigation history
+    hist = new OpenLayers.Control.NavigationHistory();
+    map.addControl(hist);
 
     // Add mouse position. 
     cursorposition = new OpenLayers.Control.MousePosition({
@@ -295,23 +292,52 @@ function inspireinit() {
         }
     });
 
+    //zoom out to max zoom level	
+    function fullExtentClicked() {
+        map.zoomToMaxExtent();
+    }
+
+    //button to go back to previous mapping state
+    previousButton = new OpenLayers.Control.Button({
+        displayClass: 'previousButton',
+        trigger: hist.previous.trigger,
+        title: 'Go to previous map state'
+    });
+
+    //button to zoom out to max zoom level
+    fullExtentButton = new OpenLayers.Control.Button({
+        displayClass: 'fullExtentButton',
+        trigger: fullExtentClicked,
+        title: 'Zoom to max extent'
+    });
+
+    //button to go forward a mapping state
+    nextButton = new OpenLayers.Control.Button({
+        displayClass: 'nextButton',
+        trigger: hist.next.trigger,
+        title: 'Go to next map state'
+    });
+
+    //panel containing buttons adding them to the map
+    panel = new OpenLayers.Control.Panel();
+    panel.addControls([previousButton, fullExtentButton, nextButton]);
+    map.addControl(panel);
+
     // Create a map panel with zoom slider   
     mapPanel = new GeoExt.MapPanel({
         renderTo: "mappanel",
         height: 435,
         width: 958,
         map: map,
-        center: new OpenLayers.LonLat(-8.89754749, 54),
         zoom: 1,
-        // Zoom slider       
         items: [{
             xtype: "gx_zoomslider",
             vertical: true,
             // Length of slider
             height: 150,
             // x,y position of slider
-            x: 10,
-            y: 20,
+            x: 29,
+            y: 35,
             // Tooltips
             plugins: new GeoExt.ZoomSliderTip({
                 template: "Zoom level: {zoom}<br>Scale: 1 : {scale}",
@@ -321,6 +347,32 @@ function inspireinit() {
             onKeyDown: function (e) {}
         }]
     });
+
+    //Register events for buttons
+    hist.previous.events.register("activate");
+    hist.next.events.register("activate");
+
+    //create overview map options
+    var overviewOptions = {
+        maximized: true,
+        minRatio: 16,
+        theme: null,
+        title: "Overview Map. Use the + or - buttons to maximize or minimize the Overview Map",
+        mapOptions: {
+            numZoomLevels: 1,
+			fallThrough: true,
+            maxExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
+            restrictedExtent: new OpenLayers.Bounds(-30, 48.00, 3.50, 64.00),
+            tileSize: new OpenLayers.Size(250, 250),
+            units: 'degrees',
+            projection: "EPSG:4258"
+        },
+        layers: [overviewLayer]
+    }
+
+    //create overview map
+    overview = new OpenLayers.Control.OverviewMap(overviewOptions);
+    map.addControl(overview);
 }
 
 function formatLonlats(lonLat) {
@@ -340,6 +392,7 @@ function clearText() {
     keyBoardDefaultControl.deactivate();
 }
 
+//allow keyboard to be used to navigate.
 function activateKeyboardDefault() {
     keyBoardDefaultControl.activate();
 }
@@ -531,18 +584,6 @@ function gazInfo(gazTxt) {
     var gazXml = (new DOMParser()).parseFromString(gazTxt, "text/xml");
     var gazEntries = gazXml.getElementsByTagName("GazetteerItemVO");
 
-    /**
-     // If one match found
-     if (gazEntries.length == 1) {
-     
-     var point = gazXml.getElementsByTagName("point")[0];
-     var coords = point.firstChild.data.split(" ");
-     var type = type.firstChild.data;
-     map.setCenter(new OpenLayers.LonLat(coords[0], coords[1]), 4);
-     locationFound = 1;
-     
-     }
-     **/
     // Create a list box
     lrTypeBuffer = "";
     numberHeaders = 0;
@@ -718,8 +759,7 @@ function pcInfo(gazTxt) {
         map.setCenter(new OpenLayers.LonLat(coords[0], coords[1]), zoomLevel);
 
         clrTxt = 1;
-        //		                   clearText();
-        //                          setText();
+
         activateKeyboardDefault();
 
     } else {
@@ -728,67 +768,49 @@ function pcInfo(gazTxt) {
     }
 }
 
-// drawBoundingBox and clearBoundingBox rollbacked for
-// bounding box change request
 // Draw Search Box 
-function drawBoundingBox(){
-	// Deactivate boundaries hovering
-	if (selectHover != undefined) {
-            selectHover.deactivate();
-            if (boundarypopup != undefined) {
-            	boundarypopup.hide();
-    		}
+function drawBoundingBox() {
+
+    if (drawMode) {
+        return;
     }
-	if(drawMode){
-		return;
-	}
-	drawMode = true;
+    drawMode = true;
     // Create a bounding box control
     boundingBoxControl = new OpenLayers.Control();
     OpenLayers.Util.extend(boundingBoxControl, {
-        draw: function(){
+        draw: function () {
             this.box = new OpenLayers.Handler.Box(boundingBoxControl, {
                 "done": this.notice
             }, {
                 keyMask: OpenLayers.Handler.MOD_NONE
             });
-            this.box.activate();            
+            this.box.activate();
         },
-        
-        notice: function(bounds){
+
+        notice: function (bounds) {
             // Remove previous bounding box, so we display only one at a time		
             try {
-                map.removeLayer(boxes);  
-            } 
-            catch (e) {
-            }
-            
+                map.removeLayer(boxes);
+            } catch (e) {}
+
             // Set a flag for the Submit button
             submitFlag = 1;
-            
+
             // Get longitude and latitude of the lower left and upper right of the box
             ll = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.left, bounds.bottom));
             ur = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.right, bounds.top));
-            // if(!isBoundingBoxDrawn()){
-				// return;
-            // }
-			drawMode = false;			
+            drawMode = false;
             // Draw the bounding box
             boxes = new OpenLayers.Layer.Boxes("Boxes");
             bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
             var borderColor = "red";
             rectangle = new OpenLayers.Marker.Box(bounds, borderColor);
             boxes.addMarker(rectangle);
-            
+
             map.addLayer(boxes);
-            
+
             // Deactivate the control
             this.box.deactivate();
-            
-            // Reactivate boundaries hovering
-            if (selectHover != undefined) {
-            	selectHover.activate();
-   			};
         }
     })
 
@@ -797,20 +819,18 @@ function drawBoundingBox(){
 }
 
 // Clear the bounding box
-function clearBoundingBox(){
+function clearBoundingBox() {
 
-    //  Dont need to add it again, theres a default one
-    //map.addControl(new OpenLayers.Control.Navigation());    
     try {
-           map.removeLayer(boxes);
-    } 
-    catch (e) {
-    
-    }    
+        map.removeLayer(boxes);
+    } catch (e) {
+
+    }
     // Set a flag for the Submit button
     submitFlag = 0;
 }
 
+// Check for bounding box
 function isBoundingBoxDrawn() {
     if (ll == undefined || ur == undefined) {
         return false;
@@ -824,6 +844,7 @@ function isBoundingBoxDrawn() {
     }
     return false;
 }
+
 // Submit the bounding box	 
 function submitBox() {
     if (!isBoundingBoxDrawn()) {
@@ -843,10 +864,9 @@ function submitBox() {
         // UK Gemini2.1 variables to be passed to CKAN
         var bBox = new Array(wblon, eblon, nblat, sblat);
 
-
-			
+        /**
              //TEST: Display coordinates of bounding box in popup
-            /*
+            
              alert("   *** Submit Test ***" +
             
              "\n\nWest Bounding Longitude: " +
@@ -868,11 +888,11 @@ function submitBox() {
              "\n\nProjection: " +
             
              map.getProjectionObject(), '');
-			*/
-
+            **/
     }
 }
 
+//set IE loading warning
 function boundaryLoadstart() {
     //setTimeout("document.body.style.cursor = 'wait'", 10);
     if (useVMLRenderer && (!(IEWarned))) {
@@ -881,18 +901,11 @@ function boundaryLoadstart() {
     }
 
     document.body.style.cursor = 'wait';
-    // var theCursor = 
-    // document.layers ? document.cursor :
-    // document.all ? document.all.cursor :
-    // document.getElementById ? document.getElementById('cursor') : null;
-    // theCursor='wait';
-    //OpenLayers.Element.addClass(this, "olCursorWait"); 
 }
 
+//set timeout for boundaries display
 function boundaryLoadend() {
-    //alert(document.body.style.cursor);
     setTimeout("document.body.style.cursor = 'default'", 50);
-    //document.body.style.cursor='default';
 }
 
 // Display/remove boundaries
@@ -922,7 +935,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=geoserverkey",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -953,7 +966,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=geoserverkey",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -984,7 +997,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=geoserverkey",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1015,7 +1028,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=geoserverkey",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1045,18 +1058,18 @@ function removeBoundaries() {
         boundarypopup.hide();
     }
     boundaryLayer = undefined;
-    map.removeControl(navigationControl);
+
+    //switch back to default navigation
+    boundsNavigationControl.deactivate();
+    navigationControl.activate();
 }
 
-//boundaryHovering function rollbacked for
-//bounding box change request
+// Display name when hovering cursor over boundaries
 function boundaryHovering() {
     var report = function (e) {
-
             // Add navigation to re-enable panning
-            map.addControl(navigationControl);
-
-
+            navigationControl.deactivate();
+            boundsNavigationControl.activate();
             var boundaryname = "" + e.feature.attributes.NAME;
             if (boundaryname.length != 0) {
                 if (boundarynamebuffer == undefined || boundaryname != boundarynamebuffer) {
@@ -1064,13 +1077,10 @@ function boundaryHovering() {
                     if (boundarypopup != undefined) {
                         boundarypopup.destroy();
                     }
-
                     // add a popup
                     var positionCursor = cursorposition.lastXy;
                     if (positionCursor != null || (cursorXp != null && cursorYp != null)) {
                         var centroid = e.feature.geometry.getCentroid();
-
-
                         // Removed (B) from the tooltip display
                         var index = boundaryname.indexOf("(B)");
                         if (index != -1) {
@@ -1088,7 +1098,6 @@ function boundaryHovering() {
                         map.addPopup(boundarypopup);
                         reportoffexecuted = false;
                     }
-
                     boundarynamebuffer = boundaryname;
                 } else {
                     if (reportoffexecuted) {
@@ -1099,17 +1108,12 @@ function boundaryHovering() {
                 }
             }
         };
-
     var reportoff = function (e) {
-            // Add navigation to re-enable panning
-            map.addControl(navigationControl);
-
             if (boundarypopup != undefined) {
                 boundarypopup.hide();
                 reportoffexecuted = true;
             }
         };
-
     // Hovering over the boundary will display the name of the boundary in the DIV
     selectHover = new OpenLayers.Control.SelectFeature(boundaryLayer, {
         hover: true,

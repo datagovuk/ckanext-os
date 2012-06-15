@@ -2,9 +2,9 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
-        <base href="http://vmlin74/inspire/2_3_1_3/"/>
+        <base href="http://vmlin74/inspire/2_4_0_2/"/>
     	 <title>UK Location Programme</title>
-        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <meta http-equiv="Content-Script-Type" content="text/html;charset=utf-8" />
         <meta name="DC.subject" scheme="eGMS.IPSV" content="Civil Service"/>
         <meta name="eGMS.accessibility" scheme="eGMS.WCAG10" content="Double-A" />
         <meta name="DC.coverage" content="GB" />
@@ -15,7 +15,7 @@
         <meta name="DC.date" scheme="DCTERMS.W3CDTF" content="2011-04-15" />
         <meta name="description" content="The UK Location Information Infrastructure (UKLII) enables users to search for metadata records using a number of criteria. This is the location component of that service allowing users to search for and is provided by Ordnance Survey." />
         <meta name="keywords" content="ordnance survey,os,uk location programme" />
-        <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://vmlin74/inspire/2_3_1_3/" />
+        <meta name="DC.identifier" scheme="DCTERMS.URI" content="http://vmlin74/inspire/2_4_0_2/" />
         <!-- TO DO: Add final URL -->
         <meta name="copyright" content="Ordnance Survey 2012" />
 		<!-- Do not change the order of CSS declaration as it cuase styling issues-->
@@ -71,7 +71,7 @@
                     	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
 			
 						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" />
-					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
+					  	<label for="buttonSearchID"><span class="offScreen">Search results</span></label>
 		  	
 					  	<div id="gazContainer">
 						</div>
@@ -97,11 +97,12 @@
 							
 							<p>Find data for selected area</p>
 							
-							<input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
+							<input type="submit" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" />
 			
 					</fieldset>
             </form>
-                       <div style=.clear:left; height:30px;.>&#160;</div>
+			
+			<div id="IE7Aligner"></div>
 			<div id="mapwrapper">
 				<div id="mappanel"></div>
 			</div>

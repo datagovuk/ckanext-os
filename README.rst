@@ -33,6 +33,7 @@ To configure the servers used in the widgets, put the following lines in your ck
  ckanext-os.gazetteer.host = osinspiremappingprod.ordnancesurvey.co.uk
  ckanext-os.libraries.host = osinspiremappingprod.ordnancesurvey.co.uk
  ckanext-os.tiles.url = http://osinspiremappingprod.ordnancesurvey.co.uk/geoserver/gwc/service/wms
+ ckanext-os.wms.url = /geoserver/wms
  ckanext-os.wfs.url = /geoserver/wfs
  ckanext-os.geoserver.apikey = 
 

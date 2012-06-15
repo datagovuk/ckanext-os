@@ -1,10 +1,10 @@
 /*
 * Global style sheet for search.
 * 
-* @author			: Toni Ruckwood
-* @version			: 1.0.6 
+* @author			: Toni Ruckwood, Darryl Alexander
+* @version			: 2.4.0.2
 * @create date		: 15 Apr 2011
-* @modified date	: 23 Aug 2011
+* @modified date	: 27 Apr 2012
 */
 
 /*Global reset*/
@@ -13,7 +13,12 @@
 	margin: 0;
 	padding: 0;
 }
-*/
+
+/*Failed images to be hidden rather than to be shown as pink */	
+.olImageLoadError { 
+    visibility: hidden; 
+	display: none; 
+}
 
 /*Set main page properties and centre page*/
 /*
@@ -163,6 +168,26 @@ div.olMousePosition{
 right: 3px;
 padding: 5px;     
 }
+
+div.olControlAttribution {
+pointer-events: none;
+}
+div.olControlAttribution a {
+pointer-events: auto;
+}
+div.olControlScaleLine {
+pointer-events: none;
+}
+div.olControlScaleLine a {
+pointer-events: auto;
+}
+div.olControlMousePosition {
+pointer-events: none;
+}
+div.olControlMousePosition a {
+pointer-events: auto;
+}
+
 em{
     font-style: italic;
     font-weight: normal;	
@@ -184,4 +209,100 @@ padding: 1px;
 
 div.olPopup {
 padding: 3px;
+}
+
+/*Styling for map history buttons; previous, next and fullExtent. All the below 
+OpenLayers control styles overwrites style.css (default ol style sheet)*/
+.previousButtonItemInactive {
+	top: 5px;
+	left: 5px;
+	position: absolute;
+	background: url('resources/previous.png');
+	width: 24px;
+	height: 22px;
+}
+
+.nextButtonItemInactive {
+	top: 5px;
+	left: 53px;
+	position: absolute;
+	background: url('resources/next.png');
+	width: 24px;
+	height: 22px;
+}
+
+.fullExtentButtonItemInactive {
+	top: 5px;
+	left: 29px;
+	position: absolute;
+	background: url('resources/full-extent.png');
+	width: 24px;
+	height: 22px;
+}
+
+/*Styling for Control panel that contains the map history buttons*/
+.olControlPanel {
+	width: 0px;
+	height: 0px;
+}
+
+/*Styling for Overview Map Container*/
+.olControlOverviewMapContainer {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+	height:0px;
+}
+
+/*Styling for overview Map*/
+.olControlOverviewMap {
+	background: none;
+	border: none;
+	padding: none;
+	top: 0px;
+	right: 0px;
+	height: 0px;
+}
+
+/*Styling for Overview Map*/		
+.olControlOverviewMapElement {
+	background: none !important;
+	border: none;
+	top: 0px;
+	right: 0px;
+	height: 0px;
+}
+
+/*Styling for Overview Map Minimize Button*/
+.olControlOverviewMapMinimizeButton {
+	height: 18px;
+    width: 18px;
+    right: 0px;
+	top: 10px;
+    cursor: pointer;
+	background: url('resources/minus.png');
+	background-color: none;
+}
+.olControlOverviewMapMinimizeButton > img {
+    display: none;
+}
+/*Styling for Overview Map Maximize Button*/
+.olControlOverviewMapMaximizeButton {
+    height: 18px;
+    width: 18px;
+    right: 0;
+	top: 10px;
+    cursor: pointer;
+	background: url('resources/plus.png');
+	background-color: none;
+}
+.olControlOverviewMapMaximizeButton > img {
+    display: none;
+}
+
+/*Styling for border around map and overview map*/
+.olControlOverviewMapElement > .olMap {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #99BBE8;  
 }

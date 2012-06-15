@@ -23,6 +23,7 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
+WMS_URL_CKAN = config.get('ckanext-os.wms.url', '/geoserver/wms')
 WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
 
 # API Key is provided to the javascript to make calls. The proxy passes
@@ -100,12 +101,13 @@ class Proxy(BaseController):
         /geoserver/gwc/service/wms - OS base map tiles (via GeoWebCache) (for Search & Preview)
                                      NB Tile requests appear to go direct to that server
                                         (not via this proxy)
+        /geoserver/wms - Web Map Service (map images) (for Overview map)
         /geoserver/wfs - Boundaries info (for Search)
         '''
         key = request.params.get('key')
         loggable_key = (key[:2] + 'xxx') if key else None
         log.debug('Geoserver proxy for url_suffix=%r key=%r', url_suffix, loggable_key)
-        if url_suffix not in ('gwc/service/wms', 'wfs'):
+        if url_suffix not in ('gwc/service/wms', 'wfs','wms'):
             response.status_int = 404
             return 'Path not proxied'
         url = 'http://%s/geoserver/%s' % \

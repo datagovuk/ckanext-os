@@ -168,6 +168,17 @@ display: none;
     width: 16px;
 }
 
+.gx-activelayer-drag-icon {
+    background: url('resources/drag.png') no-repeat !important;
+    width: 16px !important;
+    height: 16px !important;
+	/* margin: 0 !important;
+    background-image: url('resources/drag.png') !important;
+    width: 16px !important;
+    height: 16px !important;
+	*/
+}
+
 table.popup {
 	border-width: 0px;
 	border-spacing: 0px;
@@ -193,5 +204,97 @@ table.popup td {
 	-moz-border-radius: ;
 }
 
+.gx-zoomslider {
+    /* top: 90px;
+    left: 17px; 
+	x: 44px;
+	y: 45px;*/
+}
 
+/*Styling for map history buttons; previous, next and fullExtent*/
+.previousButtonItemInactive {
+	top: 5px;
+	left: 5px;
+	position: absolute;
+	background: url('resources/previous.png');
+	width: 24px;
+	height: 22px;
+}
+		
+.nextButtonItemInactive {
+	top: 5px;
+	left: 57px;
+	position: absolute;
+	background: url('resources/next.png');
+	width: 24px;
+	height: 22px;
+}
 
+.fullExtentButtonItemInactive {
+	top: 5px;
+	left: 31px;
+	position: absolute;
+	background: url('resources/full-extent.png');
+	width: 24px;
+	height: 22px;
+}
+
+/*Styling for Control panel that contains the map history buttons
+NOTE: if more controls are added this will need to be made larger and
+the map panel for the zoom slider will need to be moved if panels overlap
+(zoom slider will disappear).*/
+.olControlPanel {
+	width: 80px;
+	height: 30px;
+}
+
+/*Styling for Overview Map Container*/
+.olControlOverviewMapContainer {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height:0px;
+}
+
+/*Styling for overview Map*/
+.olControlOverviewMap {
+      background: none;
+      border: none;
+      padding: none;
+      right: 0px;
+      height: 0px;
+}
+ 
+/*Styling for Overview Map*/        
+.olControlOverviewMapElement {
+      background: none !important;
+      border: none;
+      top: 0px;
+      right: 0px;
+      height: 0px;
+}
+
+/*Styling for Overview Map Minimize Button*/
+.olControlOverviewMapMinimizeButton{
+	height: 18px;
+	width: 18px;
+	right: 0;
+	top: 10px;
+	cursor: pointer;
+	background-color: none;
+}
+
+/*Styling for Overview Map Maximize Button*/
+.olControlOverviewMapMaximizeButton {
+	height: 18px;
+	width: 18px;
+	right: 0;
+	top: 10px;
+	cursor: pointer;
+	background-color: none;
+}
+.olMap {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #99BBE8;	
+}

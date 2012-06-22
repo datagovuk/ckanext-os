@@ -9,9 +9,9 @@ import logging
 from pylons import session as pylons_session
 from pylons import config
 
-from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render
+from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect
 from ckan import model
-from ckan.lib.helpers import OrderedDict, json
+from ckan.lib.helpers import OrderedDict, json, url_for
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +43,33 @@ class SearchWidget(BaseController):
 
 class PreviewWidget(BaseController):
     def index(self):
+
+        # Avoid duplicate URLs for the same service
+        # (Only if it has not been checked before)
+        if not request.params.get('checked',False):
+            urls = request.params.getall('url')
+            checked_urls = []
+            for url in urls:
+                base_url = url.split('?')[0] if '?' in url else url
+                if not base_url in checked_urls:
+                    checked_urls.append(base_url)
+
+            if len(checked_urls) < len(urls):
+                # Redirect to the same endpoint with the correct URLs
+                # and the rest of params
+                offset = url_for(controller='ckanext.os.controller:PreviewWidget',action='index')
+
+                query_string = urlencode([('url',u) for u in checked_urls])
+
+                for key,value in request.params.iteritems():
+                    if key != 'url':
+                        query_string += '&' + urlencode([(key,value)])
+                query_string += '&checked=true'
+                new_url = offset + '?' + query_string
+
+                redirect(new_url)
+
+        # Render the page
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
         return render('os/map_preview.html')
 
@@ -174,10 +201,12 @@ class Proxy(BaseController):
             return 'Missing url parameter'
 
         # Check URL is in CKAN (otherwise we are an open proxy)
-        query = model.Session.query(model.Resource).filter_by(url=wms_url)
+        base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
+        query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
+
         if query.count() == 0:
             response.status_int = 403
-            return 'WMS URL not known'
+            return 'WMS URL not known: %s' % base_wms_url
 
         # Correct basic errors in the WMS URL
         try:
@@ -210,7 +239,7 @@ class Proxy(BaseController):
 
         # Check base of URL is in CKAN (otherwise we are an open proxy)
         # (the parameters get changed by the Preview widget)
-        base_wms_url = wms_url.split('?')[0]
+        base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
         query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
         if query.count() == 0:
             response.status_int = 403

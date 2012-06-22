@@ -1,14 +1,18 @@
 import os
 import urllib2
-from urllib import quote
+from urllib import quote,urlencode
+from urlparse import urlparse, parse_qs
 from urllib2 import HTTPError
 import SimpleHTTPServer
 
+from ckan.lib.helpers import url_for
+
 from nose.tools import assert_equal, assert_raises
 
-from ckanext.os.controller import GAZETTEER_HOST, MAP_TILE_HOST, Proxy, ValidationError
+from ckanext.os.controller import GAZETTEER_HOST, GEOSERVER_HOST, Proxy, ValidationError
 from ckanext.os.testtools.mock_os_server import MOCK_OS_SERVER_HOST_AND_PORT
 from ckan.tests import BaseCase
+from ckan.tests import TestController
 
 boundary_request = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="json" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="inspire:UK_Admin_Boundaries_250m_4258" srsName="EPSG:4258" xmlns:inspire="http://ordnancesurvey.co.uk/spatialdb"><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:BBOX><ogc:PropertyName>the_geom</ogc:PropertyName><gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4258"><gml:lowerCorner>-5.4529443561525 51.077000998278</gml:lowerCorner><gml:upperCorner>-0.6249563498509 53.269250249574</gml:upperCorner></gml:Envelope></ogc:BBOX></ogc:Filter></wfs:Query></wfs:GetFeature>'
 
@@ -41,7 +45,7 @@ class MockOsServerCase(BaseCase):
                 break
 
     @staticmethod
-    def _stop_server(process): 
+    def _stop_server(process):
         pid = process.pid
         pid = int(pid)
         if os.system("kill -9 %d" % pid):
@@ -68,9 +72,9 @@ class TestPreviewProxy:
             'http://host.com?request=GetCapabilities&service=WMS')
 
     def test_wms_url_correcter_bad_structure(self):
-        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+        assert_raises(ValidationError, Proxy.wms_url_correcter,
                       'http://host.com?request=')
-        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+        assert_raises(ValidationError, Proxy.wms_url_correcter,
                       'http://host.com?request=?')
 
     def test_wms_url_correcter_missing_params(self):
@@ -90,11 +94,74 @@ class TestPreviewProxy:
             'http://host.com?colour=blue&rainbow=&request=GetCapabilities&service=WMS')
 
     def test_wms_url_correcter_disallowed_values(self):
-        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+        assert_raises(ValidationError, Proxy.wms_url_correcter,
                       'http://host.com?request=DoBadThing')
-        assert_raises(ValidationError, Proxy.wms_url_correcter, 
+        assert_raises(ValidationError, Proxy.wms_url_correcter,
                       'http://host.com?service=NotWMS')
-        
+
+class TestPreviewController(TestController):
+
+    def test_preview_unique_urls(self):
+
+        offset = '/data/map-preview'
+
+        url = '%s?%s' % (
+            offset,
+            urlencode([
+                ('url','http://server1.com/wmsserver'),
+                ('url','http://server2.com/wmsserver?'),
+                ('a','1'),
+                ('b','2')
+            ])
+        )
+
+        res = self.app.get(url)
+
+        # No redirect should occur, just render the map preview template
+        assert res.status == 200
+        assert '<html' in res.body
+        assert 'Map Based Preview' in res.body
+
+    def test_preview_duplicate_urls(self):
+
+        offset = '/data/map-preview'
+
+        url = '%s?%s' % (
+            offset,
+            urlencode([
+                ('url','http://server1.com/wmsserver'),
+                ('url','http://server1.com/wmsserver?request=GetCapabilities'),
+                ('url','http://server1.com/wmsserver?'),
+                ('a','1'),
+                ('b','2')
+            ])
+        )
+
+        res = self.app.get(url)
+
+        # The response should be a redirect, with the Location header showing
+        # only one of the urls, the rest of the params and the 'checked' parameter
+        assert res.status == 302
+
+        new_url = res.header('Location')
+
+        assert new_url
+
+        parts = urlparse(new_url)
+        params = parse_qs(parts.query)
+
+        assert params['url'] and len(params['url']) == 1
+        assert 'a' in params and params['a'] == ['1']
+        assert 'b' in params and params['b'] == ['2']
+        assert 'checked' in params and params['checked'] == ['true']
+
+        # The new url should not redirect
+        res = self.app.get(new_url)
+        assert res.status == 200
+        assert '<html' in res.body
+        assert 'Map Based Preview' in res.body
+
+
 
 class OsServerCase:
     def test_gazetteer_proxy(self):
@@ -137,7 +204,7 @@ class OsServerCase:
 ''', response)
 
     def test_gazetteer_postcode_proxy_bad_space(self):
-        q = 'EH99 1SP' 
+        q = 'EH99 1SP'
         url = 'http://%s/InspireGaz/postcode?q=%s' % \
               (self.gazetteer_host, q) # NB: Not quoted - space remains
         exc = None
@@ -167,7 +234,7 @@ class OsServerCase:
 
 class TestExternalOsServers(OsServerCase):
     gazetteer_host = GAZETTEER_HOST
-    map_tile_host = MAP_TILE_HOST
+    map_tile_host = GEOSERVER_HOST
 
 class TestMockOsServers(OsServerCase, MockOsServerCase):
     gazetteer_host = MOCK_OS_SERVER_HOST_AND_PORT

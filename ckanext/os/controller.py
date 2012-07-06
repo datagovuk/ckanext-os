@@ -22,9 +22,14 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # was 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com' # Not '46.137.180.108'
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
+
+# Tiles and WMS can be accessed directly from the OS servers because
+# they are images (you still need to provide an API key). WFS is used
+# for displaying the boundaries and needs to be queried via the local
+# proxy (they are json or xml payloads)
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
 WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
-WFS_URL_CKAN = config.get('ckanext-os.wfs.url', 'http://%s/geoserver/wfs' % GEOSERVER_HOST)
+WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
 
 # API Key is provided to the javascript to make calls. The proxy passes
 # on the key from the javascript, to show the caller is authorized.

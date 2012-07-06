@@ -1257,7 +1257,7 @@ Ext.onReady(function(){
     }); 
         
     // overview layer
-    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", "http://46.137.172.224/geoserver/wms?key=0822e7b98adf11e1a66e183da21c99ac", {
+    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", CKANEXT_OS_WMS_URL, {
         LAYERS: 'sea_dtm,overview_layers',
         STYLES: '',
         format: 'image/png',

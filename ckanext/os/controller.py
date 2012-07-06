@@ -23,14 +23,15 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
-WMS_URL_CKAN = config.get('ckanext-os.wms.url', '/geoserver/wms')
-WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
+WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
+WFS_URL_CKAN = config.get('ckanext-os.wfs.url', 'http://%s/geoserver/wfs' % GEOSERVER_HOST)
 
 # API Key is provided to the javascript to make calls. The proxy passes
 # on the key from the javascript, to show the caller is authorized.
 api_key = config.get('ckanext-os.geoserver.apikey', '')
 if api_key:
     TILES_URL_CKAN += '?key=%s' % quote(api_key)
+    WMS_URL_CKAN += '?key=%s' % quote(api_key)
     WFS_URL_CKAN += '?key=%s' % quote(api_key)
 
 class ValidationError(Exception):
@@ -39,6 +40,9 @@ class ValidationError(Exception):
 class SearchWidget(BaseController):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        c.tiles_url_ckan = TILES_URL_CKAN
+        c.wms_url_ckan = WMS_URL_CKAN       
+        c.wfs_url_ckan = WFS_URL_CKAN
         return render('os/map_search.html')
 
 class PreviewWidget(BaseController):
@@ -71,6 +75,10 @@ class PreviewWidget(BaseController):
 
         # Render the page
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        c.tiles_url_ckan = TILES_URL_CKAN
+        c.wms_url_ckan = WMS_URL_CKAN       
+        c.wfs_url_ckan = WFS_URL_CKAN
+
         return render('os/map_preview.html')
 
 class Proxy(BaseController):

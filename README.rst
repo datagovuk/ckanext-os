@@ -58,7 +58,11 @@ In an HTML template the list can be accessed as: ``${session.get('preview_list',
 Tests
 =====
 
+For the OS server tests you need to provide this option in your development.ini:
+
+    ckanext-os.test.prod-apikey = <key>
+
 Run the tests like this::
 
- nosetests --ckan pyenv/src/ckanext-os/ckanext/os/tests/
+ nosetests --ckan --with-pylons=ckanext-os/test-core.ini ckanext-os/ckanext/os/tests/
 

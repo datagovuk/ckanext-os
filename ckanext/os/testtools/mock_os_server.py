@@ -9,6 +9,7 @@ MOCK_OS_SERVER_PORT = 8051
 MOCK_OS_SERVER_HOST = 'localhost'
 MOCK_OS_SERVER_HOST_AND_PORT = '%s:%s' % (MOCK_OS_SERVER_HOST,
                                           MOCK_OS_SERVER_PORT)
+MOCK_API_KEY = 'testapikey'
 
 def get_mock_os_server_config():
     return {
@@ -91,6 +92,10 @@ class MockOsServerProcess(object):
             def do_POST(self):
                 path, param_dict = self.parse_path()
                 #data = 
+
+                if 'apikey' not in param_dict or \
+                   param_dict['apikey'] != MOCK_API_KEY:
+                    self.send_error(403)
                 
                 # 'http://%s/geoserver/wfs'
                 if path == '/geoserver/wfs':

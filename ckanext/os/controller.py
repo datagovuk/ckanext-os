@@ -2,8 +2,7 @@ import os
 import re
 import urllib2
 from urllib2 import HTTPError, URLError
-from urllib import quote
-from urllib import urlencode
+from urllib import quote, urlencode
 import logging
 
 from pylons import session as pylons_session
@@ -23,16 +22,17 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 
-# Tiles and WMS can be accessed directly from the OS servers because
-# they are images (you still need to provide an API key). WFS is used
-# for displaying the boundaries and needs to be queried via the local
-# proxy (they are json or xml payloads)
+# Tiles and Overview WMS are accessed directly from the OS servers. 
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
 WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
+# WFS is used for displaying the boundaries. Requests are sent via the local
+# proxy to the OS servers. The proxy is needed to overcome the 'common origin'
+# javascript restriction - they are json or xml payloads whereas there is no
+# such restriction for the images in the tiles/WMS.
 WFS_URL_CKAN = config.get('ckanext-os.wfs.url', '/geoserver/wfs')
 
-# API Key is provided to the javascript to make calls. The proxy passes
-# on the key from the javascript, to show the caller is authorized.
+# API Key is provided to the javascript to make calls. If requests go via
+# the proxy then that passes through the API Key with the request.
 api_key = config.get('ckanext-os.geoserver.apikey', '')
 if api_key:
     TILES_URL_CKAN += '?key=%s' % quote(api_key)
@@ -52,28 +52,23 @@ class SearchWidget(BaseController):
 
 class PreviewWidget(BaseController):
     def index(self):
-
-        # Avoid duplicate URLs for the same service
+        # Avoid duplicate URLs for the same WMS service
         # (Only if it has not been checked before)
-        if not request.params.get('checked',False):
+        if not request.params.get('deduped', False):
             urls = request.params.getall('url')
-            checked_urls = []
-            for url in urls:
-                base_url = url.split('?')[0] if '?' in url else url
-                if not base_url in checked_urls:
-                    checked_urls.append(base_url)
+            deduped_urls = set(urls)
 
-            if len(checked_urls) < len(urls):
-                # Redirect to the same endpoint with the correct URLs
-                # and the rest of params
+            if len(deduped_urls) < len(urls):
+                # Redirect to the same location, but with the deduplicated
+                # URLs.
                 offset = url_for(controller='ckanext.os.controller:PreviewWidget',action='index')
 
-                query_string = urlencode([('url',u) for u in checked_urls])
+                query_string = urlencode([('url', u) for u in deduped_urls])
 
                 for key,value in request.params.iteritems():
                     if key != 'url':
-                        query_string += '&' + urlencode([(key,value)])
-                query_string += '&checked=true'
+                        query_string += '&' + urlencode([(key, value)])
+                query_string += '&deduped=true'
                 new_url = offset + '?' + query_string
 
                 redirect(new_url)
@@ -215,7 +210,7 @@ class Proxy(BaseController):
 
         # Check URL is in CKAN (otherwise we are an open proxy)
         base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
-        query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
+        query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url + '%'))
 
         if query.count() == 0:
             response.status_int = 403

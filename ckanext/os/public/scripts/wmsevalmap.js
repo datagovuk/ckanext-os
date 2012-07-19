@@ -1,7 +1,7 @@
 // Name             : wmsevalmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP evaluation map widget (evalmapwms.htm)
 // Author           : Peter Cotroneo, Ordnance Survey, Andrew Bailey (C)
-// Version          : 2.4.0.2
+// Version          : 2.4.0.5
 // Notes            : This version does not turn layers off automatically after receiving an image load error
 //                  : On deployment: change UKLP_HELP_DOCUMENTATION to suit DGU href
 
@@ -24,6 +24,7 @@ var paramsParsed;                               // object that holds bounding bo
 var copyrightStatements;                        // string to store OS & Gebco copyright statements
 var previousZoom = 0;                           // integer holding previous zoom (used by map.zoomstart/zoomend)
 var baseMappingPreferenceLargeScales = true;    // boolean holding preference for base mapping enablement
+var unqueryables;
 
 /*
  * Projection definitions
@@ -694,8 +695,8 @@ Ext.onReady(function(){
                 zoom = this.map.getZoomForResolution(state.resolution);
                 center = state.center;
                 this.map.setCenter(center, zoom);
-                console.log("from: " + this.map.getCenter().toString() + " : " + this.map.getProjectionObject().getCode());
-                console.log("to: " + center.toString() + " : same projection");
+                //console.log("from: " + this.map.getCenter().toString() + " : " + this.map.getProjectionObject().getCode());
+                //console.log("to: " + center.toString() + " : same projection");
             } else {
                 currentProj = this.map.getProjectionObject();
                 var triggerMoveEnd = false;
@@ -1241,7 +1242,7 @@ Ext.onReady(function(){
                         combo.setValue("Irish Transverse Mercator");                    
                         break;
                     default:
-                        console.log("oops");
+                        //console.log("oops");
                 }
             } 
         }
@@ -1461,8 +1462,53 @@ Ext.onReady(function(){
         },
         eventListeners: {
             
+            beforegetfeatureinfo: function(e) {
+                // to stop sending getFeatureInfo requests to WMS layers that are not queryable
+                // we have to run through each layer, if it is queryable then add it to the list
+                // to be queried. Also add the layer's url to the url list.
+                        
+                // also need to build url (string) and layerUrls (array string)
+                unqueryables = new Array();
+                // empty the layerUrls & layers array
+                this.layerUrls.length = 0;
+                this.layers.length = 0;
+                this.url = "";
+                
+                // loop through map.layers ignoring base layers and top layer (boxes)
+                for (var i = 1, len = this.map.layers.length; i < (len -1); i++) {
+                    if (this.map.layers[i].queryable) {
+                        //console.log("queryable: " + this.map.layers[i].name);
+                        this.layers.push(this.map.layers[i]);
+                        var layerUrlIsPresent = false;
+                        for (var j = 0; j < this.layerUrls.length; j++) {
+                            if (this.map.layers[i].url == this.layerUrls[j]) {
+                                layerUrlIsPresent = true;
+                            }
+                        }
+                        if (!(layerUrlIsPresent)) {
+                            this.layerUrls.push(this.map.layers[i].url);
+                        }                        
+                    } else {
+                        //console.log("not queryable: " + this.map.layers[i].name);
+                        unqueryables.push(this.map.layers[i].name);
+                    }                    
+                }
+                if (this.layerUrls.length > 0) {
+                    this.url = this.layerUrls[0];
+                }
+            },
+
             nogetfeatureinfo: function(e) {
+                if (unqueryables.length != 0) {
+                    // no features to display, layers that have been selected are unqueryable
+                    if (unqueryables.length > 1) {
+                        Ext.MessageBox.alert('Feature Information', 'The selected layers do not support information retrieval.','');            
+                    } else {
+                        Ext.MessageBox.alert('Feature Information', 'The selected layer does not support information retrieval.','');            
+                    }
+                } else {
                 Ext.MessageBox.alert('Feature Information', 'A layer must be selected before information can be retrieved.', '');           
+                }
             },
             
             getfeatureinfo: function(e) {
@@ -1588,6 +1634,28 @@ Ext.onReady(function(){
                 // the following provides the bottom-left latlon point for the popup. no idea why it doesn't need -((popUpWidth/2)*mapPanel.map.getResolution()) on the lat but it works.
                 var popUpAnchor = new OpenLayers.LonLat((mapCentre.lon),(mapCentre.lat-((popUpHeight/2)*mapPanel.map.getResolution())));
                 
+                // check for any returns
+                if (items.length == 0) {
+                    // add No Features returned message
+                    items.push({
+                        xtype: "panel",
+                        title: "Feature Information",
+                        html: "No features found.",
+                        autoScroll: true
+                    });
+                }
+                
+                // check for any non-queryable layers
+                if (unqueryables.length != 0) {
+                    // non-queryable layers were skipped, tell user
+                    items.push({
+                        xtype: "panel",
+                        title: "Non-queryable Layers",
+                        html: ("The following layer(s) do not support information retrieval: " + unqueryables.toString()),
+                        autoScroll: true
+                    });                    
+                }
+
                 popup = new Ext.Window({
                     id: 'popup',
                     title: "Feature Information",
@@ -1605,14 +1673,14 @@ Ext.onReady(function(){
                     items: items
                 });
                 
-                if (items.length == 0)
-                {
-                    popup.html = 'No features found.'; 
-                    popup.minWidth = 400;
-                    popup.width = 400;
-                    popup.minHeight = 300;
-                    popup.height = 300;
-                }
+                //if (items.length == 0)
+                //{
+                    //popup.html = 'No features found.'; 
+                    //popup.minWidth = 400;
+                    //popup.width = 400;
+                    //popup.minHeight = 300;
+                    //popup.height = 300;
+                //}
                 
                 popup.show();
                 OpenLayers.Element.removeClass(this.map.viewPortDiv, "olCursorWait");
@@ -1950,6 +2018,7 @@ function buildUI(urls){
                     mapPanel.map.layers[mapPanel.map.getNumLayers() -2].attribution = "";
                     // force redraw (in case projection is not supported and we'd like to see the warning message)
                     mapPanel.map.layers[mapPanel.map.getNumLayers() -2].clearGrid();
+                    // redraw is causing some legend titles to be dropped
                     mapPanel.map.layers[mapPanel.map.getNumLayers() -2].redraw(true);
                     // add listener for tileerror event
                     mapPanel.map.layers[mapPanel.map.getNumLayers() -2].events.register("tileerror", this, function(e) {
@@ -1961,9 +2030,7 @@ function buildUI(urls){
                             }
                         }                           
                     }); 
-                    //var layerName = node.attributes.layer.name;
                 } else {                    
-                    //console.log("index:" + mapPanel.map.getLayerIndex(node.attributes.layer.data.layer));
                     mapPanel.map.layers[mapPanel.map.getLayerIndex(node.attributes.layer.data.layer)].events.triggerEvent("loadend");   
                     mapPanel.layers.remove(node.attributes.layer);      
                 }
@@ -2567,7 +2634,8 @@ function buildUI(urls){
         defaults: {
             style: 'padding:5px',
             baseParams: {
-                FORMAT: 'image/png',
+                //format: 'image/png',
+                //LEGEND_OPTIONS: 'forceLabels:on', - geoserver only
                 width: 600   
             }        
         },
@@ -2595,7 +2663,7 @@ function buildUI(urls){
         key : Ext.EventObject.ENTER,
         scope: this,
         fn : function() {
-            console.log("activeElement:" + document.activeElement);        
+            //console.log("activeElement:" + document.activeElement);        
         }
     });
     
@@ -2907,10 +2975,16 @@ function StringtoXML(text){
 
 function featuresAttributestoHTMLTable(feature){
     var returnedTable = '<table class="popup">';
-    
+    var bolFeatureHasAttributes = false;
     for(var prop in feature.attributes) {
         if(feature.attributes.hasOwnProperty(prop))
             returnedTable += "<tr><td>" + prop + "</td><td>" + feature.attributes[prop] + "</td></tr>";
+        bolFeatureHasAttributes = true;
+    }
+    if (!(bolFeatureHasAttributes))
+    {
+        returnedTable += "<td>Data not supplied</td>";
+
     }
 
     // this doesn't work in IE7-9 :-/

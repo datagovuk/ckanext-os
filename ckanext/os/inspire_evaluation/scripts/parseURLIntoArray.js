@@ -28,7 +28,22 @@ function ParamParser(){
 		if ((keyval[0] == "cbxExceptions") && (keyval[1].length > 0))
 			this.exceptions = decodeURIComponent(keyval[1]);
     }
-	
+    
+    // delete any repeated URLs
+    var j;
+    var len=this.urls.length;
+    var out=[];
+    var obj={};
+
+    for (j=0;j<len;j++) {
+        if (!obj[this.urls[j]])
+        {
+            obj[this.urls[j]]={};
+            out.push(this.urls[j]);
+        }
+    }
+    this.urls = out;
+
     this.getBBox = function(){
         return {
             "eastBndLon": this.eastBndLon,

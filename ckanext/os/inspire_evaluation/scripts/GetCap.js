@@ -46,7 +46,9 @@ os.WMSCapabilitiesLoader = Ext.extend(GeoExt.tree.WMSCapabilitiesLoader,{
 			this.hasLayers = true;		
 			this.capabilitiesStore = new GeoExt.data.WMSCapabilitiesStore({data:capabilities});
         	
-			var infoFormatsArr = capabilities.capability.request.getfeatureinfo.formats;
+			// change requested by PC, implemented by AB
+			var infoFormatsArr = (capabilities.capability.request.getfeatureinfo) ? capabilities.capability.request.getfeatureinfo.formats : [];
+			// var infoFormatsArr = capabilities.capability.request.getfeatureinfo.formats;
 			var exceptionFormatsArr = capabilities.capability.exception.formats;			
 			
 			// choose preferred info_format

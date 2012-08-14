@@ -122,7 +122,7 @@ class Proxy(BaseController):
             if 'Connection timed out' in err:
                 response.status_int = 504
                 return 'Proxied server timed-out: %s' % err
-            log.error('Proxy URL error. URL: %r Error: %s', url, s)
+            log.error('Proxy URL error. URL: %r Error: %s', url, err)
             raise e # Send an exception email to handle it better
         res = f.read()
         log.debug('Proxy reponse %s: %s', f.code, res[:100])

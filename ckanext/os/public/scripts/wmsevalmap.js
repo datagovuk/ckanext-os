@@ -2707,7 +2707,7 @@ function buildUI(urls){
         // ])  
         // ,renderTo: 'info'
         ,style: 'font-family: Arial; font-size: 13px'        
-        ,html: "<a href=\"/doc/map-preview\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>"
+        ,html: "<a href=\"/location/preview-on-map\" target=\"_blank\" title=\"Open Help Window\">Need help getting started?</a><br><br>"
         +"Please note:<br><br>"
         +"<b>&#149;</b> Where a rotating circle remains in the WMS Layers window, this indicates that the service is still waiting for a response from that publisher's WMS. This is due to their server not being available or to network problems.<br>"
         +"<b>&#149;</b> Backdrop mapping is available at zoom levels up to the scale of 1:10 000. Additional zoom levels without backdrop mapping are provided to enable viewing of large scale data.<br>"
@@ -2717,7 +2717,7 @@ function buildUI(urls){
         +"<b>&#149;</b> To view feature information about the data layers being displayed, position the mouse cursor over the point of interest and click the left button once. A pop-up window will be displayed containing information about features within each layer at that point. If no information is returned, this could be due to there being no features at the point of interest, no support for feature information by the publisher's WMS or a format returned by the WMS which is not supported by the Preview on Map tool. <br>"
         +"<b>&#149;</b> All the backdrop mapping displayed in this window is derived from small scale data and is intended to aid evaluation of selected data sets only. It should not be used to assess their positional accuracy. <br>"
         +"<b>&#149;</b> Users of Internet Explorer  and Opera will find the map pan tool doesn't work in the copyright section. This is a known issue with the mapping framework. A fix will be provided in a future release. <br>" 
-        +'<b>&#149;</b> Further advice and guidance on all of these notes is provided in the <a href="/doc/map-preview">Preview on Map User Guide</a>.<br>'    
+        +'<b>&#149;</b> Further advice and guidance on all of these notes is provided in the <a href="/location/preview-on-map">Preview on Map User Guide</a>.<br>'    
     });
         
     // Create a panel for Layers, Legend and Information

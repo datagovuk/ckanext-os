@@ -122,6 +122,9 @@ class Proxy(BaseController):
             if 'Connection timed out' in err:
                 response.status_int = 504
                 return 'Proxied server timed-out: %s' % err
+            if 'Name or service not known' in err:
+                response.status_int = 400
+                return 'Host name in URL not known: %s' % url
             log.error('Proxy URL error. URL: %r Error: %s', url, err)
             raise e # Send an exception email to handle it better
         res = f.read()

@@ -70,15 +70,17 @@
                     </p>
                 </div>
                 	
+                <p id="helplink"><a href="/location/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
                 <h1>Map Based Search</h1>
 
             	<form id="searchForm" action="/dataset" method="post">
             	
-                    <p id="helplink"><a href="/location/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
+                <div class="clearfix"></div>
             <div class="row">
               <div class="span6">
                     <fieldset id="fieldset1" class="boxed">
 	                    <h2>Step 1 (Optional)</h2>
+                            <hr/>
 	                    
 	                    <p>Locate area of interest</p>
 	                    <p><strong>Example:</strong> <em>London or EH99 1SP or 54.58, -5.93</em></p>
@@ -98,7 +100,8 @@
               <div class="span3">
                     <fieldset id="fieldset2" class="boxed">
                             <h2>Step 2</h2>
-				
+                            <hr/>
+
                             <p>Draw search area &nbsp;<a href="#" class="htmltooltip" data-content="When drawing a search box, if the cursor touches the map frame then the box will disappear.  Please redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
 				
                             <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary button"/>
@@ -114,6 +117,7 @@
               <div class="span3">	
                     <fieldset id="fieldset3" class="boxed">
                         <h2>Step 3</h2>
+                        <hr/>
 							
                         <p>Find data for selected area</p>
 							

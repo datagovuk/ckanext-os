@@ -1,15 +1,19 @@
 /* CSS for the search widget for when integrated into CKAN */
 
 body.SearchWidget h1 {
-  font-size: 32px;
+  font-size: 24px;
+  line-height: 30px;
+  margin-bottom: 10px;
 }
 
 fieldset h2 {
   font-size: 16px;
   line-height: 23px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid #ccc;
+  margin-bottom: 4px;
   display: block;
+}
+fieldset.boxed hr {
+  margin: 2px 0 6px;
 }
 
 legend { 

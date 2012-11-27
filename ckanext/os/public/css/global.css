@@ -40,7 +40,6 @@ P {
 /*Main page container*/
 #wrapper {
 	width: 940px;
-	margin: 10px auto;
 	text-align: left;
 }
 
@@ -55,7 +54,7 @@ P {
 
 /*Help link*/
 #helplink {
-	text-align: right;
+	float: right;
 }
 
 #searchForm FIELDSET {

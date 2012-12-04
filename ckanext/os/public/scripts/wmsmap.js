@@ -1037,7 +1037,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: thickFeatureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1096,7 +1096,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: thickFeatureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1155,7 +1155,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: thickFeatureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",

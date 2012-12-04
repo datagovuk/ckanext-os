@@ -1,12 +1,13 @@
 // Name				: wmsmap.js 
 // Description      : JavaScript file for the INSPIRE / UKLP search map widget
-// Author			: Peter Cotroneo, Darryl Alexander, Ordnance Survey
+// Author			: Philippe Brossier, Darryl Alexander, Ordnance Survey
 // Version			: 2.4.0.2
 // ** Global variables **
 var mapPanel, map, zoombar, zoompopup, boxes, rectangle;
 var globalGazZoomType, globalGazCoords, globalGazTypes;
 var lastSelection, lastSelectedZoomLocation, lastZoomLevel;
 var boundaryLayer, defBoundaryStyle, styBoundary, styleBoundaryMap;
+var thickBoundaryLayer, defThickBoundaryStyle, styThickBoundary, styleThickBoundaryMap;
 var selectHover, boundarypopup, boundarynamebuffer, reportoffexecuted;
 var cursorXp, cursorYp, cursorposition;
 var navigationControl, keyBoardDefaultControl, boundingBoxControl, drawMode;
@@ -66,6 +67,27 @@ function getInternetExplorerVersion()
         if (re.exec(ua) != null) rv = parseFloat(RegExp.$1);
     }
     return rv;
+}
+
+function isLonLatOnViewableMap(aLonLat) {
+		thisX = aLonLat.x;
+		thisY = aLonLat.y;
+		
+		mapBounds = map.getExtent();
+		bottomX = mapBounds.left;
+		bottomY = mapBounds.bottom;
+		topX = mapBounds.right;
+		topY = mapBounds.top;
+
+		if (thisX > bottomX && thisX < topX) {
+					if (thisY > bottomY && thisY < topY) {
+							return true;
+					} else {
+							return false;
+					}
+		} else {
+				return false;
+		}
 }
 
 // all other browsers
@@ -138,7 +160,7 @@ function inspireinit() {
     copyrightStatements = "Contains Ordnance Survey data (c) Crown copyright and database right  [2012] <br>" + "Contains Royal Mail data (c) Royal Mail copyright and database right [2012]<br>" + "Contains bathymetry data by GEBCO (c) Copyright [2012]<br>" + "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
 
     // setup tiled layer
-    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", "http://46.137.172.224/geoserver/gwc/service/wms?key=c4e45b94936e11e1955d183da21c99ac", {
+    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", "http://54.247.68.59/geoserver/gwc/service/wms?key=c4e45b94936e11e1955d183da21c99ac", {
         LAYERS: 'InspireETRS89',
         STYLES: '',
         format: 'image/png',
@@ -152,7 +174,7 @@ function inspireinit() {
     });
 
     //setup overview map layer group
-    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", "http://46.137.172.224/geoserver/wms?key=c4e45b94936e11e1955d183da21c99ac", {
+    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", "http://54.247.68.59/geoserver/wms?key=c4e45b94936e11e1955d183da21c99ac", {
         LAYERS: 'sea_dtm,overview_layers',
         STYLES: '',
         format: 'image/png',
@@ -207,12 +229,28 @@ function inspireinit() {
         cursor: "pointer"
     };
     styBoundary = OpenLayers.Util.applyDefaults(defBoundaryStyle, OpenLayers.Feature.Vector.style["default"]);
-
     styleBoundaryMap = new OpenLayers.StyleMap({
         'default': styBoundary,
         'select': {
             strokeColor: "black",
             fillColor: "#FF7777"
+        }
+    });
+    
+    defThickBoundaryStyle = {
+        strokeColor: "green",
+        strokeOpacity: "0.7",
+        strokeWidth: 5,
+        fillColor: "white",
+        fillOpacity: 0.01,
+        cursor: "pointer"
+    };
+    styThickBoundary = OpenLayers.Util.applyDefaults(defThickBoundaryStyle, OpenLayers.Feature.Vector.style["default"]);
+    styleThickBoundaryMap = new OpenLayers.StyleMap({
+        'default': styThickBoundary,
+        'select': {
+            strokeColor: "green",
+            fillColor: "#05753D"
         }
     });
 
@@ -469,6 +507,7 @@ function processQuery() {
         // Perform gazetteer lookup
         gazetteer(queryText);
     }
+    
 }
 
 function recordSelection(selObj) {
@@ -542,24 +581,24 @@ function getXMLObject() {
 
 // Call Gazetteer servlet
 function gazetteer(queryText) {
-    if (xmlhttp) {
+		if (xmlhttp) {
         var url = "proxy.php?t=gz&q=" + queryText;
-        xmlhttp.open("GET", url, true);
-        xmlhttp.onreadystatechange = handleGazServerResponse;
-        xmlhttp.send(null);
+        xmlhttp.open("GET", url, false);
+        xmlhttp.send();
+        xmlhttp.onreadystatechange = handleGazServerResponse();
     }
 }
 
 // Handle response from Gazetteer servlet
 function handleGazServerResponse() {
-    // if not ready, don't do anything
-    if (xmlhttp.readyState != 4) {
-        return;
+		// if not ready, don't do anything
+   	if (xmlhttp.readyState != 4) {
+    		return;
     }
 
     // if the request was aborted, don't do anything
     if (xmlhttp.status == 0) {
-        return;
+    		return;
     }
 
     // if the request is not fully completed, pop up an error
@@ -593,7 +632,7 @@ function gazInfo(gazTxt) {
         o = document.createElement("OPTION");
         o.text = "Select place name from list";
         da.options.add(o);
-
+        
         // Build list box
         for (var i = 0; i < gazEntries_length; i++) {
             var name = gazEntries[i].getElementsByTagName("name");
@@ -894,7 +933,7 @@ function submitBox() {
 
 //set IE loading warning
 function boundaryLoadstart() {
-    //setTimeout("document.body.style.cursor = 'wait'", 10);
+		//setTimeout("document.body.style.cursor = 'wait'", 10);
     if (useVMLRenderer && (!(IEWarned))) {
         IEWarned = true;
         alert("A version of Internet Explorer older than IE9 has been detected. Administrative Areas will take some time to display in this browser, please be patient.");
@@ -905,12 +944,12 @@ function boundaryLoadstart() {
 
 //set timeout for boundaries display
 function boundaryLoadend() {
-    setTimeout("document.body.style.cursor = 'default'", 50);
+		setTimeout("document.body.style.cursor = 'default'", 50);
 }
 
 // Display/remove boundaries
 function checkBoundaries() {
-    if (boundaryLayer != null) {
+		if (boundaryLayer != null) {
         removeBoundaries();
     }
 
@@ -919,16 +958,46 @@ function checkBoundaries() {
             boundarypopup.hide();
         }
     } else {
-        var VMLLayerArray = new Array("", "", "UK_Admin_Boundaries_3000m_4258", "UK_Admin_Boundaries_600m_4258", "UK_Admin_Boundaries_250m_4258", "UK_Admin_Boundaries_50m_4258");
-        var CanvasLayerArray = new Array("", "", "UK_Admin_Boundaries_1500m_4258", "UK_Admin_Boundaries_250m_4258", "UK_Admin_Boundaries_50m_4258", "UK_Admin_Boundaries_5m_4258");
+        // this is the one used when testing in IE
+        var VMLLayerArray = new Array("", "", "ukboundaries_Z2_nogen", "ukboundaries_z3_0", "ukboundaries_Z4_nogen", "ukboundaries_Z5_131112_nogen", "UK_Admin_Thick_Boundaries_600m_4258", "UK_Admin_Thick_Boundaries_250m_4258", "UK_Boundaries_Z5_thickLine");
+        var CanvasLayerArray = new Array("", "", "ukboundaries_Z2_nogen", "ukboundaries_z3_0", "ukboundaries_Z4_nogen", "ukboundaries_Z5_131112_nogen", "UK_Admin_Thick_Boundaries_250m_4258", "UK_Admin_Thick_Boundaries_50m_4258", "UK_Boundaries_Z5_thickLine");
         var featureType;
+        var thickFeatureType;
         if (map.getZoom() == 5) {
-            if (boundaryLayer == undefined) {
-                if (useVMLRenderer) {
+        		if (boundaryLayer == undefined) {
+        				if (useVMLRenderer) {
                     featureType = VMLLayerArray[5];
+                    thickFeatureType = VMLLayerArray[8];
                 } else {
                     featureType = CanvasLayerArray[5];
+                    thickFeatureType = CanvasLayerArray[8];
                 }
+                
+                // boundary with thick lines
+                thickBoundaryLayer = new OpenLayers.Layer.Vector("Thick Boundaries", {
+                    projection: new OpenLayers.Projection("EPSG:4258"),
+                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    protocol: new OpenLayers.Protocol.WFS({
+                        version: "1.1.0",
+                        srsName: "EPSG:4258",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        featureType: thickFeatureType,
+                        featurePrefix: "inspire",
+                        featureNS: "http://ordnancesurvey.co.uk/spatialdb",
+                        outputFormat: "json",
+                        readFormat: new OpenLayers.Format.GeoJSON()
+                    }),
+                    eventListeners: {
+                        "loadstart": boundaryLoadstart,
+                        "loadend": boundaryLoadend
+                    },
+                    styleMap: styleThickBoundaryMap
+                    //,renderers: ["Canvas", "SVG", "VML"]
+                });
+                map.addLayer(thickBoundaryLayer);
+                thickBoundaryLayer.setVisibility(true);
+                
+                // boundary with districts
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
                     strategies: [new OpenLayers.Strategy.BBOX()],
@@ -951,15 +1020,43 @@ function checkBoundaries() {
                 });
                 map.addLayer(boundaryLayer);
                 boundaryLayer.setVisibility(true);
+                boundaryLayer.refresh();
                 boundaryHovering();
             }
         } else if (map.getZoom() == 4) {
             if (boundaryLayer == undefined) {
                 if (useVMLRenderer) {
                     featureType = VMLLayerArray[4];
+                    thickFeatureType = VMLLayerArray[7];
                 } else {
                     featureType = CanvasLayerArray[4];
+                    thickFeatureType = CanvasLayerArray[7];
                 }
+                // boundary with thick lines
+                thickBoundaryLayer = new OpenLayers.Layer.Vector("Thick Boundaries", {
+                    projection: new OpenLayers.Projection("EPSG:4258"),
+                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    protocol: new OpenLayers.Protocol.WFS({
+                        version: "1.1.0",
+                        srsName: "EPSG:4258",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        featureType: thickFeatureType,
+                        featurePrefix: "inspire",
+                        featureNS: "http://ordnancesurvey.co.uk/spatialdb",
+                        outputFormat: "json",
+                        readFormat: new OpenLayers.Format.GeoJSON()
+                    }),
+                    eventListeners: {
+                        "loadstart": boundaryLoadstart,
+                        "loadend": boundaryLoadend
+                    },
+                    styleMap: styleThickBoundaryMap
+                    //,renderers: ["Canvas", "SVG", "VML"]
+                });
+                map.addLayer(thickBoundaryLayer);
+                thickBoundaryLayer.setVisibility(true);
+                
+                // boundary with districts
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
                     strategies: [new OpenLayers.Strategy.BBOX()],
@@ -988,9 +1085,37 @@ function checkBoundaries() {
             if (boundaryLayer == undefined) {
                 if (useVMLRenderer) {
                     featureType = VMLLayerArray[3];
+                    thickFeatureType = VMLLayerArray[6];
                 } else {
                     featureType = CanvasLayerArray[3];
+                    thickFeatureType = CanvasLayerArray[6];
                 }
+                
+                // boundary with thick lines
+                thickBoundaryLayer = new OpenLayers.Layer.Vector("Thick Boundaries", {
+                    projection: new OpenLayers.Projection("EPSG:4258"),
+                    strategies: [new OpenLayers.Strategy.BBOX()],
+                    protocol: new OpenLayers.Protocol.WFS({
+                        version: "1.1.0",
+                        srsName: "EPSG:4258",
+                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        featureType: thickFeatureType,
+                        featurePrefix: "inspire",
+                        featureNS: "http://ordnancesurvey.co.uk/spatialdb",
+                        outputFormat: "json",
+                        readFormat: new OpenLayers.Format.GeoJSON()
+                    }),
+                    eventListeners: {
+                        "loadstart": boundaryLoadstart,
+                        "loadend": boundaryLoadend
+                    },
+                    styleMap: styleThickBoundaryMap
+                    //,renderers: ["Canvas", "SVG", "VML"]
+                });
+                map.addLayer(thickBoundaryLayer);
+                thickBoundaryLayer.setVisibility(true);
+                
+                // boundary with districts
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
                     strategies: [new OpenLayers.Strategy.BBOX()],
@@ -1013,7 +1138,7 @@ function checkBoundaries() {
                 });
                 map.addLayer(boundaryLayer);
                 boundaryLayer.setVisibility(true);
-                boundaryHovering();
+                boundaryHovering();   
             }
         } else if (map.getZoom() == 2) {
             if (boundaryLayer == undefined) {
@@ -1054,10 +1179,12 @@ function checkBoundaries() {
 // to remove boundaries
 function removeBoundaries() {
     boundaryLayer.setVisibility(false);
+    thickBoundaryLayer.setVisibility(false);
     if (boundarypopup != undefined) {
         boundarypopup.hide();
     }
     boundaryLayer = undefined;
+    thickBoundaryLayer = undefined;
 
     //switch back to default navigation
     boundsNavigationControl.deactivate();
@@ -1066,11 +1193,12 @@ function removeBoundaries() {
 
 // Display name when hovering cursor over boundaries
 function boundaryHovering() {
-    var report = function (e) {
+		var report = function (e) {
             // Add navigation to re-enable panning
             navigationControl.deactivate();
             boundsNavigationControl.activate();
-            var boundaryname = "" + e.feature.attributes.NAME;
+            var boundaryname = e.feature.attributes.NAME;
+            var boundarynameEncapsulator = e.feature.attributes.NAME_1;
             if (boundaryname.length != 0) {
                 if (boundarynamebuffer == undefined || boundaryname != boundarynamebuffer) {
                     // remove the previous popup
@@ -1086,16 +1214,37 @@ function boundaryHovering() {
                         if (index != -1) {
                             boundaryname = boundaryname.substring(0, index);
                         }
-                        boundarypopup = new OpenLayers.Popup("boundarypopup",
-                        //        e.feature.geometry.getBounds().getCenterLonLat(),                                                                        
-                        new OpenLayers.LonLat(centroid.x, centroid.y), new OpenLayers.Size(225, 5), "<b>" + boundaryname + "</b>", false);
-                        boundarypopup.autoSize = true;
-                        boundarypopup.panMapIfOutOfView = false;
-                        boundarypopup.keepInMap = false;
-                        boundarypopup.closeOnMove = true;
-                        boundarypopup.setBorder("2px solid black");
-                        boundarypopup.setOpacity(0.8);
-                        map.addPopup(boundarypopup);
+                        
+                        var boundarypopupLabel;
+                     		var boundarypopupPosition;
+                     		var currentZoomLevel = map.getZoom();
+                     		if ((currentZoomLevel == 3 || currentZoomLevel == 4 || currentZoomLevel == 5) && boundaryStringMatch(boundaryname,boundarynameEncapsulator)) {
+                     					boundarypopupLabel = "<b>" + boundaryname + " - " + boundarynameEncapsulator + "</b>";
+                     		} else {
+                     					boundarypopupLabel = "<b>" + boundaryname + "</b>";
+                     		}
+                     		if (isLonLatOnViewableMap(centroid)) {
+                     					boundarypopupPosition = new OpenLayers.LonLat(centroid.x, centroid.y);
+                     		} else {
+                     					boundarypopupPosition = map.getLonLatFromPixel(positionCursor);
+                     		}
+                     		boundarypopup = new OpenLayers.Popup("boundarypopup",                                                                  
+				                        											boundarypopupPosition, 		
+				                        											new OpenLayers.Size(225, 5), 		
+				                        											boundarypopupLabel, 
+				                        											false		// Whether to display a close box
+				                );
+                     		
+                     		if (boundarypopup != undefined) {
+                     				boundarypopup.autoSize = true;
+		                        boundarypopup.panMapIfOutOfView = false;
+		                        boundarypopup.keepInMap = false;
+		                        boundarypopup.closeOnMove = true;
+		                        boundarypopup.setBorder("2px solid black");
+		                        boundarypopup.setOpacity(0.8);
+		                        map.addPopup(boundarypopup);
+                     		}
+                        
                         reportoffexecuted = false;
                     }
                     boundarynamebuffer = boundaryname;
@@ -1124,6 +1273,26 @@ function boundaryHovering() {
     });
     map.addControl(selectHover);
     selectHover.activate();
+}
+
+// returns true if boundarynameEncapsulator is really different from boundaryname
+// so we do not end up displaying City of Pmouth - City of Pmouth
+function boundaryStringMatch(boundaryname,boundarynameEncapsulator) {
+	boundarynameLC = trimWhitespaces(boundaryname.toLowerCase());
+	boundarynameEncapsulatorLC = trimWhitespaces(boundarynameEncapsulator.toLowerCase());
+	if (boundarynameLC == boundarynameEncapsulatorLC) {
+				return false;
+	} else {
+				if (boundarynameEncapsulatorLC.indexOf(boundarynameLC) != -1) {
+						return false;
+				} else {
+						return true;
+			}
+	}
+}
+
+function trimWhitespaces (str) {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 }
 
 function refreshMap() {

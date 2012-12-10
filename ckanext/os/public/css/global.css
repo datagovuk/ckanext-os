@@ -55,6 +55,7 @@ P {
 /*Help link*/
 #helplink {
 	float: right;
+        margin-top: 14px;
 }
 
 #searchForm FIELDSET {

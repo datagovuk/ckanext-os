@@ -54,6 +54,15 @@ List: You can also just request the list using ``/api/2/util/preview_list``.
 
 In an HTML template the list can be accessed as: ``${session.get('preview_list', []}``
 
+Spatial Ingester
+================
+
+This is a wrapper for a Java tool that takes tabular geo-data and stores it in PostGIS for display in the Preview tool. It is currently in development.
+
+Configuration:
+
+  ckanext-os.spatial-datastore.url = postgresql://username:password@localhost/spatial-db
+
 
 Tests
 =====

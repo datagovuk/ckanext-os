@@ -50,6 +50,19 @@ P {
 	text-align: center;
 }
 
+/*Message for search being processed */
+#busy_indicator {
+  display: none;
+  float: right;
+  background: rgb(255,241,168);
+  margin-top: 5px;
+  z-index: 1000;
+  width: 200;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1em;
+}
+
 /*Help link*/
 #helplink {
 	text-align: right;
@@ -144,11 +157,6 @@ P {
 #IE7Aligner {
 clear:left; 
 height:30px;
-}
-
-/*Misc styles*/
-html.waiting {
-cursor: wait;
 }
 
 /*Elements positioned off screen*/
@@ -277,12 +285,12 @@ OpenLayers control styles overwrites style.css (default ol style sheet)*/
 
 /*Styling for Overview Map Minimize Button*/
 .olControlOverviewMapMinimizeButton {
-	height: 18px;
+		height: 18px;
     width: 18px;
     right: 0px;
-	top: 10px;
-    cursor: pointer;
-	background-color: none;
+		top: 10px;
+  	cursor: pointer;
+		background-color: none;
 }
 
 /*Styling for Overview Map Maximize Button*/
@@ -290,9 +298,9 @@ OpenLayers control styles overwrites style.css (default ol style sheet)*/
     height: 18px;
     width: 18px;
     right: 0;
-	top: 10px;
+		top: 10px;
     cursor: pointer;
-	background-color: none;
+		background-color: none;
 }
 
 /*Styling for border around map and overview map*/

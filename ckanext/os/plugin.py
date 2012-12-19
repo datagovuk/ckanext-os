@@ -22,10 +22,10 @@ class SearchWidget(SingletonPlugin):
 
     def after_map(self, map):
         map.connect('/data/map-based-search',
-                    controller='ckanext.os.controller:SearchWidget',
+                    controller='ckanext.os.controllers.widgets:SearchWidget',
                     action='index')
         map.connect('/data/search_proxy',
-                    controller='ckanext.os.controller:Proxy',
+                    controller='ckanext.os.controllers.widgets:Proxy',
                     action='gazetteer_proxy')
 
         # Proxy for boundary information etc.
@@ -34,7 +34,7 @@ class SearchWidget(SingletonPlugin):
         # ProxyPass /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
         # ProxyPassReverse /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
         map.connect('/geoserver/{url_suffix:.*}',
-                    controller='ckanext.os.controller:Proxy',
+                    controller='ckanext.os.controllers.widgets:Proxy',
                     action='geoserver_proxy')
         return map
 
@@ -57,30 +57,30 @@ class PreviewWidget(SingletonPlugin):
 
     def after_map(self, map):
         map.connect('/data/map-preview',
-                    controller='ckanext.os.controller:PreviewWidget',
+                    controller='ckanext.os.controllers.widgets:PreviewWidget',
                     action='index')
         map.connect('/data/preview_proxy',
-                    controller='ckanext.os.controller:Proxy',
+                    controller='ckanext.os.controllers.widgets:Proxy',
                     action='preview_proxy')
         map.connect('/data/preview_getinfo',
-                    controller='ckanext.os.controller:Proxy',
+                    controller='ckanext.os.controllers.widgets:Proxy',
                     action='preview_getinfo')
 ##        map.connect('/geoserver/{url_suffix:.*}',
-##                    controller='ckanext.os.controller:Proxy',
+##                    controller='ckanext.os.controllers.widgets:Proxy',
 ##                    action='geoserver_proxy')
 
         # Preview list 'Shopping basket'
         map.connect('/api/2/util/preview_list/add/{id}',
-                    controller='ckanext.os.controller:PreviewList',
+                    controller='ckanext.os.controllers.preview_list:PreviewList',
                     action='add')
         map.connect('/api/2/util/preview_list/remove/{id}',
-                    controller='ckanext.os.controller:PreviewList',
+                    controller='ckanext.os.controllers.preview_list:PreviewList',
                     action='remove')
         map.connect('/api/2/util/preview_list/reset',
-                    controller='ckanext.os.controller:PreviewList',
+                    controller='ckanext.os.controllers.preview_list:PreviewList',
                     action='reset')
         map.connect('/api/2/util/preview_list',
-                    controller='ckanext.os.controller:PreviewList',
+                    controller='ckanext.os.controllers.preview_list:PreviewList',
                     action='view')
         return map
 

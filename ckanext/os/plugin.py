@@ -155,3 +155,26 @@ class SpatialIngesterPlugin(SingletonPlugin):
         send_task("os.spatial_ingest", args=[context, data], task_id=task_id, queue=queue)
         log.debug('Spatial Ingest put into celery queue %s: %s site_user=%s site_url=%s',
                   queue, dataset.name, site_user['name'], self.site_url)
+
+class WfsServer(SingletonPlugin):
+    implements(IRoutes, inherit=True)
+
+    def after_map(self, map):
+        map.connect('/data/wfs',
+                    controller='ckanext.os.controllers.wfs_server:WfsServer',
+                    action='index')
+
+        ## map.connect('/data/wfs_proxy',
+        ##             controller='ckanext.os.controllers.wfs_server:Proxy',
+        ##             action='gazetteer_proxy')
+
+        ## # Proxy to WFS server
+        ## # This is ideally duplicated in the Apache config as:
+        ## #
+        ## # ProxyPass /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
+        ## # ProxyPassReverse /geoserver/ http://searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com/geoserver/
+        ## map.connect('/geoserver/{url_suffix:.*}',
+        ##             controller='ckanext.os.controllers.wfs_server:Proxy',
+        ##             action='geoserver_proxy')
+        return map
+    

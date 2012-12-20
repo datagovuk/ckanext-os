@@ -610,11 +610,7 @@ function gazetteer(queryText) {
         //TODO
         var url = "search_proxy?t=gz&q=" + queryText;
         xmlhttp.open("GET", url, true);
-        if (navigator.appName == "Microsoft Internet Explorer"){
-            xmlhttp.onreadystatechange = new Function(handleGazServerResponse());
-	} else {
-            xmlhttp.onreadystatechange = handleGazServerResponse;
-        }
+        xmlhttp.onreadystatechange = handleGazServerResponse;
         xmlhttp.send(null);
     }
 }

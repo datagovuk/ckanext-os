@@ -34,16 +34,18 @@
         </script>
         <script src="http://54.247.68.59/libraries/openlayers-openlayers-85b836d/OpenLayers.js" type="text/javascript">
         </script>
-		<script type="text/javascript" src="http://54.247.68.59/libraries/ext-3.4.0/adapter/ext/ext-base.js">
-		</script>
-		<script type="text/javascript" src="http://54.247.68.59/libraries/ext-3.4.0/ext-all.js" >
-		</script>
-	  	<script type="text/javascript" src="GeoExt/GeoExt.js" >
-		</script>
-		<script type="text/javascript" src="scripts/GetCap.js" >
-		</script>
-        <script type="text/javascript" src="scripts/wmsmap.js">
-        </script>
+				<script type="text/javascript" src="http://54.247.68.59/libraries/ext-3.4.0/adapter/ext/ext-base.js">
+				</script>
+				<script type="text/javascript" src="http://54.247.68.59/libraries/ext-3.4.0/ext-all.js" >
+				</script>
+			  	<script type="text/javascript" src="GeoExt/GeoExt.js" >
+				</script>
+				<script type="text/javascript" src="scripts/GetCap.js" >
+				</script>
+		    <script type="text/javascript" src="scripts/wmsmap.js">
+		    </script>
+		    <script type="text/javascript" src="scripts/spin.min.js">
+		    </script>
     </head>
     <body>
         <div id="wrapper">
@@ -64,11 +66,11 @@
 	                    <strong>Example:</strong> <em>London or EH99 1SP or 54.58, -5.93</em></p>
 	                    <label for="searchArea"><span class="offScreen">Search</span></label>
                     	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate" />
-											<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" />
+											<input type="button" name="buttonID" id="buttonID" onclick="showBusysign();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" />
 					  					<label for="buttonSearchID"><span class="offScreen">Search results</span></label>
 					  					<div id="gazContainer">
 											</div>
-											<div id="busy_indicator">Searching ...</div>
+											<div class="search-spinner">&nbsp;</div>
                 	</fieldset>
                 	
                 	<fieldset id="fieldset2">

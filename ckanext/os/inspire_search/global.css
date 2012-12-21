@@ -50,19 +50,6 @@ P {
 	text-align: center;
 }
 
-/*Message for search being processed */
-#busy_indicator {
-  display: none;
-  float: right;
-  background: rgb(255,241,168);
-  margin-top: 5px;
-  z-index: 1000;
-  width: 200;
-  font-weight: bold;
-  text-align: center;
-  font-size: 1em;
-}
-
 /*Help link*/
 #helplink {
 	text-align: right;

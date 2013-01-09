@@ -1,6 +1,6 @@
 <?php
 // Set the IP Address below to that of the Inspire WMS server
-$INSPIRE_IP_ADDRESS = '54.247.68.59';
+$INSPIRE_IP_ADDRESS = 'searchandevalitereleased-1321625557.eu-west-1.elb.amazonaws.com';
 $type = $_GET['t'];
 if ($type == 'gz') {
     // Gazetteer service

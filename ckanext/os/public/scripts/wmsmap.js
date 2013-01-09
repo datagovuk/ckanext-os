@@ -93,7 +93,7 @@ function isLonLatOnViewableMap(aLonLat) {
 // all other browsers
 window.onload = function () {
     setTimeout("if (!alreadyrunflag) inspireinit()", 0);
-    hideBusysign();
+    hideGazSpinner();
     addSelect();
 }
 
@@ -438,7 +438,6 @@ function activateKeyboardDefault() {
 
 // Process the Search query
 function processQuery() {
-    SearchSpinner.start()
     cursor_wait();
 		
     // Hide and clear list box
@@ -507,13 +506,13 @@ function processQuery() {
             sectorFlag = 1;
         }
         // Perform postcode lookup
+        showGazSpinner();
         postcode(queryText);
     } else {
         // Perform gazetteer lookup
+        showGazSpinner();
         gazetteer(queryText);
     }
-    
-    SearchSpinner.stop()
     setTimeout("cursor_clear()", 50);
 }
 
@@ -527,13 +526,14 @@ function cursor_clear() {
 	document.body.style.cursor = 'default';
 }
 
-function hideBusysign() {
-   document.getElementById('busy_indicator').style.display ='none';
+function showGazSpinner() {
+    SearchSpinner.start();
 }
 
-function showBusysign() {
-   document.getElementById('busy_indicator').style.display ='inline';
+function hideGazSpinner() {
+    SearchSpinner.stop();
 }
+
 
 function recordSelection(selObj) {
     lastSelection = selObj.selectedIndex;
@@ -608,7 +608,8 @@ function getXMLObject() {
 function gazetteer(queryText) {
     if (xmlhttp) {
         //TODO
-        var url = "search_proxy?t=gz&q=" + queryText;
+        var url = CKANEXT_OS_PROXY_PATH + "?t=gz&q=" + queryText;
+
         xmlhttp.open("GET", url, true);
         xmlhttp.onreadystatechange = handleGazServerResponse;
         xmlhttp.send(null);
@@ -632,16 +633,19 @@ function getObjectClass(obj) {
 function handleGazServerResponse() {
     // if not ready, don't do anything
     if (xmlhttp.readyState != 4) {
+        hideGazSpinner();
         return;
     }
 
     // if the request was aborted, don't do anything
     if (xmlhttp.status == 0) {
+        hideGazSpinner();
         return;
     }
 
     // if the request is not fully completed, pop up an error
     if (xmlhttp.status != 200) {
+        hideGazSpinner();
         alert('Error calling the Gazetteer service. Please try again.');
         return;
     }
@@ -652,6 +656,7 @@ function handleGazServerResponse() {
     } catch (e) {
         setText();
     }
+    hideGazSpinner();
 }
 
 // Process Gazetteer response
@@ -773,7 +778,7 @@ function gazInfo(gazTxt) {
 // Call Postcode servlet
 function postcode(queryText) {
     if (xmlhttp) {
-        var url = "search_proxy?t=pc&q=" + queryText;
+        var url = CKANEXT_OS_PROXY_PATH + "?t=pc&q=" + queryText;
 
         xmlhttp.open("GET", url, true);
         xmlhttp.onreadystatechange = handlePostcodeServerResponse;
@@ -785,16 +790,19 @@ function postcode(queryText) {
 function handlePostcodeServerResponse() {
     // if not ready, don't do anything
     if (xmlhttp.readyState != 4) {
+        hideGazSpinner();
         return;
     }
 
     // if the request was aborted, do not do anything
     if (xmlhttp.status == 0) {
+        hideGazSpinner();
         return;
     }
 
     // if the request is not fully completed, pop up an error
     if (xmlhttp.status != 200) {
+        hideGazSpinner();
         alert('Error calling the Postcode service. Please try  again.');
         return;
     }
@@ -805,6 +813,7 @@ function handlePostcodeServerResponse() {
     } catch (e) {
         setText();
     }
+    hideGazSpinner();
 }
 
 // Process Postcode response

@@ -75,8 +75,9 @@ def _spatial_ingest(context, dataset_dict):
     dataset_id = dataset_dict[u'id']
 
     params = [postgis_url, api_url, api_key, dataset_id]
+    log.info('Calling: %r', ['/home/co/pyenv_dgu/src/os-spatialingester/spatial.ingester'] + params)
     try:
-        subprocess.check_call(['java', 'ingester.java'] + params)
+        subprocess.check_call(['/home/co/pyenv_dgu/src/os-spatialingester/spatial.ingester'] + params)
     except subprocess.CalledProcessError, e:
         log.error('Spatial Ingester returned non-zero: %r, %r', e, e.args)
         if os.environ.get('DEBUG'):
@@ -93,5 +94,5 @@ def _spatial_ingest(context, dataset_dict):
     # Success
     #_save_status(True, 'Archived successfully', '', status, resource['id'])
     return json.dumps({
-        'resource': resource,
+        'dataset': dataset_dict['name'],
     })

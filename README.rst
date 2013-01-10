@@ -63,6 +63,8 @@ Spatial Ingester
 
 This is a wrapper for a Java tool that takes tabular geo-data and stores it in PostGIS for display in the Preview tool. It is currently in development.
 
+You also need to install os-spatialingester alongside in the same folder as ckanext-os.
+
 Configuration:
 
   ckanext-os.spatial-datastore.url = postgresql://username:password@localhost/spatial-db
@@ -73,7 +75,7 @@ Creating the database:
   sudo -u postgres createdb -E UTF8 -O $owner spatial-db
   sudo -u postgres psql -d spatial-db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql && sudo -u postgres psql -d spatial-db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
   sudo -u postgres psql spatial-db -c "ALTER TABLE geometry_columns OWNER TO $owner; ALTER TABLE spatial_ref_sys OWNER TO $owner"
-  sudo -u postgres psql -d spatial-db -U $owner -h localhost -f ckanext-os/ckanext/os/model/spatial_db_setup.sql # NB input the db user password
+  sudo -u postgres psql -d spatial-db -U $owner -h localhost -f ../os-spatialingester/spatial.ingester.ddl # NB input the db user password
 
 Note: the last command will start off with about 6 errors such as 'ERROR:  relation "feature" does not exist' before going onto to create the tables. (The setup deletes tables first before regenerating them, so can be run again should the model change.)
 

@@ -75,10 +75,11 @@ def _spatial_ingest(context, dataset_dict):
     dataset_id = dataset_dict[u'id']
 
     params = [postgis_url, api_url, api_key, dataset_id]
+    command = ['java', 'ingester.java'] + params
     try:
-        subprocess.check_call(['java', 'ingester.java'] + params)
+        subprocess.check_call(command)
     except subprocess.CalledProcessError, e:
-        log.error('Spatial Ingester returned non-zero: %r, %r', e, e.args)
+        log.error('Spatial Ingester returned non-zero: %r, %r', e, ' '.join(command))
         if os.environ.get('DEBUG'):
             raise
         #_save_status(False, 'Spatial Ingester failure', e, status, resource['id'])

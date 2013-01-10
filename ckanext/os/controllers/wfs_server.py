@@ -9,12 +9,15 @@ import urlparse
 
 from pylons import config
 from sqlalchemy import create_engine
+from sqlalchemy.sql.expression import text
 
-from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect
+from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect, json
 from ckan import model
 from ckan.lib.helpers import OrderedDict, url_for
 
 log = logging.getLogger(__name__)
+
+DEFAULT_SRS = 4326
 
 spatial_db_connection = None
 def get_spatial_db_connection():
@@ -33,7 +36,8 @@ def get_spatial_db_connection():
         if not spatial_datastore_url:
             log.error('Spatial datastore not setup - please configure ckanext-os.spatial-datastore.url')
             abort(500, 'Spatial datastore not setup')
-        spatial_db_connection = create_engine(spatial_datastore_url, echo=False)
+        engine = create_engine(spatial_datastore_url, echo=False)
+        spatial_db_connection = engine.connect()
     return spatial_db_connection
 
 class WfsServer(BaseController):
@@ -48,7 +52,6 @@ class WfsServer(BaseController):
         # call get_capabilities or get_feature
         xml_tree = etree.fromstring(request.body)
         root_tag = xml_tree.tag
-        import pdb; pdb.set_trace()
         if root_tag == '{http://www.opengis.net/wfs}GetCapabilities':
             return self.get_capabilities()
         elif root_tag == '{http://www.opengis.net/wfs}GetFeature':
@@ -74,7 +77,7 @@ class WfsServer(BaseController):
         #SQL_SELECT_FTS_BY_COLLECTION = "select feature.datasetid, ST_SetSRID(ST_Extent(ST_Transform(feature.geom,4326)), 4326) as bbox from feature,dataset where feature.datasetid = dataset.id and dataset.collid = %(collection_id)s group by feature.datasetid;" % collection_id
 
         # Run SQL on PostGIS
-        result = engine.execute(SQL_SELECT_FTS)
+        result = engine.execute(text(SQL_SELECT_FTS))
         log.info('GetCapabilities PostGIS request returned %i features',
                  result.rowcount)
         
@@ -89,19 +92,136 @@ class WfsServer(BaseController):
                                  }
 
     def get_feature(self, xml_tree):
-        for query in xml_tree.xpath('//a/@href'):
-            typeName_element = query.findChild('typeName')
-            if not typeName_element:
-                abort(400, 'unable to find typeName attribute of the query')
-            typeName = typeName_element.name
+        name, srs, bbox = self._parse_get_feature(xml_tree)
+        features = self._get_features(name, srs, bbox)
+        response.headers['Content-Type'] = 'application/json;charset=utf-8'
+        return self._features_as_json(features)
+
+    def _features_as_json(self, features):
+        '''Returns features in JSON format, with this structure:
+        {"type": "FeatureCollection",
+         "features":
+          [
+            {   "type": "Feature",
+                "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                "properties": {"ID": 11,
+                               "SchoolName": "Camden",
+                               "SchoolType": "Primary",
+                               "StreetName": "Camden Road",
+                               "Town": "Carshalton",
+                               "Postcode": "SM5 2NS",
+                               "TelephoneNumber": "020 86477324",
+                               "Easting": 527700.179,
+                               "Northing": 164916.916}
+            },
+            ...
+          ]
+        }
+        '''
+        feature_dicts = []
+        for feature in features:
+            #TODO tidy
+            coords = feature['coordinates']
+            properties = feature['properties']
+            feature_dict = {'type': 'Feature',
+                            'geometry': {
+                                'type': 'Point',
+                                'coordinates': coords,
+                                },
+                            'properties': properties,
+                            }
+            feature_dicts.append(feature_dict)
+        features_dict = {'type': 'FeatureCollection',
+                         'features': feature_dicts}
+        return json.dumps(features_dict)
+    
+    def _get_features(self, name, srs, bbox):
+        engine = get_spatial_db_connection()
+        params = {'dataset_id': name,
+                  'srs': srs,
+                  'lower_x': bbox['lower_x'],
+                  'lower_y': bbox['lower_y'],
+                  'upper_x': bbox['upper_x'],
+                  'upper_y': bbox['upper_y'],
+                  }
+        if not bbox:
+            query = SQL_FIND_BY_DATASETID
+        elif srs == 27700:
+            query = SQL_FIND_BY_DATASETID_AND_BBOX
+        else:
+            query = SQL_FIND_BY_DATASETID_AND_BBOX_TRANSFORM
+            
+        result = engine.execute(text(query), **params)
+        log.info('GetFeatures PostGIS request returned %i results',
+                 result.rowcount)
+        return result
+
+    def _parse_coordinate(self, envelope, corner_name):
+        '''
+        Given an WFS query\'s envelope (as an xml etree), returns the coordinates
+        as a tuple of two floats. Any error, it calls abort (exception).
+        '''
+        if not corner_name in ('lowerCorner', 'upperCorner'):
+            abort(500, 'Bad param for _parse_coordinate')
+        corner = None
+        for corner_xml in envelope.iter('{http://www.opengis.net/gml}%s' % corner_name):
+            corner = corner_xml.text
+        error_message_base = 'WFS Query/Filter/BBOX/Envelope/%s ' % corner_name
+        if not corner:
+            abort(400, error_message_base + 'element missing')
+        corner = corner.strip()
+        if not corner:
+            abort(400, error_message_base + 'element blank')
+        coordinates = corner.split(' ')
+        if len(coordinates) != 2:
+            abort(400, error_message_base + 'has %i coordinates but should be 2' \
+                  % len(coordinates))
+        try:
+            coordinates = [float(coord) for coord in coordinates]
+        except ValueError:
+            abort(400, error_message_base + 'coordinates not floats: %s' \
+                  % coordinates)
+        return coordinates
+            
+    def _parse_get_feature(self, xml_tree):
+        '''Parse GetFeature request.
+        Looks for the query and yields (name, srs, bbox).
+        bbox may be None. Is a dict.
+        srs has a default. Is an int.
+        On error, raises abort().
+        '''
+        for query in xml_tree.iter('{http://www.opengis.net/wfs}Query'):
+            # Look at the query typeName property
+            # which is: a list of feature type names that are queryable
+            # e.g. 'feature:3af1eca9-5007-49d1-931f-1cd0758ac865'
+            typeName = query.get('typeName') 
+            if not typeName:
+                abort(400, 'WFS Query element must have a typeName attribute')
             if ':' in typeName:
                 typeName = typeName.split(':')[-1]
             typeName = typeName.strip()
 
-            bbox_element = query.findChild('typeName')
-            if bbox_element:
-                pass
-
+            # defaults
+            srs = DEFAULT_SRS
+            bbox = None
+            
+            for filter_ in query.iter('{http://www.opengis.net/ogc}Filter'):
+                for bbox in filter_.iter('{http://www.opengis.net/ogc}BBOX'):
+                    for envelope in bbox.iter('{http://www.opengis.net/gml}Envelope'):
+                        srsName = query.get('srsName', DEFAULT_SRS).strip()
+                        if srsName:
+                            if ':' in srsName:
+                                srsName = srsName.split(':')[-1]
+                            srs = int(srsName)
+                        lower_x, lower_y = self._parse_coordinate(envelope, 'lowerCorner')
+                        upper_x, upper_y = self._parse_coordinate(envelope, 'upperCorner')
+                        # bbox must have lower corner first
+                        bbox = {'lower_x': lower_x,
+                                'lower_y': lower_y,
+                                'upper_x': upper_x,
+                                'upper_y': upper_y}
+            return (typeName, srs, bbox)
+        abort(400, 'No suitable WFS Query found')
 
 FEATURE_XML = '''
         <FeatureType>
@@ -173,3 +293,7 @@ CAPABILITIES_END_XML = '''
 </FeatureTypeList>
     <ogc:Filter_Capabilities/>
 </wfs:WFS_Capabilities>'''
+
+SQL_FIND_BY_DATASETID = "select * from feature where datasetid = :dataset_id limit 200"
+SQL_FIND_BY_DATASETID_AND_BBOX = "select * from feature where datasetid = :dataset_id and  geom && ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, 27700) limit 200"
+SQL_FIND_BY_DATASETID_AND_BBOX_TRANSFORM = "select  datasetid, properties, st_astext(st_transform(geom, :srs)) from feature where datasetid = :dataset_id and geom && st_transform(ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, :srs), 27700) limit 200";

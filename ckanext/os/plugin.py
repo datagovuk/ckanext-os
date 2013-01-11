@@ -108,8 +108,9 @@ class SpatialIngesterPlugin(SingletonPlugin):
 
     def configure(self, config):
         self.site_url = config.get('ckan.site_url_internally') or config.get('ckan.site_url')
-        self.spatial_datastore_url = config['ckanext-os.spatial-datastore.url']
-
+        self.spatial_datastore_jdbc_url = config['ckanext-os.spatial-datastore.jdbc.url']
+        self.spatial_ingester_filepath = config['ckanext-os.spatial-ingester.filepath']
+        
     def notify(self, entity, operation=None):
         if not isinstance(entity, model.Package):
             return
@@ -129,28 +130,14 @@ class SpatialIngesterPlugin(SingletonPlugin):
         context = json.dumps({
             'site_url': self.site_url,
             'site_user_apikey': site_user['apikey'],
-            'spatial_datastore_url': self.spatial_datastore_url
+            'spatial_datastore_jdbc_url': self.spatial_datastore_jdbc_url,
+            'spatial_ingester_filepath': self.spatial_ingester_filepath,
         })
         dataset_dict = package_dictize(dataset, {'model': model})
         data = json.dumps(dataset_dict)
 
         task_id = make_uuid()
-        archiver_task_status = {
-            'entity_id': dataset.id,
-            'entity_type': u'dataset',
-            'task_type': u'os',
-            'key': u'celery_task_id',
-            'value': task_id,
-            'error': u'',
-            'last_updated': datetime.datetime.now().isoformat()
-        }
-        archiver_task_context = {
-            'model': model,
-            'user': site_user['name'],
-            'ignore_auth': True
-        }
 
-        #get_action('task_status_update')(archiver_task_context, archiver_task_status)
         queue = 'priority'
         send_task("os.spatial_ingest", args=[context, data], task_id=task_id, queue=queue)
         log.debug('Spatial Ingest put into celery queue %s: %s site_user=%s site_url=%s',

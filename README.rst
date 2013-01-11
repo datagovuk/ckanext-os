@@ -58,24 +58,30 @@ List: You can also just request the list using ``/api/2/util/preview_list``.
 
 In an HTML template the list can be accessed as: ``${session.get('preview_list', []}``
 
-Spatial Ingester
+Spatial Database
 ================
 
-This is a wrapper for a Java tool that takes tabular geo-data and stores it in PostGIS for display in the Preview tool. It is currently in development.
+Spatial Database allows map preview of data in CKAN that has geo-references (lat/longs, post codes etc). (Some datasets are in WMS format and can be previewed directly, without need for this functionality.)
 
-You also need to install os-spatialingester alongside in the same folder as ckanext-os.
+There is a wrapper to call the Spatial Ingester, which is a Java tool that converts the data (usually CSV/XLS) and stores it in a PostGIS database. This data is served in WFS format for display in the Map Preview tool. It is currently in development.
+
+The Spatial Ingester (Java tool) 'os-spatialingester' needs to be installed alongside this module - i.e. in the same folder as ckanext-os.
 
 Configuration:
 
-  ckanext-os.spatial-datastore.url = postgresql://username:password@localhost/spatial-db
+  ckan.plugins = os_wfs_server
+  ckanext-os.spatial-datastore.sqlalchemy.url = postgresql://username:password@localhost/spatial-db
+  ckanext-os.spatial-datastore.jdbc.url = jdbc:postgresql://localhost/spatial-db?user=username&password=password
+  ckanext-os.spatial-ingester.filepath = /home/co/pyenv_dgu/src/os-spatialingester/spatial.ingester
 
-Creating the database:
+Creating the PostGIS database:
 
-  owner=dgu
-  sudo -u postgres createdb -E UTF8 -O $owner spatial-db
-  sudo -u postgres psql -d spatial-db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql && sudo -u postgres psql -d spatial-db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
-  sudo -u postgres psql spatial-db -c "ALTER TABLE geometry_columns OWNER TO $owner; ALTER TABLE spatial_ref_sys OWNER TO $owner"
-  sudo -u postgres psql -d spatial-db -U $owner -h localhost -f ../os-spatialingester/spatial.ingester.ddl # NB input the db user password
+  owner=username
+  db=spatial-db
+  sudo -u postgres createdb -E UTF8 -O $owner $db
+  sudo -u postgres psql -d $db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql && sudo -u postgres psql -d $db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+  sudo -u postgres psql $db -c "ALTER TABLE geometry_columns OWNER TO $owner; ALTER TABLE spatial_ref_sys OWNER TO $owner"
+  sudo -u postgres psql -d $db -U $owner -h localhost -f ../os-spatialingester/spatial.ingester.ddl # NB input the db user password
 
 Note: the last command will start off with about 6 errors such as 'ERROR:  relation "feature" does not exist' before going onto to create the tables. (The setup deletes tables first before regenerating them, so can be run again should the model change.)
 

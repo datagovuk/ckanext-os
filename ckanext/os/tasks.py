@@ -15,27 +15,16 @@ def spatial_ingest(context, data):
     can ingest the spatial data in CKAN.
 
     Params:
-      context - dict containing 'site_user_apikey' and 'site_url'
-      data - resource_dict
-             e.g. {
-                   "revision_id": "2bc8ed56-8900-431a-b556-2417f309f365",
-                   "id": "842062b2-e146-4c5f-80e8-64d072ad758d"}
-                   "content_length": "35731",
-                   "hash": "",
-                   "description": "",
-                   "format": "",
-                   "url": "http://www.justice.gov.uk/publications/companywindingupandbankruptcy.htm",
-                   "openness_score_failure_count": "0",
-                   "content_type": "text/html",
-                   "openness_score": "1",
-                   "openness_score_reason": "obtainable via web page",
-                   "position": 0,
-                  }
+      context - dict containing 'site_user_apikey', 'site_url' &
+                'spatial_ingester_filepath'
+      data - dataset_dict
       '''
     log = spatial_ingest.get_logger()
-    log.info('Starting spatial_ingest task: %r', data)
+    log.info('Starting spatial_ingest task')
     try:
         data = json.loads(data)
+        log.info('Dataset: %s (%i resources)', data.get('name'),
+                 len(data.get('resources', [])))
         context = json.loads(context)
         result = _spatial_ingest(context, data) 
         return result
@@ -71,11 +60,11 @@ def _spatial_ingest(context, dataset_dict):
 
     api_url = urlparse.urljoin(context['site_url'], 'api')
     api_key = context['site_user_apikey']
-    postgis_url = context['spatial_datastore_url'] # ckanext-os.spatial-datastore.url
+    postgis_url = context['spatial_datastore_jdbc_url'] # ckanext-os.spatial-datastore.jdbc.url
     dataset_id = dataset_dict[u'id']
 
     params = [postgis_url, api_url, api_key, dataset_id]
-    command = ['java', 'ingester.java'] + params
+    command = [context['spatial_ingester_filepath']] + params
     try:
         subprocess.check_call(command)
     except subprocess.CalledProcessError, e:
@@ -87,12 +76,13 @@ def _spatial_ingest(context, dataset_dict):
     except Exception, e:
         if os.environ.get('DEBUG'):
             raise
-        log.error('Uncaught Spatial Ingester failure: %r, %r', e, e.args)
+        log.error('Uncaught Spatial Ingester failure: %r, %r', e, ' '.join(command))
         #_save_status(False, 'Spatial Ingester failure', e, status, resource['id'])
         return
 
     # Success
+    log.info('Spatial Ingester succeeded')
     #_save_status(True, 'Archived successfully', '', status, resource['id'])
     return json.dumps({
-        'resource': resource,
+        'dataset': dataset_dict['name'],
     })

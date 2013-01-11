@@ -8,37 +8,18 @@ from lxml import etree
 import urlparse
 
 from pylons import config
-from sqlalchemy import create_engine
-from sqlalchemy.sql.expression import text
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect, json
 from ckan import model
 from ckan.lib.helpers import OrderedDict, url_for
+from ckanext.os.model import spatial_data as spatial_model
 
 log = logging.getLogger(__name__)
 
 DEFAULT_SRS = 4326
 
-spatial_db_connection = None
-def get_spatial_db_connection():
-    '''Returns a db connection (sqlalchemy engine) to the
-    Spatial db (postgis).
-
-    Not using SQLAlchemy connection pooling because in DGU
-    we use pgbouncer for this. But caches connection between
-    future requests of this thread.
-
-    May raise AbortError (i.e. suitable a request).
-    '''
-    global spatial_db_connection
-    if spatial_db_connection is None:
-        spatial_datastore_url = config.get('ckanext-os.spatial-datastore.url')
-        if not spatial_datastore_url:
-            log.error('Spatial datastore not setup - please configure ckanext-os.spatial-datastore.url')
-            abort(500, 'Spatial datastore not setup')
-        engine = create_engine(spatial_datastore_url, echo=False)
-        spatial_db_connection = engine.connect()
-    return spatial_db_connection
+class WfsServerError(Exception):
+    pass
 
 class WfsServer(BaseController):
     def index(self):
@@ -69,31 +50,24 @@ class WfsServer(BaseController):
         return capabilities
 
     def _get_feature_types_xml(self):
-        engine = get_spatial_db_connection()
-        
-        SQL_SELECT_FTS = "select datasetid, ST_SetSRID(ST_Extent(ST_Transform(geom,4326)), 4326) as bbox from feature group by datasetid"
-
-        # this is for getFeatureCapabilities instead of SQL_SELECT_FTS
-        #SQL_SELECT_FTS_BY_COLLECTION = "select feature.datasetid, ST_SetSRID(ST_Extent(ST_Transform(feature.geom,4326)), 4326) as bbox from feature,dataset where feature.datasetid = dataset.id and dataset.collid = %(collection_id)s group by feature.datasetid;" % collection_id
-
-        # Run SQL on PostGIS
-        result = engine.execute(text(SQL_SELECT_FTS))
-        log.info('GetCapabilities PostGIS request returned %i features',
-                 result.rowcount)
+        result = spatial_model.get_dataset_extents()
         
         for feature in result:
-            yield FEATURE_XML % {'name': feature.name,
-                                 'title': feature.title,
-                                 'description': feature.description,
-                                 'minx': feature.bbox[0],
-                                 'miny': feature.bbox[1],
-                                 'maxx': feature.bbox[2],
-                                 'maxy': feature.bbox[3],
+            dataset_id = feature['datasetid'] 
+            bbox_ewkt = feature['bbox']
+            bbox = parse_bbox_ewkt(bbox_ewkt)
+            yield FEATURE_XML % {'name': dataset_id, # TODO
+                                 'title': dataset_id,
+                                 'description': '',
+                                 'minx': bbox['sw'][0],
+                                 'miny': bbox['sw'][1],
+                                 'maxx': bbox['ne'][0],
+                                 'maxy': bbox['ne'][1],
                                  }
 
     def get_feature(self, xml_tree):
         name, srs, bbox = self._parse_get_feature(xml_tree)
-        features = self._get_features(name, srs, bbox)
+        features = spatial_model.get_features(name, srs, bbox)
         response.headers['Content-Type'] = 'application/json;charset=utf-8'
         return self._features_as_json(features)
 
@@ -120,9 +94,14 @@ class WfsServer(BaseController):
         '''
         feature_dicts = []
         for feature in features:
-            #TODO tidy
-            coords = feature['coordinates']
-            properties = feature['properties']
+            # ignore feature['datasetid']
+            try:
+                properties = json.loads(feature['properties'])
+            except ValueError:
+                log.error('Properties did not parse as JSON. Dataset: %s Properties: %r',
+                          feature['datasetid'], feature['properties'])
+                properties = 'Error loading properties'
+            coords = parse_point_wkt(feature['geom'])
             feature_dict = {'type': 'Feature',
                             'geometry': {
                                 'type': 'Point',
@@ -135,27 +114,6 @@ class WfsServer(BaseController):
                          'features': feature_dicts}
         return json.dumps(features_dict)
     
-    def _get_features(self, name, srs, bbox):
-        engine = get_spatial_db_connection()
-        params = {'dataset_id': name,
-                  'srs': srs,
-                  'lower_x': bbox['lower_x'],
-                  'lower_y': bbox['lower_y'],
-                  'upper_x': bbox['upper_x'],
-                  'upper_y': bbox['upper_y'],
-                  }
-        if not bbox:
-            query = SQL_FIND_BY_DATASETID
-        elif srs == 27700:
-            query = SQL_FIND_BY_DATASETID_AND_BBOX
-        else:
-            query = SQL_FIND_BY_DATASETID_AND_BBOX_TRANSFORM
-            
-        result = engine.execute(text(query), **params)
-        log.info('GetFeatures PostGIS request returned %i results',
-                 result.rowcount)
-        return result
-
     def _parse_coordinate(self, envelope, corner_name):
         '''
         Given an WFS query\'s envelope (as an xml etree), returns the coordinates
@@ -223,6 +181,35 @@ class WfsServer(BaseController):
             return (typeName, srs, bbox)
         abort(400, 'No suitable WFS Query found')
 
+def parse_bbox_ewkt(bbox_ewkt):
+    '''
+    Parse bbox in ewkt format
+    e.g. 'SRID=4326;POLYGON((-0.241608190098641 51.3255056327391,-0.241608190098641 51.3899664544441,-0.135869140341743 51.3899664544441,-0.135869140341743 51.3255056327391,-0.241608190098641 51.3255056327391))'
+    Returns as {'srid': 4326,
+                'sw': (-0.241608190098641, 51.3255056327391),
+                'ne': (-0.135869140341743, 51.3899664544441)}
+    '''
+    match = re.match('^SRID=(\d+);POLYGON\(\(([^ ]+) ([^ ]+),[^ ]+ [^ ]+,([^ ]+) ([^ ]+),[^ ]+ [^ ]+,[^ ]+ [^ ]+\)\)$', bbox_ewkt)
+    if not match:
+        raise WfsServerError('Could not parse bounding box that was stored: %r' % bbox_ewkt)
+    groups = match.groups()
+    return {'srid': int(groups[0]),
+            'sw': (float(groups[1]), float(groups[2])),
+            'ne': (float(groups[3]), float(groups[4])),
+            }
+
+def parse_point_wkt(point_wkt):
+    '''
+    Parse POINT in wkt format
+    e.g. 'POINT(529045.924 165372.031)'
+    Returns as (529045.924, 165372.031)
+    '''
+    match = re.match('^POINT\(([^ ]+) ([^ ]+)\)$', point_wkt)
+    if not match:
+        raise WfsServerError('Could not parse point: %r' % point_wkt)
+    groups = match.groups()
+    return (float(groups[0]), float(groups[1]))
+
 FEATURE_XML = '''
         <FeatureType>
             <Name>%(name)s</Name>
@@ -234,7 +221,7 @@ FEATURE_XML = '''
                 <ows:LowerCorner>%(minx)s %(miny)s</ows:LowerCorner>
                 <ows:UpperCorner>%(maxx)s %(maxy)s</ows:UpperCorner>
             </ows:WGS84BoundingBox>
-        </FeatureType>";
+        </FeatureType>
 '''
 
 CAPABILITIES_START_XML = '''<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -294,6 +281,3 @@ CAPABILITIES_END_XML = '''
     <ogc:Filter_Capabilities/>
 </wfs:WFS_Capabilities>'''
 
-SQL_FIND_BY_DATASETID = "select * from feature where datasetid = :dataset_id limit 200"
-SQL_FIND_BY_DATASETID_AND_BBOX = "select * from feature where datasetid = :dataset_id and  geom && ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, 27700) limit 200"
-SQL_FIND_BY_DATASETID_AND_BBOX_TRANSFORM = "select  datasetid, properties, st_astext(st_transform(geom, :srs)) from feature where datasetid = :dataset_id and geom && st_transform(ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, :srs), 27700) limit 200";

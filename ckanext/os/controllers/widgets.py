@@ -4,6 +4,7 @@ import urllib2
 from urllib2 import HTTPError, URLError
 from urllib import quote, urlencode
 import logging
+from urlparse import urljoin
 
 from pylons import config
 
@@ -200,33 +201,42 @@ class Proxy(BaseController):
         return wms_url
         
     def preview_proxy(self):
+        '''
+        WMS and WFS GetCapabilities and GetFeature requests come through here
+        to avoid cross-domain issue.
+        '''
         # avoid status_code_redirect intercepting error responses
         request.environ['pylons.status_code_redirect'] = False
 
-        wms_url = request.params.get('url')
+        url = request.params.get('url')
 
         # Check parameter
-        if not (wms_url):
+        if not (url):
             response.status_int = 400
             return 'Missing url parameter'
 
         # Check URL is in CKAN (otherwise we are an open proxy)
-        base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
-        query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url + '%'))
+        base_url = url.split('?')[0] if '?' in url else url
+        if base_url == urljoin(config('site_url'), '/data/wfs'):
+            # local WFS service
+            return self._read_url(url)
+        else:
+            # WMS
+            query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_url + '%'))
 
-        if query.count() == 0:
-            response.status_int = 403
-            return 'WMS URL not known: %s' % base_wms_url
+            if query.count() == 0:
+                response.status_int = 403
+                return 'WMS URL not known: %s' % base_url
 
         # Correct basic errors in the WMS URL
         try:
-            wms_url = self.wms_url_correcter(wms_url)
+            url = self.wms_url_correcter(url)
         except ValidationError, e:
             response.status_int = 400
-            log.warning('WMS Preview proxy received invalid url: %r', wms_url)
+            log.warning('WMS Preview proxy received invalid url: %r', url)
             return 'Invalid URL: %s' % str(e)
             
-        return self._read_url(wms_url)
+        return self._read_url(url)
 
     def preview_getinfo(self):
         '''

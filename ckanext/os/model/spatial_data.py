@@ -8,6 +8,15 @@ log = logging.getLogger(__name__)
 
 SRS_BRITISH_NATIONAL_GRID = 27700 # i.e. Easting & Northing
 
+# 'collection' is equivalent to a CKAN resource
+# collection id == CKAN resource id
+
+# each collection may have multiple 'dataset's only if the CKAN
+# resource is a workbook with multiple sheets. For convenience,
+# the first dataset has id the same as its collection.
+# So in normal circumstances, there is one 'dataset' and it has the same
+# id as the collection and therefore the same id as the CKAN resource.
+
 spatial_db_connection = None
 def get_spatial_db_connection():
     '''Returns a db connection (sqlalchemy engine) to the

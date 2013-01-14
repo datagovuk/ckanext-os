@@ -1,4 +1,5 @@
 from urllib import quote, urlencode
+from urlparse import urljoin
 from pylons import session as pylons_session
 
 from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect
@@ -15,7 +16,15 @@ class PreviewList(BaseController):
     def _querystring(self, pkg):
         out = []
         for r in pkg.resources:
-            # NB This WMS detection condition must match that in dgu/ckanext/dgu/lib/helpers.py
+            # NB This WFS/WMS detection condition must match that in dgu/ckanext/dgu/lib/helpers.py
+            if r.extras.get('wfs_service') == 'ckanext_os' or (r.format or '').lower() == 'wfs':
+                out.append(('wfsurl', urljoin(g.site_url, '/data/wfs')))
+                out.append(('resid', r.id))
+                resname = pkg.title
+                if r.description:
+                    resname += ' - %s' % r.description
+                out.append(('resname', resname))
+                           
             if 'wms' in (r.url or '').lower() or (r.format  or '').lower() == 'wms':
                 out.append(('url',r.url))
         return urlencode(out)

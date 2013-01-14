@@ -78,5 +78,5 @@ SQL_SELECT_FTS = "select datasetid, ST_AsEWKT(ST_SetSRID(ST_Extent(ST_Transform(
 #SQL_SELECT_FTS_BY_COLLECTION = "select feature.datasetid, ST_SetSRID(ST_Extent(ST_Transform(feature.geom,4326)), 4326) as bbox from feature,dataset where feature.datasetid = dataset.id and dataset.collid = %(collection_id)s group by feature.datasetid;" % collection_id
 
 SQL_FIND_BY_DATASETID = "select datasetid, properties, ST_AsText(geom) as geom from feature where datasetid = :dataset_id limit 200"
-SQL_FIND_BY_DATASETID_AND_BBOX = "select datasetid, properties, ST_AsText(geom) from feature where datasetid = :dataset_id and geom && ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, %s) limit 200" % SRS_BRITISH_NATIONAL_GRID
+SQL_FIND_BY_DATASETID_AND_BBOX = "select datasetid, properties, ST_AsText(geom) as geom from feature where datasetid = :dataset_id and geom && ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, %s) limit 200" % SRS_BRITISH_NATIONAL_GRID
 SQL_FIND_BY_DATASETID_AND_BBOX_TRANSFORM = "select datasetid, properties, st_astext(st_transform(geom, :srs)) as geom from feature where datasetid = :dataset_id and geom && st_transform(ST_MakeEnvelope(:lower_x, :lower_y, :upper_x, :upper_y, :srs), %s) limit 200" % SRS_BRITISH_NATIONAL_GRID

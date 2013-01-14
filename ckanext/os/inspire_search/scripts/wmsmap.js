@@ -79,9 +79,11 @@ function isLonLatOnViewableMap(aLonLat) {
 		bottomY = mapBounds.bottom;
 		topX = mapBounds.right;
 		topY = mapBounds.top;
+		bufferX = 0.1;
+		bufferY = 0.1;
 
-		if (thisX > bottomX && thisX < topX) {
-					if (thisY > bottomY && thisY < topY) {
+		if (thisX > (bottomX + bufferX) && thisX < (topX - bufferX)) {
+					if (thisY > (bottomY + bufferY) && thisY < (topY - bufferY)) {
 							return true;
 					} else {
 							return false;
@@ -94,12 +96,13 @@ function isLonLatOnViewableMap(aLonLat) {
 // all other browsers
 window.onload = function () {
     setTimeout("if (!alreadyrunflag) inspireinit()", 0);
+    hideGazSpinner();
     addSelect();
 }
 
 function addSelect() {
     // Just write the original HTML for the element to the new gazContainer div
-    document.getElementById("gazContainer").innerHTML = '<select name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomToLastSel()"   onfocus="recordSelection(this.form.select)"></select>';
+    document.getElementById("gazContainer").innerHTML = '<select name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomGazSel(this.form.select)"   onfocus="recordSelection(this.form.select)"></select>';
 }
 
 function inspireinit() {
@@ -121,44 +124,6 @@ function inspireinit() {
     // boundaries off at the start
     document.getElementById("boundaries").checked = false;
 
-		gazetteerSearchSpinningWheel = {
-				start: function() {
-					alert("spinning wheel appears");
-				}, 
-				stop:function() {
-					alert("spinning wheel disappears");
-				}
-		}; 
-		//gazetteerSearchSpinningWheel = {
-		//				el: $('.search-spinner')[0],
-    //				config: {
-		//							      lines: 9, // The number of lines to draw
-		//							      length: 4, // The length of each line
-		//							      width: 2, // The line thickness
-		//							      radius: 3, // The radius of the inner circle
-		//							      rotate: 0, // The rotation offset
-		//							      color: '#000', // #rgb or #rrggbb
-		//							      speed: 2, // Rounds per second
-		//							      trail: 60, // Afterglow percentage
-		//							      shadow: false, // Whether to render a shadow
-		//							      hwaccel: false, // Whether to use hardware acceleration
-		//							      className: 'spinner', // The CSS class to assign to the spinner
-		//							      zIndex: 2e9, // The z-index (defaults to 2000000000)
-		//							      top: 'auto', // Top position relative to parent in px
-		//							      left: 'auto' // Left position relative to parent in px
-    //				},
-    //				active: null,
-		//			  start: function() {
-		//			      if (this.active) return;
-		//			      this.active = new Spinner(this.config).spin(this.el);
-		//			  },
-		//			  stop: function() {
-		//			      if (!this.active) return;
-		//			      this.active.stop();
-		//			      this.active = null;
-		//			  }
-		//};
-		
     OSInspire = {};
     OSInspire.Layer = {};
     OSInspire.Layer.WMS = OpenLayers.Class(OpenLayers.Layer.WMS, {
@@ -199,7 +164,7 @@ function inspireinit() {
     copyrightStatements = "Contains Ordnance Survey data (c) Crown copyright and database right  [2012] <br>" + "Contains Royal Mail data (c) Royal Mail copyright and database right [2012]<br>" + "Contains bathymetry data by GEBCO (c) Copyright [2012]<br>" + "Contains data by Land & Property Services (Northern Ireland) (c) Crown copyright [2012]";
 
     // setup tiled layer
-    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", "http://54.247.68.59/geoserver/gwc/service/wms?key=c4e45b94936e11e1955d183da21c99ac", {
+    tiled = new OpenLayers.Layer.WMS("Geoserver layers - Tiled", CKANEXT_OS_TILES_URL, {
         LAYERS: 'InspireETRS89',
         STYLES: '',
         format: 'image/png',
@@ -213,7 +178,7 @@ function inspireinit() {
     });
 
     //setup overview map layer group
-    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", "http://54.247.68.59/geoserver/wms?key=c4e45b94936e11e1955d183da21c99ac", {
+    var overviewLayer = new OpenLayers.Layer.WMS("Geoserver layers - nonTiled", CKANEXT_OS_WMS_URL, {
         LAYERS: 'sea_dtm,overview_layers',
         STYLES: '',
         format: 'image/png',
@@ -542,13 +507,14 @@ function processQuery() {
             sectorFlag = 1;
         }
         // Perform postcode lookup
+        showGazSpinner();
         postcode(queryText);
     } else {
         // Perform gazetteer lookup
+        showGazSpinner();
         gazetteer(queryText);
     }
 
-    hideBusysign();
     setTimeout("cursor_clear()", 50);
 }
 
@@ -562,14 +528,12 @@ function cursor_clear() {
 	document.body.style.cursor = 'default';
 }
 
-function hideBusysign() {
-   	gazetteerSearchSpinningWheel.stop();
+function showGazSpinner() {
+    SearchSpinner.start();
 }
 
-function showBusysign() {
-		cursor_wait();
-   	gazetteerSearchSpinningWheel.start();
-   	setTimeout("processQuery()", 50);
+function hideGazSpinner() {
+    SearchSpinner.stop();
 }
 
 function recordSelection(selObj) {
@@ -645,13 +609,9 @@ function getXMLObject() {
 function gazetteer(queryText) {
 		if (xmlhttp) {
         var url = "proxy.php?t=gz&q=" + queryText;
-        xmlhttp.open("GET", url, false);
-        xmlhttp.send();
-        if (navigator.appName == "Microsoft Internet Explorer"){
-							xmlhttp.onreadystatechange = new Function(handleGazServerResponse());
-				}	else{
-						xmlhttp.onreadystatechange = handleGazServerResponse();
-				}
+        xmlhttp.open("GET", url, true);
+        xmlhttp.onreadystatechange = handleGazServerResponse;
+				xmlhttp.send(null);
     }
 }
 
@@ -672,16 +632,19 @@ function getObjectClass(obj) {
 function handleGazServerResponse() {
 		// if not ready, don't do anything
    	if (xmlhttp.readyState != 4) {
+   		hideGazSpinner();
     		return;
     }
 
     // if the request was aborted, don't do anything
     if (xmlhttp.status == 0) {
-    		return;
+    	hideGazSpinner();
+    	return;
     }
 
     // if the request is not fully completed, pop up an error
     if (xmlhttp.status != 200) {
+    	hideGazSpinner();
         alert('Error calling the Gazetteer service. Please try again.');
         return;
     }
@@ -692,6 +655,7 @@ function handleGazServerResponse() {
     } catch (e) {
         setText();
     }
+    hideGazSpinner();
 }
 
 // Process Gazetteer response
@@ -825,16 +789,19 @@ function postcode(queryText) {
 function handlePostcodeServerResponse() {
     // if not ready, don't do anything
     if (xmlhttp.readyState != 4) {
+    	hideGazSpinner();
         return;
     }
 
-    // if the request was aborted, don�t do anything
+    // if the request was aborted, don?t do anything
     if (xmlhttp.status == 0) {
+    	hideGazSpinner();
         return;
     }
 
     // if the request is not fully completed, pop up an error
     if (xmlhttp.status != 200) {
+    	hideGazSpinner();
         alert('Error calling the Postcode service. Please try  again.');
         return;
     }
@@ -845,6 +812,7 @@ function handlePostcodeServerResponse() {
     } catch (e) {
         setText();
     }
+    hideGazSpinner();
 }
 
 // Process Postcode response
@@ -1062,7 +1030,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: thickFeatureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1087,7 +1055,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1125,7 +1093,7 @@ function checkBoundaries() {
 			                    protocol: new OpenLayers.Protocol.WFS({
 			                        version: "1.1.0",
 			                        srsName: "EPSG:4258",
-			                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+			                        url: CKANEXT_OS_WFS_URL,
 			                        featureType: thickFeatureType,
 			                        featurePrefix: "inspire",
 			                        featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1150,7 +1118,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1185,7 +1153,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: thickFeatureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1209,7 +1177,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1240,7 +1208,7 @@ function checkBoundaries() {
                     protocol: new OpenLayers.Protocol.WFS({
                         version: "1.1.0",
                         srsName: "EPSG:4258",
-                        url: "/geoserver/wfs?key=c4e45b94936e11e1955d183da21c99ac",
+                        url: CKANEXT_OS_WFS_URL,
                         featureType: featureType,
                         featurePrefix: "inspire",
                         featureNS: "http://ordnancesurvey.co.uk/spatialdb",
@@ -1437,3 +1405,42 @@ function fixcase(str) {
         return index == 0 ? letter.toUpperCase() : letter.toLowerCase();
     });
 }
+
+$(
+  // Bootstrap tooltip
+  function() {
+  			$('.htmltooltip').popover({
+    				placement: 'right'
+      	})
+
+			  // Singleton object to handle spinner animation. Call start() and stop()
+			  SearchSpinner = {
+			    el: $('.search-spinner')[0],
+			    config: {
+			      lines: 9, // The number of lines to draw
+			      length: 4, // The length of each line
+			      width: 2, // The line thickness
+			      radius: 3, // The radius of the inner circle
+			      rotate: 0, // The rotation offset
+			      color: '#000', // #rgb or #rrggbb
+			      speed: 2, // Rounds per second
+			      trail: 60, // Afterglow percentage
+			      shadow: false, // Whether to render a shadow
+			      hwaccel: false, // Whether to use hardware acceleration
+			      className: 'spinner', // The CSS class to assign to the spinner
+			      zIndex: 2e9, // The z-index (defaults to 2000000000)
+			      top: 'auto', // Top position relative to parent in px
+			      left: 'auto' // Left position relative to parent in px
+			    },
+			    active: null,
+			    start: function() {
+			      if (this.active) return;
+			      this.active = new Spinner(this.config).spin(this.el);
+			    },
+			    stop: function() {
+			      if (!this.active) return;
+			      this.active.stop();
+			      this.active = null;
+			    }
+			  };
+	})

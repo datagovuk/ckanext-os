@@ -217,9 +217,9 @@ class Proxy(BaseController):
 
         # Check URL is in CKAN (otherwise we are an open proxy)
         base_url = url.split('?')[0] if '?' in url else url
-        if base_url == urljoin(config('site_url'), '/data/wfs'):
+        if base_url == urljoin(g.site_url, '/data/wfs'):
             # local WFS service
-            return self._read_url(url)
+            return self._read_url(url, post_data=request.body, content_type='application/xml')
         else:
             # WMS
             query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_url + '%'))

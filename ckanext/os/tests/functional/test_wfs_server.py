@@ -23,6 +23,19 @@ class TestWfsServer(TestController):
 </wfs:GetFeature>''' % {'dataset_id': TEST_DATASET_ID}
     get_feature_xml_with_bbox = '''
 <wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="JSON" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <wfs:Query typeName="feature:%(dataset_id)s" srsName="EPSG:4326">
+    <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+      <ogc:BBOX>
+        <gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4258">
+          <gml:lowerCorner>-64.087504189526 45.416727752366</gml:lowerCorner>
+          <gml:upperCorner>37.587504189526 66.583272247634</gml:upperCorner>
+        </gml:Envelope>
+      </ogc:BBOX>
+    </ogc:Filter>  
+  </wfs:Query>
+</wfs:GetFeature>''' % {'dataset_id': TEST_DATASET_ID}
+    get_feature_xml_with_bbox_and_srs = '''
+<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" outputFormat="JSON" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <wfs:Query typeName="feature:%(dataset_id)s" srsName="EPSG:4258">
     <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
       <ogc:BBOX>
@@ -96,11 +109,20 @@ class TestWfsServer(TestController):
         assert res.body.startswith('{"type": "FeatureCollection", "features": '),\
                res.body
         assert '"features": [{"geometry": {"type": "Point", "coordinates": [529045.924, 165372.031]}, "type": "Feature", "properties": {"Perimeter": 464.361, "Area": 4039.859, "SITE": "Beddington Park", "Easting": 529045.924, "ADDRESS": "Church Road", "WARD": "Beddington North", "ID": 1, "Northing": 165372.031}},' in res.body
-        assert 0 # These feature coordinates are wrong
+        # yes feature coordinates in OS format (as that was put in by Spatial
+        # Ingester).
 
     def test_get_features_with_bbox(self):
         params = {'dataset_id': TEST_DATASET_ID}
         res = self.app.post(self.offset, self.get_feature_xml_with_bbox, headers=self.headers)
+        # BBOX has SRS of 4326 (WGS84) so it doesn't need transformation
+        assert res.status == 200
+        assert res.body.startswith('{"type": "FeatureCollection", "features": '),\
+               res.body
+
+    def test_get_features_with_bbox_and_srs(self):
+        params = {'dataset_id': TEST_DATASET_ID}
+        res = self.app.post(self.offset, self.get_feature_xml_with_bbox_and_srs, headers=self.headers)
         assert res.status == 200
         assert res.body.startswith('{"type": "FeatureCollection", "features": '),\
                res.body
@@ -108,7 +130,7 @@ class TestWfsServer(TestController):
     def test_parse_bbox_ewkt(self):
         bbox_ewkt = 'SRID=4326;POLYGON((-0.241608190098641 51.3255056327391,-0.241608190098641 51.3899664544441,-0.135869140341743 51.3899664544441,-0.135869140341743 51.3255056327391,-0.241608190098641 51.3255056327391))'
         res = parse_bbox_ewkt(bbox_ewkt)
-        assert_equal(res, {'srid': 4326,
+        assert_equal(res, {'srid': 4326, #WGS84
                            'sw': (-0.241608190098641, 51.3255056327391),
                            'ne': (-0.135869140341743, 51.3899664544441)})
 

@@ -16,7 +16,7 @@ from ckanext.os.model import spatial_data as spatial_model
 
 log = logging.getLogger(__name__)
 
-DEFAULT_SRS = 4326
+DEFAULT_SRS = 4326 #WGS84
 
 class WfsServerError(Exception):
     pass
@@ -31,7 +31,10 @@ class WfsServer(BaseController):
             abort(400, 'Content type should be "application/xml"')
 
         # call get_capabilities or get_feature
-        xml_tree = etree.fromstring(request.body)
+        try:
+            xml_tree = etree.fromstring(request.body)
+        except etree.XMLSyntaxError, e:
+            abort(400, 'Content did not parse as XML: %s' % e)
         root_tag = xml_tree.tag
         if root_tag == '{http://www.opengis.net/wfs}GetCapabilities':
             return self.get_capabilities()
@@ -178,6 +181,8 @@ class WfsServer(BaseController):
                                 'lower_y': lower_y,
                                 'upper_x': upper_x,
                                 'upper_y': upper_y}
+            log.info('WFS Query typeName: %s parsed: SRS %s BBOX %s',
+                     typeName, srs, bbox.values() if bbox else None)
             return (typeName, srs, bbox)
         abort(400, 'No suitable WFS Query found')
 

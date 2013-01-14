@@ -27,6 +27,7 @@ setup(
 
         [paste.paster_command]
         mock_os_server = ckanext.os.testtools.mock_os_server:Command
+        os=ckanext.os.commands:OSCommand
 
         [ckan.celery_task]
         tasks = ckanext.os.celery_import:task_imports

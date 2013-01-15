@@ -635,7 +635,6 @@ function getObjectClass(obj) {
 function handleGazServerResponse() {
     // if not ready, don't do anything
     if (xmlhttp.readyState != 4) {
-        hideGazSpinner();
         return;
     }
 
@@ -792,7 +791,6 @@ function postcode(queryText) {
 function handlePostcodeServerResponse() {
     // if not ready, don't do anything
     if (xmlhttp.readyState != 4) {
-        hideGazSpinner();
         return;
     }
 

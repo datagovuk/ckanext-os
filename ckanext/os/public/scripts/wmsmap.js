@@ -78,9 +78,11 @@ function isLonLatOnViewableMap(aLonLat) {
 		bottomY = mapBounds.bottom;
 		topX = mapBounds.right;
 		topY = mapBounds.top;
+                bufferX = 0.1;
+                bufferY = 0.1;
 
-		if (thisX > bottomX && thisX < topX) {
-					if (thisY > bottomY && thisY < topY) {
+                if (thisX > (bottomX + bufferX) && thisX < (topX - bufferX)) {
+                    if (thisY > (bottomY + bufferY) && thisY < (topY - bufferY)) {
 							return true;
 					} else {
 							return false;
@@ -99,7 +101,7 @@ window.onload = function () {
 
 function addSelect() {
     // Just write the original HTML for the element to the new gazContainer div
-    document.getElementById("gazContainer").innerHTML = '<select name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomToLastSel()"   onfocus="recordSelection(this.form.select)"></select>';
+    document.getElementById("gazContainer").innerHTML = '<select name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomGazSel(this.form.select)"   onfocus="recordSelection(this.form.select)"></select>';
 }
 
 function inspireinit() {

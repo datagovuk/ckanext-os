@@ -96,11 +96,11 @@ class Proxy(BaseController):
         if type_ == 'gz':
             # Gazetteer service
             return self._read_url('http://%s/InspireGaz/gazetteer?q=%s' %
-                                  (GAZETTEER_HOST, quote(q)))
+                                  (GAZETTEER_HOST, quote(q.encode('utf8'))))
         elif type_ == 'pc':
             # Postcode service
             return self._read_url('http://%s/InspireGaz/postcode?q=%s' %
-                                  (GAZETTEER_HOST, quote(q)))
+                                  (GAZETTEER_HOST, quote(q.encode('utf8'))))
         else:
             response.status_int = 400
             return 'Value for t parameter not recognised'

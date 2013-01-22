@@ -26,6 +26,14 @@ class OsServerCase:
   <GazetteerResultVO>
     <items>'''), response[:100]
 
+    def test_gazetteer_proxy_unicode(self):
+        q = 'Ll%C5%B7n' # Llyn but with a circumflex over the 'y', urlencoded
+        url = 'http://%s/InspireGaz/gazetteer?q=%s' % \
+              (self.gazetteer_host, q)
+        f = urllib2.urlopen(url)
+        response = f.read()
+        assert '<GazetteerResultVO>' in response, response
+
     def test_gazetteer_postcode_proxy(self):
         q = 'DL3 0UR' # BBC Complaints postcode
         url = 'http://%s/InspireGaz/postcode?q=%s' % \

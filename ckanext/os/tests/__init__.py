@@ -1,6 +1,8 @@
 import os
 
 from ckan.tests import BaseCase
+import ckanext.os.controllers
+from ckanext.os.controllers.widgets import GAZETTEER_HOST, GEOSERVER_HOST
 from ckanext.os.testtools.mock_os_server import MOCK_OS_SERVER_HOST_AND_PORT
 
 class MockOsServerCase(BaseCase):
@@ -8,10 +10,14 @@ class MockOsServerCase(BaseCase):
     def setup_class(self):
         self.pid = self._start_server()
         self._wait_for_url()
+        ckanext.os.controllers.widgets.GAZETTEER_HOST = MOCK_OS_SERVER_HOST_AND_PORT
+        ckanext.os.controllers.widgets.GEOSERVER_HOST = MOCK_OS_SERVER_HOST_AND_PORT
 
     @classmethod
     def teardown_class(self):
         self._stop_server(self.pid)
+        ckanext.os.controllers.widgets.GAZETTEER_HOST = GAZETTEER_HOST
+        ckanext.os.controllers.widgets.GEOSERVER_HOST = GEOSERVER_HOST
 
     @staticmethod
     def _start_server():

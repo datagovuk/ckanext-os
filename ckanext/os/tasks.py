@@ -66,7 +66,7 @@ def _spatial_ingest(context, dataset_dict):
     params = [postgis_url, api_url, api_key, dataset_id]
     command = [context['spatial_ingester_filepath']] + params
     try:
-        subprocess.check_call(command)
+        output = subprocess_check_output(command)
     except subprocess.CalledProcessError, e:
         log.error('Spatial Ingester returned non-zero: %r, %r', e, ' '.join(command))
         if os.environ.get('DEBUG'):
@@ -81,8 +81,24 @@ def _spatial_ingest(context, dataset_dict):
         return
 
     # Success
-    log.info('Spatial Ingester succeeded')
+    log.info('Spatial Ingester succeeded with output: %s', output)
     #_save_status(True, 'Archived successfully', '', status, resource['id'])
     return json.dumps({
         'dataset': dataset_dict['name'],
     })
+
+'''We want to use subprocess.check_output, but it is only
+available in python 2.7, so include the code here.'''
+def subprocess_check_output(*popenargs, **kwargs):
+    if 'stdout' in kwargs:
+        raise ValueError('stdout argument not allowed, it will be overridden.')
+    process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        cmd = kwargs.get("args")
+        if cmd is None:
+            cmd = popenargs[0]
+        raise subprocess.CalledProcessError(retcode, cmd)
+    return output
+

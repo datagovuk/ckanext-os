@@ -25,6 +25,7 @@ LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
 # Tiles and Overview WMS are accessed directly from the OS servers. 
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
 WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
+
 # WFS is used for displaying the boundaries. Requests are sent via the local
 # proxy to the OS servers. The proxy is needed to overcome the 'common origin'
 # javascript restriction - they are json or xml payloads whereas there is no
@@ -95,11 +96,11 @@ class Proxy(BaseController):
         if type_ == 'gz':
             # Gazetteer service
             return self._read_url('http://%s/InspireGaz/gazetteer?q=%s' %
-                                  (GAZETTEER_HOST, quote(q)))
+                                  (GAZETTEER_HOST, quote(q.encode('utf8'))))
         elif type_ == 'pc':
             # Postcode service
             return self._read_url('http://%s/InspireGaz/postcode?q=%s' %
-                                  (GAZETTEER_HOST, quote(q)))
+                                  (GAZETTEER_HOST, quote(q.encode('utf8'))))
         else:
             response.status_int = 400
             return 'Value for t parameter not recognised'
@@ -122,9 +123,12 @@ class Proxy(BaseController):
             if 'Connection timed out' in err:
                 response.status_int = 504
                 return 'Proxied server timed-out: %s' % err
-            if 'Name or service not known' in err:
+            elif 'Name or service not known' in err:
                 response.status_int = 400
                 return 'Host name in URL not known: %s' % url
+            elif 'Connection refused' in err:
+                response.status_int = 403
+                return 'Connection refused: %s' % url
             log.error('Proxy URL error. URL: %r Error: %s', url, err)
             raise e # Send an exception email to handle it better
         res = f.read()

@@ -10,7 +10,7 @@ var boundaryLayer, defBoundaryStyle, styBoundary, styleBoundaryMap;
 var thickBoundaryLayer, defThickBoundaryStyle, styThickBoundary, styleThickBoundaryMap;
 var selectHover, boundarypopup, boundarynamebuffer, reportoffexecuted;
 var cursorXp, cursorYp, cursorposition;
-var navigationControl, keyBoardDefaultControl, boundingBoxControl, drawMode;
+var navigationControl, keyBoardDefaultControl, boundingBoxControl;
 var inputStr, outputStr, clrTxt, locationFound;
 var o, da, xmlhttp, ll, ur;
 var submitFlag, sectorFlag, browserFlag;
@@ -107,8 +107,6 @@ function addSelect() {
 
 function inspireinit() {
     setText();
-    // To be used to keep track of Draw button press	
-    drawMode = false;
     var browserName = navigator.appName;
     if (browserName == "Microsoft Internet Explorer") {
         document.attachEvent("onmousemove", function (evt) {

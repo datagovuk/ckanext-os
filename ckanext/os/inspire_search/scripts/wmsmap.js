@@ -634,7 +634,7 @@ function handleGazServerResponse() {
     		return;
     }
 
-    // if the request was aborted, don't do anything
+    // if the request was aborted, do not do anything
     if (xmlhttp.status == 0) {
     	hideGazSpinner();
     	return;
@@ -855,10 +855,15 @@ function pcInfo(gazTxt) {
 // Draw Search Box 
 function drawBoundingBox() {
 
-    if (drawMode) {
-        return;
+    // to fix Defect # 316 
+    if (selectHover != undefined) {
+	selectHover.unselectAll();
+	selectHover.deactivate();
+	if (boundarypopup != undefined) {
+            boundarypopup.hide();
+        }
     }
-    drawMode = true;
+		
     // Create a bounding box control
     boundingBoxControl = new OpenLayers.Control();
     OpenLayers.Util.extend(boundingBoxControl, {
@@ -883,7 +888,6 @@ function drawBoundingBox() {
             // Get longitude and latitude of the lower left and upper right of the box
             ll = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.left, bounds.bottom));
             ur = map.getLonLatFromViewPortPx(new OpenLayers.Pixel(bounds.right, bounds.top));
-            drawMode = false;
             // Draw the bounding box
             boxes = new OpenLayers.Layer.Boxes("Boxes");
             bounds = new OpenLayers.Bounds(ll.lon, ll.lat, ur.lon, ur.lat);
@@ -895,6 +899,13 @@ function drawBoundingBox() {
 
             // Deactivate the control
             this.box.deactivate();
+            
+            // to fix Defect # 316
+            if (selectHover != undefined) {
+            		selectHover.activate();
+            		navigationControl.activate();
+            		boundsNavigationControl.deactivate();
+            }
         }
     })
 

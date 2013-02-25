@@ -2,9 +2,16 @@
 OS Widgets for DGU - CKAN Extension
 ===================================
 
-This extension contains the OS Widgets for use in DGU CKAN.
+This extension contains the Map Based Search and Map Preview pages, seen on data.gov.uk and developed in the main by Ordnance Survey.
 
-NB: This software is open source, but the services provided by OS servers are not free. For usage of these other than on data.gov.uk, please contact Ordnance Survey for a licence.
+Licence
+=======
+
+All of this code is [c] Crown Copyright. Ordnance Survey developed the search and preview widgets, which were integrated into this CKAN extension by Cabinet Office.
+
+This software is licensed pursuant to the terms of the BSD 3 Clause License, which can be found at: http://opensource.org/licenses/BSD-3-Clause
+
+Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by OS servers for data.gov.uk are not free. For usage of these other than on data.gov.uk, please contact Ordnance Survey for a licence and corresponding API key.
 
 
 Install & Configuration
@@ -85,6 +92,19 @@ Creating the PostGIS database:
 
 Note: the last command will start off with about 6 errors such as 'ERROR:  relation "feature" does not exist' before going onto to create the tables. (The setup deletes tables first before regenerating them, so can be run again should the model change.)
 
+Libraries
+=========
+
+In avoidance of doubt, here are the libraries and version numbers used by the Search and Preview Widgets.
+
+* jquery 1.7.1 - http://jquery.com/
+* underscore 1.1.6 - http://underscorejs.org/
+* backbone 0.5.1 - http://backbonejs.org/
+* bootstrap 2.0.3 - http://twitter.github.com/bootstrap/
+* ext-3.4.0 - http://www.sencha.com/products/extjs3
+* GeoExt 1.1 - http://www.geoext.org/
+* Open Layers 2.12 (85b836d)
+* proj4js-1.0.3 - http://trac.osgeo.org/proj4js/ 
 
 Tests
 =====

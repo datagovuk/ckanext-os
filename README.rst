@@ -2,9 +2,16 @@
 OS Widgets for DGU - CKAN Extension
 ===================================
 
-This extension contains the OS Widgets for use in DGU CKAN.
+This extension contains the Map Based Search and Map Preview pages, seen on data.gov.uk and developed in the main by Ordnance Survey.
 
-NB: This software is open source, but the services provided by OS servers are not free. For usage of these other than on data.gov.uk, please contact Ordnance Survey for a licence.
+Licence
+=======
+
+All of this code is [c] Crown Copyright. Ordnance Survey developed the search and preview widgets, which were integrated into this CKAN extension by Cabinet Office.
+
+This software is licensed pursuant to the terms of the BSD 3 Clause License, which can be found at: http://opensource.org/licenses/BSD-3-Clause
+
+Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by OS servers for data.gov.uk are not free. For usage of these other than on data.gov.uk, please contact Ordnance Survey for a licence and corresponding API key.
 
 
 Install & Configuration
@@ -14,7 +21,12 @@ To install this extension's code into your pyenv::
 
  pip install -e git+https://bitbucket.org/dread/ckanext-os#egg=ckanext-os
 
-To enable it, in your CKAN config add to ckan.plugins items, as follows::
+Now configure the parts of the extension that you want to enable, using the instructions in the sections below.
+
+Widgets
+=======
+
+To enable the OS widgets, in your CKAN config add to ckan.plugins items, as follows::
 
  ckan.plugins = os_search os_preview
 
@@ -37,7 +49,6 @@ To configure the servers used in the widgets, put the following lines in your ck
  ckanext-os.wfs.url = /geoserver/wfs
  ckanext-os.geoserver.apikey = 
 
-
 Preview List
 ============
 
@@ -54,6 +65,46 @@ List: You can also just request the list using ``/api/2/util/preview_list``.
 
 In an HTML template the list can be accessed as: ``${session.get('preview_list', []}``
 
+Spatial Database
+================
+
+Spatial Database allows map preview of data in CKAN that has geo-references (lat/longs, post codes etc). (Some datasets are in WMS format and can be previewed directly, without need for this functionality.)
+
+There is a wrapper to call the Spatial Ingester, which is a Java tool that converts the data (usually CSV/XLS) and stores it in a PostGIS database. This data is served in WFS format for display in the Map Preview tool. It is currently in development.
+
+The Spatial Ingester (Java tool) 'os-spatialingester' needs to be installed alongside this module - i.e. in the same folder as ckanext-os.
+
+Configuration:
+
+  ckan.plugins = os_wfs_server
+  ckanext-os.spatial-datastore.sqlalchemy.url = postgresql://username:password@localhost/spatial-db
+  ckanext-os.spatial-datastore.jdbc.url = jdbc:postgresql://localhost/spatial-db?user=username&password=password
+  ckanext-os.spatial-ingester.filepath = /home/co/pyenv_dgu/src/os-spatialingester/spatial.ingester
+
+Creating the PostGIS database:
+
+  owner=username
+  db=spatial-db
+  sudo -u postgres createdb -E UTF8 -O $owner $db
+  sudo -u postgres psql -d $db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql && sudo -u postgres psql -d $db -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+  sudo -u postgres psql $db -c "ALTER TABLE geometry_columns OWNER TO $owner; ALTER TABLE spatial_ref_sys OWNER TO $owner"
+  sudo -u postgres psql -d $db -U $owner -h localhost -f ../os-spatialingester/spatial.ingester.ddl # NB input the db user password
+
+Note: the last command will start off with about 6 errors such as 'ERROR:  relation "feature" does not exist' before going onto to create the tables. (The setup deletes tables first before regenerating them, so can be run again should the model change.)
+
+Libraries
+=========
+
+In avoidance of doubt, here are the libraries and version numbers used by the Search and Preview Widgets.
+
+* jquery 1.7.1 - http://jquery.com/
+* underscore 1.1.6 - http://underscorejs.org/
+* backbone 0.5.1 - http://backbonejs.org/
+* bootstrap 2.0.3 - http://twitter.github.com/bootstrap/
+* ext-3.4.0 - http://www.sencha.com/products/extjs3
+* GeoExt 1.1 - http://www.geoext.org/
+* Open Layers 2.12 (85b836d)
+* proj4js-1.0.3 - http://trac.osgeo.org/proj4js/ 
 
 Tests
 =====

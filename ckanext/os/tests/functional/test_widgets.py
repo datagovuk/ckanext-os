@@ -1,10 +1,43 @@
-from urllib import urlencode
+from urllib import urlencode, quote
 from urlparse import urlparse, parse_qs
 
 from nose.tools import assert_equal, assert_raises
 
-from ckanext.os.controller import Proxy, ValidationError
+from ckanext.os.controllers.widgets import Proxy, ValidationError
+from ckanext.os.tests import MockOsServerCase
 from ckan.tests import TestController
+
+class TestSearchProxy(TestController, MockOsServerCase):
+    def test_gazetteer_proxy(self):
+        q = 'London'
+        url = '/data/search_proxy?t=gz&q=%s' % quote(q)
+        res = self.app.get(url)
+        response = res.body
+        assert '<county>Greater London Authority</county>' in response, response
+        assert response.startswith('''<?xml version="1.0" encoding="UTF-8"?>
+  <GazetteerResultVO>
+    <items>'''), response[:100]
+
+    def test_gazetteer_proxy_unicode(self):
+        q = 'Ll%C5%B7n' # Llyn but with a circumflex over the 'y', urlencoded
+        url = '/data/search_proxy?t=gz&q=%s' % q
+        res = self.app.get(url)
+        response = res.body
+        assert '<GazetteerResultVO>' in response, response
+
+    def test_gazetteer_postcode_proxy(self):
+        q = 'DL3 0UR' # BBC Complaints postcode
+        url = '/data/search_proxy?t=pc&q=%s' % quote(q)
+        res = self.app.get(url)
+        response = res.body
+        assert_equal (response, '''<?xml version="1.0" encoding="UTF-8"?>
+  <CodePointItemVO>
+    <easting>-1.5719322177872677</easting>
+    <northing>54.55246821308707</northing>
+    <point>-1.5719322177872677 54.55246821308707</point>
+  </CodePointItemVO>
+''')
+    
 
 class TestPreviewProxy:
     def test_wms_url_correcter_normal(self):

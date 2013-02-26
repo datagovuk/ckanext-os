@@ -23,8 +23,13 @@ setup(
         [ckan.plugins]
         os_search=ckanext.os.plugin:SearchWidget
         os_preview=ckanext.os.plugin:PreviewWidget
+        os_wfs_server=ckanext.os.plugin:WfsServer
 
         [paste.paster_command]
         mock_os_server = ckanext.os.testtools.mock_os_server:Command
+        os=ckanext.os.commands:OSCommand
+
+        [ckan.celery_task]
+        tasks = ckanext.os.celery_import:task_imports
 	""",
 )

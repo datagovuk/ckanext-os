@@ -19,7 +19,7 @@ Install & Configuration
 
 To install this extension's code into your pyenv::
 
- pip install -e git+https://bitbucket.org/dread/ckanext-os#egg=ckanext-os
+ pip install -e git+https://github.com/datagovuk/ckanext-os#egg=ckanext-os
 
 Now configure the parts of the extension that you want to enable, using the instructions in the sections below.
 

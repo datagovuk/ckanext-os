@@ -11,7 +11,7 @@ All of this code is [c] Crown Copyright. Ordnance Survey developed the search an
 
 This software is licensed pursuant to the terms of the BSD 3 Clause License, which can be found at: http://opensource.org/licenses/BSD-3-Clause
 
-Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by Ordnance Survey exclusively for data.gov.uk use. Please contact Ordnance Survey for details of their commercially-provided mapping services.
+Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by Ordnance Survey exclusively for data.gov.uk use in support of UKLII. Please contact Ordnance Survey for details of their commercially-provided mapping services.
 
 
 Install & Configuration

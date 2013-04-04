@@ -121,7 +121,7 @@ class Proxy(BaseController):
         except URLError, e:
             err = str(e)
             if 'Connection timed out' in err:
-                response.status_int = 504
+                response.status_int = 504 # proxy failure
                 return 'Proxied server timed-out: %s' % err
             elif 'Name or service not known' in err:
                 response.status_int = 400
@@ -129,6 +129,10 @@ class Proxy(BaseController):
             elif 'Connection refused' in err:
                 response.status_int = 403
                 return 'Connection refused: %s' % url
+            elif 'Connection reset by peer' in err:
+                response.status_int = 504 # proxy failure
+                return 'Proxied server closed the connection abruptly: %s' % err
+
             log.error('Proxy URL error. URL: %r Error: %s', url, err)
             raise e # Send an exception email to handle it better
         res = f.read()

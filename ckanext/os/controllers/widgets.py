@@ -120,7 +120,7 @@ class Proxy(BaseController):
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
         except URLError, e:
             err = str(e)
-            if 'Connection timed out' in err:
+            if 'Connection timed out' or 'Interrupted system call' in err:
                 response.status_int = 504 # proxy failure
                 return 'Proxied server timed-out: %s' % err
             elif 'Name or service not known' in err:

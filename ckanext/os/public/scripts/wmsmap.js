@@ -1475,9 +1475,7 @@ function fixcase(str) {
 $(
   // Bootstrap tooltip
   function() {
-  $('.htmltooltip').popover({
-    placement: 'right'
-      })
+    $('a[data-toggle="tooltip"]').tooltip();
 
   // Singleton object to handle spinner animation. Call start() and stop()
   SearchSpinner = {

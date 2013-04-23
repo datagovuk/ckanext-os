@@ -11,7 +11,7 @@ All of this code is [c] Crown Copyright. Ordnance Survey developed the search an
 
 This software is licensed pursuant to the terms of the BSD 3 Clause License, which can be found at: http://opensource.org/licenses/BSD-3-Clause
 
-Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by OS servers for data.gov.uk are not free. For usage of these other than on data.gov.uk, please contact Ordnance Survey for a licence and corresponding API key.
+Although the code is open source, the mapping and gazetteer services at osinspiremappingprod.ordnancesurvey.co.uk are provided by Ordnance Survey exclusively for data.gov.uk use in support of UKLII. Please contact Ordnance Survey for details of their commercially-provided mapping services.
 
 
 Install & Configuration
@@ -19,7 +19,7 @@ Install & Configuration
 
 To install this extension's code into your pyenv::
 
- pip install -e git+https://bitbucket.org/dread/ckanext-os#egg=ckanext-os
+ pip install -e git+https://github.com/datagovuk/ckanext-os#egg=ckanext-os
 
 Now configure the parts of the extension that you want to enable, using the instructions in the sections below.
 
@@ -30,7 +30,7 @@ To enable the OS widgets, in your CKAN config add to ckan.plugins items, as foll
 
  ckan.plugins = os_search os_preview
 
-To improve performance of the geoserver calls (boundary information) add these lines to your Apache config::
+To improve performance of the geoserver WFS calls (for boundary information) configure a proxy in the Apache config (osinspiremappingprod.ordnancesurvey.co.uk is used here as an example only - it is for data.gov.uk use only)::
  
  ProxyPass /geoserver/ http://osinspiremappingprod.ordnancesurvey.co.uk/geoserver/
  ProxyPassReverse /geoserver/ http://osinspiremappingprod.ordnancesurvey.co.uk/geoserver/
@@ -39,7 +39,7 @@ and enable Apache modules: ``mod_proxy`` and ``mod_proxy_http``::
 
  sudo a2enmod proxy_http
 
-To configure the servers used in the widgets, put the following lines in your ckan configuration file and change the values from the defaults shown::
+To configure the servers used in the widgets, put the following lines in your ckan configuration file and change the values from the defaults shown (osinspiremappingprod.ordnancesurvey.co.uk is used here as an example only - it is for data.gov.uk use only)::
 
  ckanext-os.geoserver.host = osinspiremappingprod.ordnancesurvey.co.uk
  ckanext-os.gazetteer.host = osinspiremappingprod.ordnancesurvey.co.uk

@@ -22,9 +22,13 @@
         <!-- Do not change the order of CSS declaration as it cuase styling issues-->
         <link rel="stylesheet" type="text/css" href="/css/map_search.css" />
 <!--        <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/examples/shared/examples.css" /> -->
+<!--
 	<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />  
+  -->
         <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/xtheme-gray.css" /> <!--! shows on the error dialog box for Step 1 -->
+<!--
         <link rel="stylesheet" type="text/css" href="/css/global.css" media="screen,projection"/>
+  -->
         <!--[if IE 6]>
 		<link rel="stylesheet" type="text/css" href="ie6.css" media="screen,projection" title="desktop" />
 		<![endif]-->
@@ -57,8 +61,8 @@
 
   <py:def function="page_title">Map Based Search</py:def>
   <py:def function="page_heading">
-    <p id="helplink"><a href="/location/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
     Map Based Search
+    <small style="font-size: 16px;"><a href="/location/map-based-search" class="newwin" title="Help document">(Need help getting started?)</a></small>
   </py:def>
 
 
@@ -76,8 +80,8 @@
             	<form id="searchForm" action="/dataset" method="post">
             	
                 <div class="clearfix"></div>
-            <div class="row">
-              <div class="span6">
+            <div class="row-fluid dgu-equal-height" data-selector=".auto-height">
+              <div class="span6 auto-height">
                     <fieldset id="fieldset1" class="boxed">
 	                    <h2>Step 1 (Optional)</h2>
 	                    
@@ -97,7 +101,7 @@
 
                     </fieldset>
               </div>
-              <div class="span3">
+              <div class="span3 auto-height">
                     <fieldset id="fieldset2" class="boxed">
                             <h2>Step 2</h2>
 
@@ -113,7 +117,7 @@
 							
                     </fieldset>
               </div>
-              <div class="span3">	
+              <div class="span3 auto-height">	
                     <fieldset id="fieldset3" class="boxed">
                         <h2>Step 3</h2>
 							

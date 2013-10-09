@@ -20,15 +20,11 @@
         <!-- TO DO: Add final URL -->
         <meta name="copyright" content="Ordnance Survey 2012" />
         <!-- Do not change the order of CSS declaration as it cuase styling issues-->
-        <!--<link rel="stylesheet" type="text/css" href="/css/map_search.css" />-->
+        <link rel="stylesheet" type="text/css" href="/css/map_search.css" />
 <!--        <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/examples/shared/examples.css" /> -->
-<!--
 	<link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />  
-  -->
         <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/xtheme-gray.css" /> <!--! shows on the error dialog box for Step 1 -->
-<!--
         <link rel="stylesheet" type="text/css" href="/css/global.css" media="screen,projection"/>
-  -->
         <!--[if IE 6]>
 		<link rel="stylesheet" type="text/css" href="ie6.css" media="screen,projection" title="desktop" />
 		<![endif]-->
@@ -60,9 +56,10 @@
   </py:def>
 
   <py:def function="page_title">Map Based Search</py:def>
+  <py:def function="body_class">no-sidebar</py:def>
   <py:def function="page_heading">
+    <p id="helplink"><a href="/location/map-based-search" class="newwin" title="Help document">Need help getting started?</a> </p>
     Map Based Search
-    <small style="font-size: 16px;"><a href="/location/map-based-search" class="newwin" title="Help document">(Need help getting started?)</a></small>
   </py:def>
 
 
@@ -80,55 +77,50 @@
             	<form id="searchForm" action="/dataset" method="post">
             	
                 <div class="clearfix"></div>
-            <div class="row-fluid dgu-equal-height" data-selector=".auto-height">
-              <div class="span6 auto-height boxed">
-                    <fieldset id="fieldset1">
+            <div class="row">
+              <div class="span6">
+                    <fieldset id="fieldset1" class="boxed">
 	                    <h2>Step 1 (Optional)</h2>
 	                    
 	                    <p>Locate area of interest</p>
 	                    <p><strong>Example:</strong> <em>London or EH99 1SP or 54.58, -5.93</em></p>
+			
+                        <label for="searchArea"><span class="offScreen">Search</span></label>
 	                    
-                      <span class="form-inline">
                     	<input type="text" name="searchArea" id="searchArea" onfocus="clearText();" onblur="activateKeyboardDefault();setText();" onkeydown="tabToEnter(event);" value="Place name, postcode or coordinate"/>
-                      <!--<div class="search-spinner">&nbsp;</div>-->
+                        <div class="search-spinner">&nbsp;</div>
 			
 						<input type="button" name="buttonID" id="buttonID" onclick="processQuery();" value="Find" title="Enter a place name, postcode, or latitude, longitude in decimal degrees" class="btn btn-primary button"/>
-          </span>
+					  	<label for="selectGaz"><span class="offScreen">Search results</span></label>
 		  	
 					  	<div id="gazContainer">
 						</div>
 
                     </fieldset>
               </div>
-              <div class="span3 auto-height boxed">
-                    <fieldset id="fieldset2">
+              <div class="span3">
+                    <fieldset id="fieldset2" class="boxed">
                             <h2>Step 2</h2>
 
                             <p>Draw search area &nbsp;<a href="#" data-toggle="tooltip" title="When drawing a search box, if the cursor touches the map frame then the box will disappear.  Please redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
 				
-                            <div class="step2-buttons">
-                              <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn button"/>
-                
-                              <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-danger button"/>
-                            </div>
+                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary button"/>
+							
+                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-primary button"/>
 
                             <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K">
-                              <label for="boundaries" class="checkbox">
-                                <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />
-                                &nbsp;Display administrative areas
-                              </label>
+                                <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
                             </div>
 							
                     </fieldset>
               </div>
-              <div class="span3 auto-height boxed">	
-                    <fieldset id="fieldset3">
+              <div class="span3">	
+                    <fieldset id="fieldset3" class="boxed">
                         <h2>Step 3</h2>
 							
                         <p>Find data for selected area</p>
-                        <div class="step3-buttons">
-                          <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-primary"/>
-                        </div>
+							
+                        <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-primary button"/>
 			
                  </fieldset>
               </div>

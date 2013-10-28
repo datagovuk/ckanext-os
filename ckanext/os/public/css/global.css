@@ -1,6 +1,6 @@
 /*
 * Global style sheet for search.
-* 
+*
 * @author			: Toni Ruckwood, Darryl Alexander
 * @version			: 2.4.0.2
 * @create date		: 15 Apr 2011
@@ -14,10 +14,10 @@
 	padding: 0;
 }
 
-/*Failed images to be hidden rather than to be shown as pink */	
-.olImageLoadError { 
-    visibility: hidden; 
-	display: none; 
+/*Failed images to be hidden rather than to be shown as pink */
+.olImageLoadError {
+    visibility: hidden;
+	display: none;
 }
 
 /*Set main page properties and centre page*/
@@ -129,7 +129,7 @@ P {
 }
 
 /*
-#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active { 
+#buttonID:hover, #buttonID:active, #buttonDrawID:hover, #buttonDrawID:active, #buttonClearID:hover, #buttonClearID:active, #buttonSearchID:hover, #buttonSearchID:active {
   background-color: #cdcdcd;
 }
 */
@@ -141,13 +141,13 @@ P {
 
 /*Mapping*/
 #mapwrapper {
-	width: 935px;
+	/* width: 935px; */
 	clear: both;
 /*	border: 1px solid #273397; */
 	margin-top: 10px;
 }
 #mappanel {
-	width: 935px;
+	/* width: 935px; */
 	height: 435px;
 }
 #mappanel DIV.olControlAttribution {
@@ -170,11 +170,11 @@ padding: 5px;
 left: auto;
 color: #666;
 /*hr: #666;*/
-} 
+}
 
 div.olMousePosition{
 right: 3px;
-padding: 5px;     
+padding: 5px;
 }
 
 div.olControlAttribution {
@@ -198,7 +198,7 @@ pointer-events: auto;
 
 em{
     font-style: italic;
-    font-weight: normal;	
+    font-weight: normal;
 }
 strong {
     font-style: normal;
@@ -219,7 +219,7 @@ div.olPopup {
 padding: 3px;
 }
 
-/*Styling for map history buttons; previous, next and fullExtent. All the below 
+/*Styling for map history buttons; previous, next and fullExtent. All the below
 OpenLayers control styles overwrites style.css (default ol style sheet)*/
 .previousButtonItemInactive {
 	top: 5px;
@@ -272,7 +272,7 @@ OpenLayers control styles overwrites style.css (default ol style sheet)*/
 	height: 0px;
 }
 
-/*Styling for Overview Map*/		
+/*Styling for Overview Map*/
 .olControlOverviewMapElement {
 	background: none !important;
 	border: none;
@@ -312,5 +312,5 @@ OpenLayers control styles overwrites style.css (default ol style sheet)*/
 .olControlOverviewMapElement > .olMap {
     border-width: 1px;
     border-style: solid;
-    border-color: #99BBE8;  
+    border-color: #99BBE8;
 }

@@ -1,4 +1,4 @@
-// Name				: wmsmap.js 
+// Name				: wmsmap.js
 // Description      : JavaScript file for the INSPIRE / UKLP search map widget
 // Author			: Philippe Brossier, Darryl Alexander, Ordnance Survey
 // Version			: 2.4.0.2
@@ -72,7 +72,7 @@ function getInternetExplorerVersion()
 function isLonLatOnViewableMap(aLonLat) {
 		thisX = aLonLat.x;
 		thisY = aLonLat.y;
-		
+
 		mapBounds = map.getExtent();
 		bottomX = mapBounds.left;
 		bottomY = mapBounds.bottom;
@@ -237,7 +237,7 @@ function inspireinit() {
             fillColor: "#FF7777"
         }
     });
-    
+
     defThickBoundaryStyle = {
         strokeColor: "green",
         strokeOpacity: "0.7",
@@ -290,7 +290,7 @@ function inspireinit() {
     hist = new OpenLayers.Control.NavigationHistory();
     map.addControl(hist);
 
-    // Add mouse position. 
+    // Add mouse position.
     cursorposition = new OpenLayers.Control.MousePosition({
         numdigits: 5,
         formatOutput: formatLonlats
@@ -331,7 +331,7 @@ function inspireinit() {
         }
     });
 
-    //zoom out to max zoom level	
+    //zoom out to max zoom level
     function fullExtentClicked() {
         map.zoomToMaxExtent();
     }
@@ -362,11 +362,12 @@ function inspireinit() {
     panel.addControls([previousButton, fullExtentButton, nextButton]);
     map.addControl(panel);
 
-    // Create a map panel with zoom slider   
+    // Create a map panel with zoom slider
     mapPanel = new GeoExt.MapPanel({
         renderTo: "mappanel",
         height: 435,
-        width: 935,
+        /* Fill the space
+        xwidth: 935, */
         map: map,
         zoom: 1,
         items: [{
@@ -423,7 +424,7 @@ function formatLonlats(lonLat) {
     return ns + this.separator + ew + ' (' + (lat.toFixed(digits)) + this.separator + (long.toFixed(digits)) + ')';
 }
 
-// Clear search box when clicked on 
+// Clear search box when clicked on
 function clearText() {
     if (clrTxt == 1 || document.getElementById("searchArea").value == "Place name, postcode or coordinate") {
         document.getElementById("searchArea").value = "";
@@ -439,7 +440,7 @@ function activateKeyboardDefault() {
 // Process the Search query
 function processQuery() {
     cursor_wait();
-		
+
     // Hide and clear list box
     var thedropdown = document.getElementById('selectGaz');
     thedropdown.style.display = 'none';
@@ -583,16 +584,16 @@ function getXMLObject() {
     var xmlHttp = false;
 
     try {
-        // Old Microsoft Browsers    
+        // Old Microsoft Browsers
         xmlHttp = new ActiveXObject("Msxml2.XMLHTTP")
         browserFlag = "IE6";
     } catch (e) {
         try {
-            // Microsoft IE 6.0+           
+            // Microsoft IE 6.0+
             xmlHttp = new ActiveXObject("Microsoft.XMLHTTP")
             browserFlag = "IE6+"
         } catch (e2) {
-            // Return false if no browser acceps the XMLHTTP object           
+            // Return false if no browser acceps the XMLHTTP object
             xmlHttp = false;
         }
     }
@@ -675,7 +676,7 @@ function gazInfo(gazTxt) {
         o = document.createElement("OPTION");
         o.text = "Select place name from list";
         da.options.add(o);
-        
+
         // Build list box
         for (var i = 0; i < gazEntries_length; i++) {
             var name = gazEntries[i].getElementsByTagName("name");
@@ -684,7 +685,7 @@ function gazInfo(gazTxt) {
             var type = gazEntries[i].getElementsByTagName("type");
             var zoomtype = gazEntries[i].getElementsByTagName("zoomtype");
 
-            // Adding a title for each group 
+            // Adding a title for each group
             lrType = type[0].firstChild.data;
             if (lrTypeBuffer == "" || lrTypeBuffer.substring(0, lrTypeBuffer.length - 1) != lrType.substring(0, lrTypeBuffer.length - 1)) {
                 lrTypeBuffer = lrType;
@@ -853,7 +854,7 @@ function pcInfo(gazTxt) {
     }
 }
 
-// Draw Search Box 
+// Draw Search Box
 function drawBoundingBox() {
     /*TODO:
 	// Deactivate boundaries hovering
@@ -865,7 +866,7 @@ function drawBoundingBox() {
     }
     */
 
-    // to fix Defect # 316 
+    // to fix Defect # 316
     if (selectHover != undefined) {
 	selectHover.unselectAll();
 	selectHover.deactivate();
@@ -873,7 +874,7 @@ function drawBoundingBox() {
             boundarypopup.hide();
         }
     }
-		
+
     // Create a bounding box control
     boundingBoxControl = new OpenLayers.Control();
     OpenLayers.Util.extend(boundingBoxControl, {
@@ -887,7 +888,7 @@ function drawBoundingBox() {
         },
 
         notice: function (bounds) {
-            // Remove previous bounding box, so we display only one at a time		
+            // Remove previous bounding box, so we display only one at a time
             try {
                 map.removeLayer(boxes);
             } catch (e) {}
@@ -909,7 +910,7 @@ function drawBoundingBox() {
 
             // Deactivate the control
             this.box.deactivate();
-            
+
             // to fix Defect # 316
             if (selectHover != undefined) {
             		selectHover.activate();
@@ -950,13 +951,13 @@ function isBoundingBoxDrawn() {
     return false;
 }
 
-// Submit the bounding box	 
+// Submit the bounding box
 function submitBox() {
     if (!isBoundingBoxDrawn()) {
         alert('You must draw a bounding box before submitting.');
         return;
     }
-    // Prepare coordinates per UK Gemini 2.1 spec 
+    // Prepare coordinates per UK Gemini 2.1 spec
     var wblon = ll.lon.toFixed(2);
     var eblon = ur.lon.toFixed(2);
     var nblat = ur.lat.toFixed(2);
@@ -971,32 +972,32 @@ function submitBox() {
 
         /**
              //TEST: Display coordinates of bounding box in popup
-            
+
              alert("   *** Submit Test ***" +
-            
+
              "\n\nWest Bounding Longitude: " +
-            
+
              bBox[0] +
-            
+
              "\nEast Bounding Longitude:  " +
-            
+
              bBox[1] +
-            
+
              "\nNorth Bounding Latitude:  " +
-            
+
              bBox[2] +
-            
+
              "\nSouth Bounding Latitude:  " +
-            
+
              bBox[3] +
-            
+
              "\n\nProjection: " +
-            
+
              map.getProjectionObject(), '');
-            
+
              */
         //TODO
-            // We replace any existing co-ords in the search url, then 
+            // We replace any existing co-ords in the search url, then
             // append the ones that have been selected.
             if (window.location.href.indexOf('?') != -1) {
               var pageUrlBase = window.location.href.slice(0, window.location.href.indexOf('?'));
@@ -1085,7 +1086,7 @@ function checkBoundaries() {
                     featureType = CanvasLayerArray[5];
                     thickFeatureType = CanvasLayerArray[8];
                 }
-                
+
                 // boundary with thick lines
                 if (useVMLRenderer) {
                 		// case IE so we do not want thick lines as we only have counties
@@ -1112,8 +1113,8 @@ function checkBoundaries() {
                 		});
 		                map.addLayer(thickBoundaryLayer);
 		                thickBoundaryLayer.setVisibility(true);
-		            }	
-                
+		            }
+
                 // boundary with districts or county (if IE)
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
@@ -1176,7 +1177,7 @@ function checkBoundaries() {
                     map.addLayer(thickBoundaryLayer);
                     thickBoundaryLayer.setVisibility(true);
                 }
-                
+
                 // boundary with districts or county (if IE)
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
@@ -1211,7 +1212,7 @@ function checkBoundaries() {
                     featureType = CanvasLayerArray[3];
                     thickFeatureType = CanvasLayerArray[6];
                 }
-                
+
                 // boundary with thick lines
                 thickBoundaryLayer = new OpenLayers.Layer.Vector("Thick Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
@@ -1235,7 +1236,7 @@ function checkBoundaries() {
                 });
                 map.addLayer(thickBoundaryLayer);
                 thickBoundaryLayer.setVisibility(true);
-                
+
                 // boundary with districts
                 boundaryLayer = new OpenLayers.Layer.Vector("Boundaries", {
                     projection: new OpenLayers.Projection("EPSG:4258"),
@@ -1259,7 +1260,7 @@ function checkBoundaries() {
                 });
                 map.addLayer(boundaryLayer);
                 boundaryLayer.setVisibility(true);
-                boundaryHovering();   
+                boundaryHovering();
             }
         } else if (map.getZoom() == 2) {
             if (boundaryLayer == undefined) {
@@ -1303,11 +1304,11 @@ function removeBoundaries() {
     if (thickBoundaryLayer != undefined) {
     			thickBoundaryLayer.setVisibility(false);
   	}
-    
+
     if (boundarypopup != undefined) {
         boundarypopup.hide();
     }
-    
+
     boundaryLayer = undefined;
     thickBoundaryLayer = undefined;
 
@@ -1339,7 +1340,7 @@ function boundaryHovering() {
                         if (index != -1) {
                             boundaryname = boundaryname.substring(0, index);
                         }
-                        
+
                         var boundarypopupLabel;
                      		var boundarypopupPosition;
                      		var currentZoomLevel = map.getZoom();
@@ -1357,19 +1358,19 @@ function boundaryHovering() {
                      							boundarypopupLabel = "<b>" + boundaryname + "</b>";
                      				}
                      		}
-                     		
+
                      		if (isLonLatOnViewableMap(centroid)) {
                      					boundarypopupPosition = new OpenLayers.LonLat(centroid.x, centroid.y);
                      		} else {
                      					boundarypopupPosition = map.getLonLatFromPixel(positionCursor);
                      		}
-                     		boundarypopup = new OpenLayers.Popup("boundarypopup",                                                                  
-				                        											boundarypopupPosition, 		
-				                        											new OpenLayers.Size(225, 5), 		
-				                        											boundarypopupLabel, 
+                     		boundarypopup = new OpenLayers.Popup("boundarypopup",
+				                        											boundarypopupPosition,
+				                        											new OpenLayers.Size(225, 5),
+				                        											boundarypopupLabel,
 				                        											false		// Whether to display a close box
 				                );
-                     		
+
                      		if (boundarypopup != undefined) {
                      				boundarypopup.autoSize = true;
 		                        boundarypopup.panMapIfOutOfView = false;
@@ -1379,7 +1380,7 @@ function boundaryHovering() {
 		                        boundarypopup.setOpacity(0.8);
 		                        map.addPopup(boundarypopup);
                      		}
-                        
+
                         reportoffexecuted = false;
                     }
                     boundarynamebuffer = boundaryname;
@@ -1418,7 +1419,7 @@ function boundaryStringMatch(boundaryname,boundarynameEncapsulator) {
 	}
 
 	boundarynameLC = trimWhitespaces(boundaryname.toLowerCase());
-	boundarynameEncapsulatorLC = trimWhitespaces(boundarynameEncapsulator.toLowerCase());		
+	boundarynameEncapsulatorLC = trimWhitespaces(boundarynameEncapsulator.toLowerCase());
 	if (boundarynameLC == boundarynameEncapsulatorLC) {
 				return false;
 	} else {

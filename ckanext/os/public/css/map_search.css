@@ -19,18 +19,18 @@ fieldset h2 {
   display: block;
 }
 
-legend { 
+legend {
   width: auto;
   border: none;
   margin: 0;
   line-height: 12px;
 }
 
-div.map-search p { 
+div.map-search p {
   margin: 0 0 8px;
 }
 
-div.map-search label { 
+div.map-search label {
   display: inline;
 }
 
@@ -50,7 +50,7 @@ div.htmltooltip{
   width: 550px; /*width of tooltip*/
 }
 
-div.olMap { 
+div.olMap {
   line-height: 12px;
   font-family:helvetica,tahoma,verdana,sans-serif;
   font-size: 10px;
@@ -58,7 +58,7 @@ div.olMap {
   color: black;
 }
 
-select#selectGaz { 
+select#selectGaz {
   margin-top: 5px;
 }
 
@@ -73,8 +73,8 @@ select#selectGaz {
   box-shadow: 0px 2px 6px #bbb;
 }
 
-div.olControlMousePosition.olControlNoSelect { 
-  font-size: small; 
+div.olControlMousePosition.olControlNoSelect {
+  font-size: small;
   color: #555;
  }
 

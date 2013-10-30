@@ -24,13 +24,17 @@
         <link rel="stylesheet" type="text/css" href="/css/global.css" />
         <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />
         <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/xtheme-gray.css" />
+        <style type="text/css">
+          /* Make sure we don't break the tiles in the map */
+          img { max-width: inherit; }
+          </style>
         <script type="text/javascript">
             // <![CDATA[
             document.write('<style type="text/css">#noJS{display:none;}</style>');
             // ]]>
         </script>
         <script type="text/javascript" src="/scripts/parseURLIntoArray.js">
-        </script>		
+        </script>
 		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/adapter/ext/ext-base.js">
         </script>
 		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/ext-all.js">
@@ -83,7 +87,7 @@
         </script>
         <div id="wrapper">
             <div id="info">
-            	
+
             </div>
         </div>
 

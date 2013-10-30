@@ -101,7 +101,7 @@ window.onload = function () {
 
 function addSelect() {
     // Just write the original HTML for the element to the new gazContainer div
-    document.getElementById("gazContainer").innerHTML = '<select name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomGazSel(this.form.select)"   onfocus="recordSelection(this.form.select)"></select>';
+    document.getElementById("gazContainer").innerHTML = '<select style="z-index: 1001;" name="select" id="selectGaz" onchange="zoomGazSel(this.form.select)"  onclick="zoomGazSel(this.form.select)"   onfocus="recordSelection(this.form.select)"></select>';
 }
 
 function inspireinit() {
@@ -610,7 +610,6 @@ function gazetteer(queryText) {
     if (xmlhttp) {
         //TODO
         var url = CKANEXT_OS_PROXY_PATH + "?t=gz&q=" + queryText;
-
         xmlhttp.open("GET", url, true);
         xmlhttp.onreadystatechange = handleGazServerResponse;
         xmlhttp.send(null);

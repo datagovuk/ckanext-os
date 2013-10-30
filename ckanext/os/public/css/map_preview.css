@@ -2,6 +2,9 @@ label {
   display: inline;
   font-size: 12px;
  }
+ img {
+   max-width: inherit !important;
+ }
 
 div.x-panel { 
   line-height: 12px;
@@ -29,4 +32,16 @@ div.olControlMousePosition.olControlNoSelect {
   color: #fff;
   height: 36px;
 }
+#blackbar .container {
+  margin: 0 0 0 0;
+}
+#blackbar nav {
+  display: none;
+}
+#blackbar .brand {
+  margin: 4px 0 0 0;
+  background-repeat: no-repeat;
+  background-size: 75%;
+}
+
 

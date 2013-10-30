@@ -85,21 +85,20 @@ P {
 	margin-bottom: 10px;
 }
 
-/*
 #fieldset1 {
-	width: 418px;
 	margin-right: 10px;
+    min-height: 200px;
 }
 
 #fieldset2 {
-	width: 228px;
+    min-height: 200px;
 	margin-right: 10px;
 }
 
 #fieldset3 {
-	width: 214px;
+    min-height: 200px;
+    margin-right: 10px;
 }
-*/
 
 #searchForm LEGEND {
 	font-weight: bold;

@@ -107,17 +107,19 @@
               </div>
               <div class="col-md-4">
                     <fieldset id="fieldset2" class="whitebox">
-                            <h2>Step 2</h2>
+                      <h2>Step 2</h2>
 
-                            <p>Draw search area &nbsp;<a href="#" data-toggle="tooltip" title="When drawing a search box, if the cursor touches the map frame then the box will disappear.  Please redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
+                      <p>Draw search area &nbsp;<a href="#" data-toggle="tooltip" title="When drawing a search box, if the cursor touches the map frame then the box will disappear.  Please redraw the search box ensuring the cursor remains inside the map frame.">[quick tip]</a></p>
 
-                            <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-primary pull-right"  style="margin-left: 8px;"/>
+                      <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K" class="clearfix">
+                          <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
+                      </div>
 
-                            <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary pull-right"/>
+                      <br/>
+                      <input type="button" name="buttonClearID" id="buttonClearID" value="Clear" onclick="clearBoundingBox()" title="Clear the bounding box" class="btn btn-primary pull-right"  style="margin-left: 8px;"/>
 
-                            <div id="boundariesWrapper" title="Only available between 1:5M and 1:75K">
-                                <input type="checkbox" id="boundaries" name="boundaries" value="boundaries" onclick="checkBoundaries()"  />&nbsp;<label for="boundaries">Display administrative areas</label>
-                            </div>
+                      <input type="button" name="buttonDrawID" id="buttonDrawID" value="Draw" onclick="drawBoundingBox()" title="Draw a bounding box" class="btn btn-primary pull-right"/>
+
 
                     </fieldset>
               </div>
@@ -125,10 +127,10 @@
                     <fieldset id="fieldset3" class="whitebox">
                         <h2>Step 3</h2>
 
-                        <p>Find data for selected area
+                        <p>Find data for selected area</p>
 
                           <input type="button" name="buttonSearchID" id="buttonSearchID" value="Submit" onclick="submitBox()" title="Submit the bounding box" class="btn btn-primary pull-right"/>
-                        </p>
+
                  </fieldset>
               </div>
             </div>

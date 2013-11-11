@@ -61,15 +61,19 @@
   <py:def function="body_class">no-sidebar</py:def>
 
   <py:def function="blackbar_content">
-    <div style="padding: 8px 10px 0 10px; text-align: center; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 18px;">
-      <span style="float: right; font-weight: 100;"><a href="/">DATA.GOV.UK</a></span>
+  </py:def>
+
+  <div py:match="content" class="map-preview">
+  <div id="thinblackbar">
+    <div class="container" style="padding: 8px 10px 0 10px; text-align: center; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 18px;">
+
+      <span style="float: right; font-weight: 200;"><a href="/">DATA.GOV.UK</a></span>
       <a href="javascript:history.back();" style="float: left;">&laquo; Go Back</a>
       Map Preview
     </div>
-  </py:def>
+  </div>
 
 
-  <div py:match="content" class="map-preview">
         <div>
             <p>
                 You do not appear to have JavaScript enabled in your browser.
@@ -93,7 +97,8 @@
 
   </div>
 
-  <xi:include href="../layout.html" />
+-->
+  <xi:include href="../layout_base.html" />
 
 </html>
 

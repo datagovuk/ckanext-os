@@ -1,4 +1,10 @@
-label { 
+/* Hide normal menu (which is pushed off bottom anyway) */
+#blackbar, #greenbar, #breadcrumbs, .footer {
+  display: none;
+}
+
+
+label {
   display: inline;
   font-size: 12px;
  }
@@ -6,23 +12,24 @@ label {
    max-width: inherit !important;
  }
 
-div.x-panel { 
+div.x-panel {
   line-height: 12px;
 }
 
-body > .x-panel > div > div > div { 
+body > .x-panel > div > div > div {
   padding-top: 40px;
 }
 
-input#projectionCombo { 
+input#projectionCombo {
   cursor: pointer;
  }
-div.olControlMousePosition.olControlNoSelect { 
-  font-size: small; 
+div.olControlMousePosition.olControlNoSelect {
+  font-size: small;
   color: #555;
 }
 
-#blackbar {
+
+#thinblackbar {
   position: fixed;
   top: 0;
   left: 0;
@@ -30,15 +37,15 @@ div.olControlMousePosition.olControlNoSelect {
   width: 100%;
   background: #000;
   color: #fff;
-  height: 36px;
+  height: 40px;
 }
-#blackbar .container {
+#thinblackbar .container a {
+  color: #fff;
+}
+#thinblackbar .container {
   margin: 0 0 0 0;
 }
-#blackbar nav {
-  display: none;
-}
-#blackbar .brand {
+#thinblackbar .brand {
   margin: 4px 0 0 0;
   background-repeat: no-repeat;
   background-size: 75%;

@@ -3,7 +3,7 @@ import re
 import urllib2
 from urllib2 import HTTPError, URLError
 from urllib import quote, urlencode
-import httplib
+from httplib import HTTPException, BadStatusLine
 import logging
 from urlparse import urljoin
 
@@ -119,9 +119,6 @@ class Proxy(BaseController):
         except HTTPError, e:
             response.status_int = 400
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
-        except httplib.HttpException, e:
-            response.status_int = 400
-            return 'Proxied server failed to give a response: %s' % (e.msg,)
         except URLError, e:
             err = str(e)
             if 'Connection timed out' or 'Interrupted system call' in err:
@@ -139,6 +136,12 @@ class Proxy(BaseController):
 
             log.error('Proxy URL error. URL: %r Error: %s', url, err)
             raise e # Send an exception email to handle it better
+        except BadStatusLine, e:
+            response.status_int = 504
+            return 'Proxied server returned bad status line: %s' % e.msg
+        except HTTPException, e:
+            response.status_int = 504
+            return 'Proxied server HTTP communication error: %s %s' % (e, e.msg)
         res = f.read()
         log.debug('Proxy reponse %s: %s', f.code, res[:100])
         return res

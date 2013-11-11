@@ -3,6 +3,7 @@ import re
 import urllib2
 from urllib2 import HTTPError, URLError
 from urllib import quote, urlencode
+import httplib
 import logging
 from urlparse import urljoin
 
@@ -22,7 +23,7 @@ GAZETTEER_HOST = config.get('ckanext-os.gazetteer.host',
 LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 
-# Tiles and Overview WMS are accessed directly from the OS servers. 
+# Tiles and Overview WMS are accessed directly from the OS servers.
 TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
 WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
 
@@ -47,7 +48,7 @@ class SearchWidget(BaseController):
     def index(self):
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
         c.tiles_url_ckan = TILES_URL_CKAN
-        c.wms_url_ckan = WMS_URL_CKAN       
+        c.wms_url_ckan = WMS_URL_CKAN
         c.wfs_url_ckan = WFS_URL_CKAN
         return render('os/map_search.html')
 
@@ -77,7 +78,7 @@ class PreviewWidget(BaseController):
         # Render the page
         c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
         c.tiles_url_ckan = TILES_URL_CKAN
-        c.wms_url_ckan = WMS_URL_CKAN       
+        c.wms_url_ckan = WMS_URL_CKAN
         c.wfs_url_ckan = WFS_URL_CKAN
 
         return render('os/map_preview.html')
@@ -118,6 +119,9 @@ class Proxy(BaseController):
         except HTTPError, e:
             response.status_int = 400
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
+        except httplib.HttpException, e:
+            response.status_int = 400
+            return 'Proxied server failed to give a response: %s' % (e.msg,)
         except URLError, e:
             err = str(e)
             if 'Connection timed out' or 'Interrupted system call' in err:
@@ -138,7 +142,7 @@ class Proxy(BaseController):
         res = f.read()
         log.debug('Proxy reponse %s: %s', f.code, res[:100])
         return res
-        
+
     def geoserver_proxy(self, url_suffix):
         '''Proxy for geoserver services.
         Depending on the geoserver provider, calls may require a key parameter
@@ -205,9 +209,9 @@ class Proxy(BaseController):
         for key, value in params.items():
             params_list.append('%s=%s' % (key, value))
         wms_url = base_url + '?' + '&'.join(params_list)
-        
+
         return wms_url
-        
+
     def preview_proxy(self):
         '''
         WMS and WFS GetCapabilities and GetFeature requests come through here
@@ -243,13 +247,13 @@ class Proxy(BaseController):
             response.status_int = 400
             log.warning('WMS Preview proxy received invalid url: %r', url)
             return 'Invalid URL: %s' % str(e)
-            
+
         return self._read_url(url)
 
     def preview_getinfo(self):
         '''
         This is a proxy request for the Preview map to get detail of a particular subset of a WMS service.
-        
+
         Example request:
         http://dev-ckan.dgu.coi.gov.uk/data/preview_getinfo?url=http%3A%2F%2Flasigpublic.nerc-lancaster.ac.uk%2FArcGIS%2Fservices%2FBiodiversity%2FGMFarmEvaluation%2FMapServer%2FWMSServer%3FLAYERS%3DWinterOilseedRape%26QUERY_LAYERS%3DWinterOilseedRape%26STYLES%3D%26SERVICE%3DWMS%26VERSION%3D1.1.1%26REQUEST%3DGetFeatureInfo%26EXCEPTIONS%3Dapplication%252Fvnd.ogc.se_xml%26BBOX%3D-1.628338%252C52.686046%252C-0.086204%252C54.8153%26FEATURE_COUNT%3D11%26HEIGHT%3D845%26WIDTH%3D612%26FORMAT%3Dimage%252Fpng%26INFO_FORMAT%3Dapplication%252Fvnd.ogc.wms_xml%26SRS%3DEPSG%253A4258%26X%3D327%26Y%3D429
         and that url parameter value unquotes to:

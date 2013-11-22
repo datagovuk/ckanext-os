@@ -116,6 +116,7 @@ class Proxy(BaseController):
         log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
             f = urllib2.urlopen(request)
+            res = f.read()
         except HTTPError, e:
             response.status_int = 400
             return 'Proxied server returned %s: %s' % (e.code, e.msg)
@@ -142,7 +143,6 @@ class Proxy(BaseController):
         except HTTPException, e:
             response.status_int = 504
             return 'Proxied server HTTP communication error: %s %s' % (e, e.msg)
-        res = f.read()
         log.debug('Proxy reponse %s: %s', f.code, res[:100])
         return res
 

@@ -139,7 +139,7 @@ class Proxy(BaseController):
             raise e # Send an exception email to handle it better
         except BadStatusLine, e:
             response.status_int = 504
-            return 'Proxied server returned bad status line: %s' % e.msg
+            return 'Proxied server returned bad status line: %r' % e.line
         except HTTPException, e:
             response.status_int = 504
             return 'Proxied server HTTP communication error: %s %s' % (e, e.msg)

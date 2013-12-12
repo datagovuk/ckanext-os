@@ -8,7 +8,7 @@ from nose.tools import assert_equal, assert_raises
 from pylons import config
 
 from ckan.lib.helpers import url_for
-from ckanext.os.controller import GAZETTEER_HOST, GEOSERVER_HOST
+from ckanext.os.controllers.widgets import GAZETTEER_HOST, GEOSERVER_HOST
 from ckanext.os.testtools.mock_os_server import MOCK_OS_SERVER_HOST_AND_PORT, MOCK_API_KEY
 from ckanext.os.tests import MockOsServerCase
 
@@ -107,7 +107,7 @@ class OsServerCase:
 class TestExternalOsServers(OsServerCase):
     gazetteer_host = GAZETTEER_HOST
     map_tile_host = GEOSERVER_HOST
-    api_key = config['ckanext-os.test.prod-apikey'] # this needs setting in your development.ini - it is just for tests.
+    api_key = config['ckanext-os.geoserver.apikey'] # this needs setting in your development.ini - it is just for tests.
 
 class TestMockOsServers(OsServerCase, MockOsServerCase):
     gazetteer_host = MOCK_OS_SERVER_HOST_AND_PORT

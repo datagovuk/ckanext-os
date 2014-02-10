@@ -1,4 +1,3 @@
-import os
 import re
 import urllib2
 from urllib2 import HTTPError, URLError
@@ -8,11 +7,13 @@ from socket import error as socket_error
 import logging
 from urlparse import urljoin
 
+import sqlalchemy
 from pylons import config
 
-from ckan.lib.base import request, response, c, BaseController, model, abort, h, g, render, redirect
+from ckan.lib.base import request, response, c, BaseController, g, render, redirect
 from ckan import model
 from ckan.lib.helpers import OrderedDict, url_for
+import ckan.model.misc as misc
 
 log = logging.getLogger(__name__)
 
@@ -216,7 +217,6 @@ class Proxy(BaseController):
         for key, value in params.items():
             params_list.append('%s=%s' % (key, value))
         wms_url = base_url + '?' + '&'.join(params_list)
-
         return wms_url
 
     def preview_proxy(self):
@@ -281,8 +281,19 @@ class Proxy(BaseController):
         base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
         query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
         if query.count() == 0:
-            response.status_int = 403
-            return 'Base of WMS URL not known: %r' % base_wms_url
+            # Try in the 'wms_base_urls' extras too, as some WMSs use different
+            # bases (specified in their GetCapabilities response)
+            model_attr = getattr(model.Resource, 'extras')
+            field = 'wms_base_urls'
+            term = base_wms_url #.replace('/', '\\/').replace(':', '\\:')
+            like = sqlalchemy.or_(
+                model_attr.ilike(u'''%%"%s": "%%%s%%",%%''' % (field, term)),
+                model_attr.ilike(u'''%%"%s": "%%%s%%"}''' % (field, term))
+            )
+            q = model.Session.query(model.Resource).filter(like)
+            if q.count() == 0:
+                response.status_int = 403
+                return 'Base of WMS URL not known: %r' % base_wms_url
 
         return self._read_url(wms_url)
 

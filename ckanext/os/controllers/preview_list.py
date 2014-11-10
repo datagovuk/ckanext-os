@@ -38,10 +38,12 @@ class PreviewList(BaseController):
         if not id:
             abort(409, 'Dataset not identified')
         preview_list = pylons_session.get('preview_list', [])
+
         pkg = model.Package.get(id)
+        if not pkg:
+            abort(404, 'Dataset not found')
+
         if not self._get(pkg.id):
-            if not pkg:
-                abort(404, 'Dataset not found')
             extent = (pkg.extras.get('bbox-north-lat'),
                       pkg.extras.get('bbox-west-long'),
                       pkg.extras.get('bbox-east-long'),

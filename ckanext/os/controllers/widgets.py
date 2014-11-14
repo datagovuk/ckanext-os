@@ -26,8 +26,8 @@ LIBRARIES_HOST = config.get('ckanext-os.libraries.host',
                             'osinspiremappingprod.ordnancesurvey.co.uk') # Was '46.137.180.108' and 'searchAndEvalProdELB-2121314953.eu-west-1.elb.amazonaws.com'
 
 # Tiles and Overview WMS are accessed directly from the OS servers.
-TILES_URL_CKAN = config.get('ckanext-os.tiles.url', 'http://%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
-WMS_URL_CKAN = config.get('ckanext-os.wms.url', 'http://%s/geoserver/wms' % GEOSERVER_HOST)
+TILES_URL_CKAN = config.get('ckanext-os.tiles.url', '//%s/geoserver/gwc/service/wms' % GEOSERVER_HOST)
+WMS_URL_CKAN = config.get('ckanext-os.wms.url', '//%s/geoserver/wms' % GEOSERVER_HOST)
 
 # WFS is used for displaying the boundaries. Requests are sent via the local
 # proxy to the OS servers. The proxy is needed to overcome the 'common origin'
@@ -48,7 +48,7 @@ class ValidationError(Exception):
 
 class SearchWidget(BaseController):
     def index(self):
-        c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        c.libraries_base_url = '//%s/libraries' % LIBRARIES_HOST
         c.tiles_url_ckan = TILES_URL_CKAN
         c.wms_url_ckan = WMS_URL_CKAN
         c.wfs_url_ckan = WFS_URL_CKAN
@@ -78,7 +78,7 @@ class PreviewWidget(BaseController):
                 redirect(new_url)
 
         # Render the page
-        c.libraries_base_url = 'http://%s/libraries' % LIBRARIES_HOST
+        c.libraries_base_url = '//%s/libraries' % LIBRARIES_HOST
         c.tiles_url_ckan = TILES_URL_CKAN
         c.wms_url_ckan = WMS_URL_CKAN
         c.wfs_url_ckan = WFS_URL_CKAN

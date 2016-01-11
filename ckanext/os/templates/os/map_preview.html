@@ -1,9 +1,6 @@
-<html xmlns:py="http://genshi.edgewall.org/"
-  xmlns:i18n="http://genshi.edgewall.org/i18n"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  py:strip="">
+{% extends "page.html" %}
 
-  <py:def function="optional_head">
+{% block optional_head %}
         <title>UK Location Programme</title>
         <!--meta http-equiv="content-type" content="text/html;charset=utf-8" /-->
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
@@ -22,8 +19,8 @@
         <link rel="stylesheet" type="text/css" href="/css/map_preview.css?2" />
         <link rel="stylesheet" type="text/css" href="/css/eval.css" />
         <link rel="stylesheet" type="text/css" href="/css/global.css" />
-        <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/ext-all.css" />
-        <link rel="stylesheet" type="text/css" href="${c.libraries_base_url}/ext-3.4.0/resources/css/xtheme-gray.css" />
+        <link rel="stylesheet" type="text/css" href="{{c.libraries_base_url}}/ext-3.4.0/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" href="{{c.libraries_base_url}}/ext-3.4.0/resources/css/xtheme-gray.css" />
         <style type="text/css">
           /* Make sure we don't break the tiles in the map */
           img { max-width: inherit; }
@@ -35,35 +32,33 @@
         </script>
         <script type="text/javascript" src="/scripts/parseURLIntoArray.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/adapter/ext/ext-base.js">
+		<script type="text/javascript" src="{{c.libraries_base_url}}/ext-3.4.0/adapter/ext/ext-base.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/ext-3.4.0/ext-all.js">
+		<script type="text/javascript" src="{{c.libraries_base_url}}/ext-3.4.0/ext-all.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/openlayers-openlayers-85b836d/OpenLayers.js">
+		<script type="text/javascript" src="{{c.libraries_base_url}}/openlayers-openlayers-85b836d/OpenLayers.js">
         </script>
-		<script type="text/javascript" src="${c.libraries_base_url}/proj4js-1.0.3/lib/proj4js.js">
+		<script type="text/javascript" src="{{c.libraries_base_url}}/proj4js-1.0.3/lib/proj4js.js">
 		</script>
-        <script type="text/javascript" src="${c.libraries_base_url}/GeoExt/GeoExt.js">
+        <script type="text/javascript" src="{{c.libraries_base_url}}/GeoExt/GeoExt.js">
         </script>
         <script type="text/javascript" src="/scripts/GetCap.js">
         </script>
         <script type="text/javascript">
-          var CKANEXT_OS_TILES_URL = "${c.tiles_url_ckan}";
-          var CKANEXT_OS_WMS_URL = "${c.wms_url_ckan}";
-          var CKANEXT_OS_WFS_URL = "${c.wfs_url_ckan}";
+          var CKANEXT_OS_TILES_URL = "{{c.tiles_url_ckan}}";
+          var CKANEXT_OS_WMS_URL = "{{c.wms_url_ckan}}";
+          var CKANEXT_OS_WFS_URL = "{{c.wfs_url_ckan}}";
         </script>
         <script type="text/javascript" src="/scripts/wmsevalmap.js">
         </script>
-  </py:def>
+  {% endblock %}
 
-  <py:def function="page_title">Map Based Preview</py:def>
-  <py:def function="page_heading">Map Based Preview</py:def>
-  <py:def function="body_class">no-sidebar</py:def>
 
-  <py:def function="blackbar_content">
-  </py:def>
+{% block title %}Map Based Preview - {{ super() }}{% endblock %}
 
-  <div py:match="content" class="map-preview">
+
+{% block primary_content_inner %}
+<div class="map-preview">
   <div id="thinblackbar">
     <div class="container" style="padding: 8px 10px 0 10px; text-align: center; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 18px;">
 
@@ -96,9 +91,7 @@
         </div>
 
   </div>
+  {% endblock %}
 
--->
-  <xi:include href="../layout_base.html" />
 
-</html>
 

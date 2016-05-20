@@ -129,14 +129,14 @@ class Proxy(BaseController):
                 socket.timeout), err:
             response.status_int = 504  # proxy failure
             return 'Proxied server timed-out: %s' % str(err)
-        except requests.exceptions.TooManyRedirects:
+        except requests.exceptions.TooManyRedirects, err:
             response.status_int = 504  # proxy failure
             return 'Proxied server sent us on too many redirects: %s' % \
                 str(err)
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException, err:
             response.status_int = 504  # proxy failure
             return 'Proxied server error: %s' % str(err)
-        except e:
+        except Exception, e:
             log.error('Proxy URL error. URL: %r Error: %s', url, str(e))
             raise e  # Send an exception email to handle it better
         log.debug('Proxy reponse %s: %s', response.status_code, res[:100])

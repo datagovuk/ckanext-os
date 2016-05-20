@@ -1,19 +1,17 @@
 import re
-import urllib2
-from urllib2 import HTTPError, URLError
 from urllib import quote, urlencode
-from httplib import HTTPException, BadStatusLine
-from socket import error as socket_error
+import socket
 import logging
 from urlparse import urljoin
 
 import sqlalchemy
 from pylons import config
+import requests
 
 from ckan.lib.base import request, response, c, BaseController, g, render, redirect
 from ckan import model
 from ckan.lib.helpers import OrderedDict, url_for
-import ckan.model.misc as misc
+from ckanext.dgu.gemini_postprocess import get_wms_base_url
 
 log = logging.getLogger(__name__)
 
@@ -114,41 +112,34 @@ class Proxy(BaseController):
 
     def _read_url(self, url, post_data=None, content_type=None):
         headers = {'Content-Type': content_type} if content_type else {}
-        request = urllib2.Request(url, post_data, headers)
         log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
-            f = urllib2.urlopen(request)
-            res = f.read()
-        except HTTPError, e:
+            response = requests.get(url, data=post_data, headers=headers)
+            res = response.text
+        except requests.exceptions.ConnectionError, err:
+            response.status_int = 504  # proxy failure
+            return 'Proxied server had a connection error: %s' % str(err)
+        except requests.exceptions.HTTPError, err:
             response.status_int = 400
-            return 'Proxied server returned %s: %s' % (e.code, e.msg)
-        except URLError, e:
-            err = str(e)
-            if 'Connection timed out' or 'Interrupted system call' in err:
-                response.status_int = 504 # proxy failure
-                return 'Proxied server timed-out: %s' % err
-            elif 'Name or service not known' in err:
-                response.status_int = 400
-                return 'Host name in URL not known: %s' % url
-            elif 'Connection refused' in err:
-                response.status_int = 403
-                return 'Connection refused: %s' % url
-            elif 'Connection reset by peer' in err:
-                response.status_int = 504 # proxy failure
-                return 'Proxied server closed the connection abruptly: %s' % err
-
-            log.error('Proxy URL error. URL: %r Error: %s', url, err)
-            raise e # Send an exception email to handle it better
-        except BadStatusLine, e:
-            response.status_int = 504
-            return 'Proxied server returned bad status line: %r' % e.line
-        except HTTPException, e:
-            response.status_int = 504
-            return 'Proxied server HTTP communication error: %s %s' % (e, e.msg)
-        except socket_error, e:
-            response.status_int = 504
-            return 'Proxied server socket communication error: %r' % e
-        log.debug('Proxy reponse %s: %s', f.code, res[:100])
+            return 'Proxied server HTTP error: %s' % str(err)
+        except requests.exceptions.URLRequired, err:
+            response.status_int = 400
+            return 'Cannot proxy an invalid URL: %s' % str(err)
+        except (requests.exceptions.Timeout,
+                socket.timeout), err:
+            response.status_int = 504  # proxy failure
+            return 'Proxied server timed-out: %s' % str(err)
+        except requests.exceptions.TooManyRedirects:
+            response.status_int = 504  # proxy failure
+            return 'Proxied server sent us on too many redirects: %s' % \
+                str(err)
+        except requests.exceptions.RequestException as e:
+            response.status_int = 504  # proxy failure
+            return 'Proxied server error: %s' % str(err)
+        except e:
+            log.error('Proxy URL error. URL: %r Error: %s', url, str(e))
+            raise e  # Send an exception email to handle it better
+        log.debug('Proxy reponse %s: %s', response.status_code, res[:100])
         return res
 
     def geoserver_proxy(self, url_suffix):
@@ -197,7 +188,7 @@ class Proxy(BaseController):
                 key, value = param_str.split('=')
                 params[key.lower()] = value
                 # duplicates get removed here automatically
-        except ValueError, e:
+        except ValueError:
             raise ValidationError('URL structure wrong')
 
         # Add in request and service params if missing
@@ -238,10 +229,12 @@ class Proxy(BaseController):
         base_url = url.split('?')[0] if '?' in url else url
         if base_url == urljoin(g.site_url, '/data/wfs'):
             # local WFS service
-            return self._read_url(url, post_data=request.body, content_type='application/xml')
+            return self._read_url(url, post_data=request.body,
+                                  content_type='application/xml')
         else:
             # WMS
-            query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_url + '%'))
+            query = model.Session.query(model.Resource) \
+                         .filter(model.Resource.url.like(base_url + '%'))
 
             if query.count() == 0:
                 response.status_int = 403
@@ -259,7 +252,8 @@ class Proxy(BaseController):
 
     def preview_getinfo(self):
         '''
-        This is a proxy request for the Preview map to get detail of a particular subset of a WMS service.
+        This is a proxy request for the Preview map to get detail of a
+        particular subset of a WMS service.
 
         Example request:
         http://dev-ckan.dgu.coi.gov.uk/data/preview_getinfo?url=http%3A%2F%2Flasigpublic.nerc-lancaster.ac.uk%2FArcGIS%2Fservices%2FBiodiversity%2FGMFarmEvaluation%2FMapServer%2FWMSServer%3FLAYERS%3DWinterOilseedRape%26QUERY_LAYERS%3DWinterOilseedRape%26STYLES%3D%26SERVICE%3DWMS%26VERSION%3D1.1.1%26REQUEST%3DGetFeatureInfo%26EXCEPTIONS%3Dapplication%252Fvnd.ogc.se_xml%26BBOX%3D-1.628338%252C52.686046%252C-0.086204%252C54.8153%26FEATURE_COUNT%3D11%26HEIGHT%3D845%26WIDTH%3D612%26FORMAT%3Dimage%252Fpng%26INFO_FORMAT%3Dapplication%252Fvnd.ogc.wms_xml%26SRS%3DEPSG%253A4258%26X%3D327%26Y%3D429
@@ -278,7 +272,7 @@ class Proxy(BaseController):
 
         # Check base of URL is in CKAN (otherwise we are an open proxy)
         # (the parameters get changed by the Preview widget)
-        base_wms_url = wms_url.split('?')[0] if '?' in wms_url else wms_url
+        base_wms_url = get_wms_base_url(wms_url)
         query = model.Session.query(model.Resource).filter(model.Resource.url.like(base_wms_url+'%'))
         if query.count() == 0:
             # Try in the 'wms_base_urls' extras too, as some WMSs use different
@@ -296,4 +290,3 @@ class Proxy(BaseController):
                 return 'Base of WMS URL not known: %r' % base_wms_url
 
         return self._read_url(wms_url)
-

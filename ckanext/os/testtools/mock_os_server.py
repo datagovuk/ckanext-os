@@ -1,5 +1,4 @@
 import logging
-from xmlrpclib import Fault
 
 import paste.script
 from paste.util.multidict import MultiDict
@@ -41,7 +40,8 @@ class Command(paste.script.command.Command):
             server_process = MockOsServerProcess()
             if not self.options.is_quiet:
                 server_process.log.setLevel(logging.DEBUG)
-                formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+                formatter = logging.Formatter(
+                    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
                 handler = logging.StreamHandler()
                 handler.setFormatter(formatter)
                 server_process.log.addHandler(handler)
@@ -50,9 +50,8 @@ class Command(paste.script.command.Command):
 class MockOsServerProcess(object):
     def __init__(self):
         self.log = logging.getLogger(__name__)
-        
+
     def run(self):
-        import SimpleHTTPServer
         import SocketServer
         from BaseHTTPServer import BaseHTTPRequestHandler
 
@@ -70,10 +69,10 @@ class MockOsServerProcess(object):
                     value = param[len(key)+1:]
                     param_dict.add(key, value)
                 return path, param_dict
-                
+
             def do_GET(self):
                 path, param_dict = self.parse_path()
-                    
+
                 # 'http://%s/InspireGaz/gazetteer?q=%s'
                 if path == '/InspireGaz/gazetteer':
                     return self.gazetteer(param_dict)
@@ -91,12 +90,11 @@ class MockOsServerProcess(object):
 
             def do_POST(self):
                 path, param_dict = self.parse_path()
-                #data = 
 
                 if 'apikey' not in param_dict or \
                    param_dict['apikey'] != MOCK_API_KEY:
                     self.send_error(403)
-                
+
                 # 'http://%s/geoserver/wfs'
                 if path == '/geoserver/wfs':
                     return self.admin_boundaries()
@@ -171,19 +169,18 @@ class MockOsServerProcess(object):
 
             def admin_boundaries(self):
                 message = '''{"type":"FeatureCollection","features":[{"type":"Feature","id":"UK_Admin_Boundaries_250m_4258.fid-4d34146c_1364e13b29d_-4f42","geometry":{"type":"MultiPolygon","coordinates":[[[[-4.543907032992606,50.9447173620452],[-4.546951552891223,50.95269509014119],[-4.535536997267976,50.96559909154817],[-2.954281938979178,50.82121599008027]]]},"geometry_name":"the_geom","properties":{"NAME":"Wrecsam - Wrexham"}}],"crs":{"type":"EPSG","properties":{"code":"4258"}},"bbox":[-5.3532518686055415,50.201508698391706,0.356977049661522,53.61635012856053]}'''
-                
+
                 self.send_response(200)
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
                 self.wfile.write(message)
-        
+
         # Create server
-        server = SocketServer.TCPServer((config['http_host'],
+        self.server = SocketServer.TCPServer((config['http_host'],
                                         config['http_port']),
-                                       MockOsServer)
+                                        MockOsServer)
 
         # Run the server's main loop
         self.log.debug('Serving on http://%s:%s',
-                      config['http_host'], config['http_port'])
-        server.serve_forever()
-
+                       config['http_host'], config['http_port'])
+        self.server.serve_forever()

@@ -114,8 +114,8 @@ class Proxy(BaseController):
         headers = {'Content-Type': content_type} if content_type else {}
         log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
-            response = requests.get(url, data=post_data, headers=headers)
-            res = response.text
+            resp = requests.get(url, data=post_data, headers=headers)
+            res = resp.text
         except requests.exceptions.ConnectionError, err:
             response.status_int = 504  # proxy failure
             return 'Proxied server had a connection error: %s' % str(err)
@@ -139,7 +139,7 @@ class Proxy(BaseController):
         except Exception, e:
             log.error('Proxy URL error. URL: %r Error: %s', url, str(e))
             raise e  # Send an exception email to handle it better
-        log.debug('Proxy reponse %s: %s', response.status_code, res[:100])
+        log.debug('Proxy reponse %s: %s', resp.status_code, res[:100])
         return res
 
     def geoserver_proxy(self, url_suffix):

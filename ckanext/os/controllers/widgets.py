@@ -138,7 +138,7 @@ class Proxy(BaseController):
             return 'Proxied server error: %s' % str(err)
         except Exception, e:
             log.error('Proxy URL error. URL: %r Error: %s', url, str(e))
-            raise e  # Send an exception email to handle it better
+            raise  # Send an exception email to handle it better
         log.debug('Proxy reponse %s: %s', resp.status_code, res[:100])
         return res
 

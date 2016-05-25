@@ -114,7 +114,10 @@ class Proxy(BaseController):
         headers = {'Content-Type': content_type} if content_type else {}
         log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
-            resp = requests.get(url, data=post_data, headers=headers)
+            resp = requests.get(url, data=post_data, headers=headers,
+                                verify=False)
+            # don't verify the https certificate because we got obscure errors
+            # in openssl - TypeError X509_STORE_CTX
             res = resp.text
         except requests.exceptions.ConnectionError, err:
             response.status_int = 504  # proxy failure

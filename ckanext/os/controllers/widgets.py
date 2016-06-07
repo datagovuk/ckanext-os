@@ -251,7 +251,14 @@ class Proxy(BaseController):
             log.warning('WMS Preview proxy received invalid url: %r', url)
             return 'Invalid URL: %s' % str(e)
 
-        return self._read_url(url)
+        content = self._read_url(url)
+        if not content:
+            # Varnish will change an empty response into a 500 Guru
+            # meditation  (see "small blank pages" in the vcl), so return an
+            # error message instead
+            return 'Server returned 0 bytes'
+
+        return content
 
     def preview_getinfo(self):
         '''
@@ -292,4 +299,11 @@ class Proxy(BaseController):
                 response.status_int = 403
                 return 'Base of WMS URL not known: %r' % base_wms_url
 
-        return self._read_url(wms_url)
+        content = self._read_url(wms_url)
+        if not content:
+            # Varnish will change an empty response into a 500 Guru
+            # meditation  (see "small blank pages" in the vcl), so return an
+            # error message instead
+            return 'Server returned 0 bytes'
+
+        return content

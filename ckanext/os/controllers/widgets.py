@@ -111,6 +111,7 @@ class Proxy(BaseController):
         return re.sub('key=([0-9a-f]{2})[0-9a-f]+', r'key=\1xxx', txt)
 
     def _read_url(self, url, post_data=None, content_type=None):
+        import OpenSSL.SSL
         headers = {'Content-Type': content_type} if content_type else {}
         log.debug('Proxied request to URL: %s', self.obscure_apikey(url))
         try:
@@ -139,6 +140,11 @@ class Proxy(BaseController):
         except requests.exceptions.RequestException, err:
             response.status_int = 504  # proxy failure
             return 'Proxied server error: %s' % str(err)
+        except OpenSSL.SSL.SysCallError:
+            # Requests doesn't catch this error - see:
+            # https://github.com/appfolio/farcy/issues/83
+            response.status_int = 504  # proxy failure
+            return 'Proxied server SSL connection error: %s' % str(err)
         except Exception, e:
             log.error('Proxy URL error. URL: %r Error: %s', url, str(e))
             raise  # Send an exception email to handle it better

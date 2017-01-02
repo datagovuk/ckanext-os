@@ -140,7 +140,7 @@ class Proxy(BaseController):
         except requests.exceptions.RequestException, err:
             response.status_int = 504  # proxy failure
             return 'Proxied server error: %s' % str(err)
-        except OpenSSL.SSL.SysCallError:
+        except OpenSSL.SSL.SysCallError, err:
             # Requests doesn't catch this error - see:
             # https://github.com/appfolio/farcy/issues/83
             response.status_int = 504  # proxy failure

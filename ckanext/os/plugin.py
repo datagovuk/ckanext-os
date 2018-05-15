@@ -11,8 +11,6 @@ import ckan.plugins as p
 from ckan.lib.helpers import json
 from ckan.lib.dictization.model_dictize import package_dictize
 from ckan.model.types import make_uuid
-import ckan.lib.celery_app as celery_app
-send_task = celery_app.celery.send_task
 
 log = getLogger(__name__)
 
@@ -110,7 +108,7 @@ class SpatialIngesterPlugin(SingletonPlugin):
         self.site_url = config.get('ckan.site_url_internally') or config.get('ckan.site_url')
         self.spatial_datastore_jdbc_url = config['ckanext-os.spatial-datastore.jdbc.url']
         self.spatial_ingester_filepath = config['ckanext-os.spatial-ingester.filepath']
-        
+
     def notify(self, entity, operation=None):
         if not isinstance(entity, model.Package):
             return
@@ -124,6 +122,9 @@ class SpatialIngesterPlugin(SingletonPlugin):
         self._create_task(dataset)
 
     def _create_task(self, dataset):
+        import ckan.lib.celery_app as celery_app
+        send_task = celery_app.celery.send_task
+
         site_user = t.get_action('get_site_user')(
             {'model': model, 'ignore_auth': True, 'defer_commit': True}, {}
         )
@@ -164,4 +165,4 @@ class WfsServer(SingletonPlugin):
         ##             controller='ckanext.os.controllers.wfs_server:Proxy',
         ##             action='geoserver_proxy')
         return map
-    
+
